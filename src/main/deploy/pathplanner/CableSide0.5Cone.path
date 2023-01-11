@@ -1,0 +1,106 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.8524487415516195,
+        "y": 1.634423442719067
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.065003838654295,
+        "y": 1.2499030787535261
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.9081139435775123,
+        "y": 0.9419477541962603
+      },
+      "prevControl": {
+        "x": 2.4554101988843087,
+        "y": 1.072193079536535
+      },
+      "nextControl": {
+        "x": 3.3543344991188704,
+        "y": 0.8135676775759777
+      },
+      "holonomicAngle": -0.01,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 4.893295675689097,
+        "y": 0.8430630169531025
+      },
+      "prevControl": {
+        "x": 3.893295675689097,
+        "y": 0.8430630169531025
+      },
+      "nextControl": {
+        "x": 5.893295675689097,
+        "y": 0.8430630169531025
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.4182395878889515,
+        "y": 1.7363218100496354
+      },
+      "prevControl": {
+        "x": 6.137689461939076,
+        "y": 1.510864609135234
+      },
+      "nextControl": null,
+      "holonomicAngle": 34.053207041500315,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 2.0695312499999985,
+      "names": [
+        "prepare to intake cone"
+      ]
+    }
+  ]
+}

@@ -22,6 +22,7 @@ public class GyroIOPigeon2 implements GyroIO {
     gyro.getRawGyro(xyzDps);
     inputs.connected = gyro.getLastError().equals(ErrorCode.OK);
     inputs.positionDeg = gyro.getYaw(); // degrees
+    inputs.pitch = gyro.getPitch();
     inputs.velocityDegPerSec = xyzDps[2]; // degrees per second
   }
 }

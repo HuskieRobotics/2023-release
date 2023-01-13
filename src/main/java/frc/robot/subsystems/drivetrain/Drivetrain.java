@@ -183,12 +183,14 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  public double getPidgeonAngle() {
-    GyroIO gyro = new GyroIOPigeon2(0);
-    GyroIOInputs inputs = new GyroIOInputs();
-    gyro.updateInputs(inputs);
-    return inputs.pitch;
+  public double getPidgeonPitch() {
+    gyroIO.updateInputs(gyroInputs);
+    return gyroInputs.pitch;
   }
+
+  // public boolean isBalanced() {
+  //   return getPidgeonAngle() < 0.1 && getPidgeonAngle() > - 0.1;
+  // }
 
   /**
    * Sets the rotation of the robot to the specified value. This method should only be invoked when

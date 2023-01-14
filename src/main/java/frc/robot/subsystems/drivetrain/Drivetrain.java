@@ -183,9 +183,14 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  public double getPidgeonPitch() {
+  public double getPitch() {
     gyroIO.updateInputs(gyroInputs);
     return gyroInputs.pitch;
+  }
+
+  public double getRoll() {
+    gyroIO.updateInputs(gyroInputs);
+    return gyroInputs.roll;
   }
 
   // public boolean isBalanced() {

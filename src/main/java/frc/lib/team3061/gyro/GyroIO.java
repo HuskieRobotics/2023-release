@@ -28,6 +28,7 @@ public interface GyroIO {
     public double positionDeg = 0.0;
     public double velocityDegPerSec = 0.0;
     public double pitch = 0.0;
+    public double roll = 0.0;
   }
 
   /**

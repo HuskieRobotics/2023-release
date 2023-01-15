@@ -291,5 +291,4 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
-    //Need to make a method that is enabled by clicking a button that runs vision_subsystem_is_disabled=false; which disables the vision subsystem by the disableVisionSubsystem() from the vision.java class  
 }

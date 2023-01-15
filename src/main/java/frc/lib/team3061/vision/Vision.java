@@ -29,8 +29,6 @@ public class Vision extends SubsystemBase {
   private double lastTimestamp;
   private SwerveDrivePoseEstimator poseEstimator;
 
-  private boolean vision_subsystem_is_enabled;
-
   private Alert noAprilTagLayoutAlert =
       new Alert(
           "No AprilTag layout file found. Update APRILTAG_FIELD_LAYOUT_PATH in VisionConstants.java",
@@ -86,12 +84,11 @@ public class Vision extends SubsystemBase {
             Pose3d tagPose = tagPoseOptional.get();
             Pose3d cameraPose = tagPose.transformBy(cameraToTarget.inverse());
             Pose3d robotPose = cameraPose.transformBy(VisionConstants.ROBOT_TO_CAMERA.inverse());
-            if(vision_subsystem_is_enabled){poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());}
+            poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());
 
             Logger.getInstance().recordOutput("Vision/TagPose", tagPose);
             Logger.getInstance().recordOutput("Vision/CameraPose", cameraPose);
             Logger.getInstance().recordOutput("Vision/RobotPose", robotPose.toPose2d());
-            Logger.getInstance().recordOutput("Vision/vision_subsystem_is_enabled",vision_subsystem_is_enabled);
           }
         }
       }
@@ -148,8 +145,4 @@ public class Vision extends SubsystemBase {
         && target.getPoseAmbiguity() < VisionConstants.MAXIMUM_AMBIGUITY
         && layout.getTagPose(target.getFiducialId()).isPresent();
   }
-  public void disableVisionSubsystem(){
-    vision_subsystem_is_enabled=false;
-  }
-
 }

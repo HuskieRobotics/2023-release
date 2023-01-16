@@ -1,10 +1,15 @@
-package frc.robot.subsystems.drivetrain.Elevator.java;
+package frc.robot.subsystems.elevator;
+import static frc.robot.subsystems.elevator.ElevatorConstants.*;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
 
 public class Elevator extends SubsystemBase {
 
-  private final ElevatorIO io;
+  private final ElevatorIOInputs io;
 
-  public Elevator(ElevatorIO io) {
+  public Elevator(ElevatorIOInputs io) {
     this.io = io;
   }
 

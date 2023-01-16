@@ -1,6 +1,6 @@
-package frc.robot.subsystems.drivetrain.elevator.java;
+package frc.robot.subsystems.elevator;
 
-import static frc.robot.Constants.ElevatorConstants.*;
+import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -12,10 +12,12 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.Pigeon2;
+
+import frc.robot.subsystems.elevator.ElevatorIOInputs;
 import frc.robot.util.CANDeviceFinder;
 import frc.robot.util.CANDeviceId.CANDeviceType;
 
-public class ElevatorIOTalonFX implements ElevatorIO {
+public class ElevatorIOHardware implements ElevatorIOInputs {
   private boolean isControlEnabled;
 
   private final WPI_TalonFX leftElevatorMotor;
@@ -78,13 +80,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // Feedback
     // Source
 
-    /* FPID for Distance */
-    rightConfig.slot0.kF = POSITION_PID_F;
-    rightConfig.slot0.kP = POSITION_PID_P;
-    rightConfig.slot0.kI = POSITION_PID_I;
-    rightConfig.slot0.kD = POSITION_PID_D;
-    rightConfig.slot0.integralZone = POSITION_PID_I_ZONE;
-    rightConfig.slot0.closedLoopPeakOutput = POSITION_PID_PEAK_OUTPUT;
+    // /* FPID for Distance */
+    // rightConfig.slot0.kF = POSITION_PID_F;
+    // rightConfig.slot0.kP = POSITION_PID_P;
+    // rightConfig.slot0.kI = POSITION_PID_I;
+    // rightConfig.slot0.kD = POSITION_PID_D;
+    // rightConfig.slot0.integralZone = POSITION_PID_I_ZONE;
+    // rightConfig.slot0.closedLoopPeakOutput = POSITION_PID_PEAK_OUTPUT;
 
     /* Config the neutral deadband. */
     rightConfig.neutralDeadband = 0.001;
@@ -102,23 +104,23 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rightConfig.slot3.closedLoopPeriod = closedLoopTimeMs;
 
     /* Motion Magic Configs */
-    rightConfig.motionAcceleration =
-        ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    rightConfig.motionCruiseVelocity = MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    rightConfig.motionCurveStrength = SCURVE_STRENGTH;
+    // rightConfig.motionAcceleration =
+    //     ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
+    // rightConfig.motionCruiseVelocity = MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
+    // rightConfig.motionCurveStrength = SCURVE_STRENGTH;
 
     /* APPLY the config settings */
     this.rightElevatorMotor.configAllSettings(rightConfig);
 
     /* Initialize */
-    this.rightElevatorMotor.getSensorCollection().setIntegratedSensorPosition(0, TIMEOUT_MS);
+    // this.rightElevatorMotor.getSensorCollection().setIntegratedSensorPosition(0, TIMEOUT_MS);
 
     // these status frames aren't read; so, set these CAN frame periods to the maximum value
-    //  to reduce traffic on the bus
-    this.leftElevatorMotor.setStatusFramePeriod(
-        StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
-    this.leftElevatorMotor.setStatusFramePeriod(
-        StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
+    // //  to reduce traffic on the bus
+    // this.leftElevatorMotor.setStatusFramePeriod(
+    //     StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
+    // this.leftElevatorMotor.setStatusFramePeriod(
+    //     StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
 
     this.pigeon = new Pigeon2(PIGEON_ID);
   }
@@ -127,19 +129,19 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
     inputs.isControlEnabled = isControlEnabled;
 
-    inputs.leftPosition = leftElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
-    inputs.leftVelocity = leftElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
-    inputs.leftClosedLoopError = leftElevatorMotor.getClosedLoopError(SLOT_INDEX);
-    inputs.leftAppliedVolts = leftElevatorMotor.getMotorOutputVoltage();
-    inputs.leftCurrentAmps = new double[] {leftElevatorMotor.getStatorCurrent()};
-    inputs.leftTempCelcius = new double[] {leftElevatorMotor.getTemperature()};
+    // inputs.leftPosition = leftElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
+    // inputs.leftVelocity = leftElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
+    // inputs.leftClosedLoopError = leftElevatorMotor.getClosedLoopError(SLOT_INDEX);
+    // inputs.leftAppliedVolts = leftElevatorMotor.getMotorOutputVoltage();
+    // inputs.leftCurrentAmps = new double[] {leftElevatorMotor.getStatorCurrent()};
+    // inputs.leftTempCelcius = new double[] {leftElevatorMotor.getTemperature()};
 
-    inputs.rightPosition = rightElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
-    inputs.rightVelocity = rightElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
-    inputs.rightClosedLoopError = rightElevatorMotor.getClosedLoopError(SLOT_INDEX);
-    inputs.rightAppliedVolts = rightElevatorMotor.getMotorOutputVoltage();
-    inputs.rightCurrentAmps = new double[] {rightElevatorMotor.getStatorCurrent()};
-    inputs.rightTempCelcius = new double[] {rightElevatorMotor.getTemperature()};
+    // inputs.rightPosition = rightElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
+    // inputs.rightVelocity = rightElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
+    // inputs.rightClosedLoopError = rightElevatorMotor.getClosedLoopError(SLOT_INDEX);
+    // inputs.rightAppliedVolts = rightElevatorMotor.getMotorOutputVoltage();
+    // inputs.rightCurrentAmps = new double[] {rightElevatorMotor.getStatorCurrent()};
+    // inputs.rightTempCelcius = new double[] {rightElevatorMotor.getTemperature()};
 
     inputs.pitch = pigeon.getPitch();
   }

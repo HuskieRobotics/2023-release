@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.drivetrain;
 
-import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
-
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -29,6 +27,9 @@ import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.TunableNumber;
+
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
+
 import org.littletonrobotics.junction.Logger;
 
 /**

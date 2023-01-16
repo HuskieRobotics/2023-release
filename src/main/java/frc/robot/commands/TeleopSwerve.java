@@ -1,8 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import frc.robot.subsystems.drivetrain.java.d.java.Drivetrain;
+import frc.robot.subsystems.drivetrain.java.d.java.DrivetrainConstants;
+
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 

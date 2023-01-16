@@ -1,6 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
@@ -27,43 +26,43 @@ public interface ElevatorIOInputs {
     // double pitch = 0.0;
 
     public void toLog(LogTable table) {
-    //   table.put("ControlEnabled", isControlEnabled);
+      //   table.put("ControlEnabled", isControlEnabled);
 
-    //   table.put("LeftPosition", leftPosition);
-    //   table.put("LeftVelocity", leftVelocity);
-    //   table.put("LeftClosedLoopError", leftClosedLoopError);
-    //   table.put("LeftAppliedVolts", leftAppliedVolts);
-    //   table.put("LeftCurrentAmps", leftCurrentAmps);
-    //   table.put("LeftTempCelcius", leftTempCelcius);
+      //   table.put("LeftPosition", leftPosition);
+      //   table.put("LeftVelocity", leftVelocity);
+      //   table.put("LeftClosedLoopError", leftClosedLoopError);
+      //   table.put("LeftAppliedVolts", leftAppliedVolts);
+      //   table.put("LeftCurrentAmps", leftCurrentAmps);
+      //   table.put("LeftTempCelcius", leftTempCelcius);
 
-    //   table.put("RightPosition", rightPosition);
-    //   table.put("RightVelocity", rightVelocity);
-    //   table.put("RightClosedLoopError", rightClosedLoopError);
-    //   table.put("RightAppliedVolts", rightAppliedVolts);
-    //   table.put("RightCurrentAmps", rightCurrentAmps);
-    //   table.put("RightTempCelcius", rightTempCelcius);
+      //   table.put("RightPosition", rightPosition);
+      //   table.put("RightVelocity", rightVelocity);
+      //   table.put("RightClosedLoopError", rightClosedLoopError);
+      //   table.put("RightAppliedVolts", rightAppliedVolts);
+      //   table.put("RightCurrentAmps", rightCurrentAmps);
+      //   table.put("RightTempCelcius", rightTempCelcius);
 
-    //   table.put("Pitch", pitch);
+      //   table.put("Pitch", pitch);
     }
 
     public void fromLog(LogTable table) {
       isControlEnabled = table.getBoolean("ControlEnabled", isControlEnabled);
 
-    //   leftPosition = table.getDouble("LeftPosition", leftPosition);
-    //   leftVelocity = table.getDouble("LeftVelocity", leftVelocity);
-    //   leftClosedLoopError = table.getDouble("LeftClosedLoopError", leftClosedLoopError);
-    //   leftAppliedVolts = table.getDouble("LeftAppliedVolts", leftAppliedVolts);
-    //   leftCurrentAmps = table.getDoubleArray("LeftCurrentAmps", leftCurrentAmps);
-    //   leftTempCelcius = table.getDoubleArray("LeftTempCelcius", leftTempCelcius);
+      //   leftPosition = table.getDouble("LeftPosition", leftPosition);
+      //   leftVelocity = table.getDouble("LeftVelocity", leftVelocity);
+      //   leftClosedLoopError = table.getDouble("LeftClosedLoopError", leftClosedLoopError);
+      //   leftAppliedVolts = table.getDouble("LeftAppliedVolts", leftAppliedVolts);
+      //   leftCurrentAmps = table.getDoubleArray("LeftCurrentAmps", leftCurrentAmps);
+      //   leftTempCelcius = table.getDoubleArray("LeftTempCelcius", leftTempCelcius);
 
-    //   rightPosition = table.getDouble("RightPosition", rightPosition);
-    //   rightVelocity = table.getDouble("RightVelocity", rightVelocity);
-    //   rightClosedLoopError = table.getDouble("RightClosedLoopError", rightClosedLoopError);
-    //   rightAppliedVolts = table.getDouble("RightAppliedVolts", rightAppliedVolts);
-    //   rightCurrentAmps = table.getDoubleArray("RightCurrentAmps", rightCurrentAmps);
-    //   rightTempCelcius = table.getDoubleArray("RightTempCelcius", rightTempCelcius);
+      //   rightPosition = table.getDouble("RightPosition", rightPosition);
+      //   rightVelocity = table.getDouble("RightVelocity", rightVelocity);
+      //   rightClosedLoopError = table.getDouble("RightClosedLoopError", rightClosedLoopError);
+      //   rightAppliedVolts = table.getDouble("RightAppliedVolts", rightAppliedVolts);
+      //   rightCurrentAmps = table.getDoubleArray("RightCurrentAmps", rightCurrentAmps);
+      //   rightTempCelcius = table.getDoubleArray("RightTempCelcius", rightTempCelcius);
 
-    //   pitch = table.getDouble("Pitch", pitch);
+      //   pitch = table.getDouble("Pitch", pitch);
     }
   }
 

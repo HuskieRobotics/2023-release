@@ -1,13 +1,15 @@
 package frc.robot.subsystems.elevator;
-import static frc.robot.subsystems.elevator.ElevatorConstants.*;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
+import static frc.robot.subsystems.elevator.ElevatorConstants.*;
+// import frc.robot.subsystems.elevator;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
 
   private final ElevatorIOInputs io;
+  private final ElevatorIOHardware inputs = new ElevatorIOHardware();
 
   public Elevator(ElevatorIOInputs io) {
     this.io = io;
@@ -16,9 +18,9 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.getInstance().processInputs(SUBSYSTEM_NAME, inputs);
+    // Logger.getInstance().processInputs(SUBSYSTEM_NAME, inputs);
 
-    double pitch = inputs.picth;
+    // double pitch = inputs.pitch;
   }
 
   public void setElevatorMotorPower(double power) {}
@@ -44,11 +46,11 @@ public class Elevator extends SubsystemBase {
     io.setControlEnabled(false);
   }
 
-  private double getElevatorEncoderHeight() {
-    return inputs.rightPosition;
-  }
+  // private double getElevatorEncoderHeight() {
+  //    return inputs.rightPosition;
+  // }
   /** CHECK THIS - not sure about about encoder */
   private double getSetPoint() {
-    return encoderPositionSetpoint;
+    return 10;
   }
 }

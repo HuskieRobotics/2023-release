@@ -4,7 +4,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import frc.robot.subsystems.drivetrain.java.d.java.DrivetrainConstants;
+import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 
 /**
  * Singleton class for SwerveDrivePoseEstimator that allows it to be shared by subsystems

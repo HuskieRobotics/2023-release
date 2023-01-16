@@ -5,7 +5,7 @@
 package frc.robot;
 
 import static frc.robot.Constants.*;
-import static frc.robot.subsystems.drivetrain.java.d.java.DrivetrainConstants.*;
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -38,8 +38,7 @@ import frc.robot.commands.FollowPath;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.drivetrain.java.d.java.Drivetrain;
-
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

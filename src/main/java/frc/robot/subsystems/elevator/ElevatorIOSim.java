@@ -12,12 +12,14 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotType;
+import frc.robot.operator_interface.OperatorInterface;
 
 public class ElevatorIOSim implements ElevatorIOInputs {
   public RobotType robot;
-
+  private ElevatorIOHardware elevatorHardware;
   private static final DCMotor m_elevatorGearbox = DCMotor.getVex775Pro(4); // CHANGE MOTOR
   private static final double kCarriageMass = 4; // Kg CHANGE
   private static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
@@ -27,7 +29,9 @@ public class ElevatorIOSim implements ElevatorIOInputs {
 
   private static final int kEncoderAChannel = 0; // CHANGE
   private static final int kEncoderBChannel = 1; // CHANGE, maybe use a constant
-  private final Encoder m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
+  public final Encoder m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
+  private static final double kElevatorEncoderDistPerPulse =
+  2.0 * Math.PI * kElevatorDrumRadius / 4096;
 
   private final ElevatorSim m_elevatorSim = new ElevatorSim(m_elevatorGearbox,
     kCarriageMass,
@@ -69,11 +73,12 @@ public class ElevatorIOSim implements ElevatorIOInputs {
     // // post the mechanism to the dashboard
     // SmartDashboard.putData("Mech2d", elevator);
   }
-
-    @Override
-  public void robotInit() {
-    m_encoder.setDistancePerPulse(kElevatorEncoderDistPerPulse);
+  
+  public Encoder getElevatorEncoder(){
+    return m_encoder;
   }
+
+ 
 
   // public Mechanism2d elevatorSimConstruct(){
   //     MechanismRoot2d elevator_root = elevator.getRoot("elevator", 2, 0);

@@ -39,6 +39,10 @@ import frc.robot.commands.TeleopSwerve;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIOHardware;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +56,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
-
+  
+  private Elevator elevator;
   private Drivetrain drivetrain;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
@@ -71,6 +76,7 @@ public class RobotContainer {
           {
             GyroIO gyro = new GyroIOPigeon2(PIGEON_ID);
 
+            elevator = new Elevator(new ElevatorIOHardware());
             SwerveModule flModule =
                 new SwerveModule(
                     new SwerveModuleIOTalonFX(
@@ -122,6 +128,8 @@ public class RobotContainer {
           }
         case ROBOT_SIMBOT:
           {
+            elevator = new Elevator(new ElevatorIOSim() {});
+
             SwerveModule flModule =
                 new SwerveModule(new SwerveModuleIOSim(), 0, MAX_VELOCITY_METERS_PER_SECOND);
 
@@ -228,6 +236,20 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
+
+    oi.getElevatorUpButton().onTrue(Commands.runOnce(elevator::enableElevatorControl, elevator));
+    oi.getElevatorUpButton().onFalse(Commands.runOnce(elevator::disableElevatorControl, elevator));
+  }
+
+  public void simPeriodic() {
+    if () {
+      // Here, we run PID control like normal, with a constant setpoint of 30in.
+      double pidOutput = m_controller.calculate(m_encoder.getDistance(), Units.inchesToMeters(30));
+      .setVoltage(pidOutput);
+    } else {
+      // Otherwise, we disable the motor.
+      m_motor.set(0.0);
+    }
   }
 
   /** Use this method to define your commands for autonomous mode. */

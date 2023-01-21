@@ -183,4 +183,8 @@ public class ElevatorIOHardware implements ElevatorIOInputs {
   // public void configClosedLoopPeakOutput(double peakOutput) {
   //   rightElevatorMotor.configClosedLoopPeakOutput(SLOT_INDEX, peakOutput);
   // }
+
+  public boolean getElevatorControl(){
+    return this.isControlEnabled;
+  }
 }

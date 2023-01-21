@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     LED.setLED(100, 0, 255, 0);
-    //LED.changeAnimationTo(Animations.Fire);
+    //LED.changeAnimationTo(Animations.ColorFlow);
   }
 
   /**

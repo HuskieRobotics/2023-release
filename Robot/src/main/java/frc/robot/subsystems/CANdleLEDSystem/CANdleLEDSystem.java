@@ -4,6 +4,7 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.FireAnimation;
@@ -201,7 +202,8 @@ public class CANdleLEDSystem extends SubsystemBase {
 
     switch (newAnimation) {
       case ColorFlow:
-        m_toAnimate = new ColorFlowAnimation(128, 20, 7);
+        Direction direction = Direction.Forward;
+        m_toAnimate = new ColorFlowAnimation(255, 0, 255, 125, 0.6, LED_COUNT, direction);
         break;
 
       case Fire:

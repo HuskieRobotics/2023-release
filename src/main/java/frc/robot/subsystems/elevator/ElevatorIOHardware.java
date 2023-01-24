@@ -2,52 +2,63 @@ package frc.robot.subsystems.elevator;
 
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.Pigeon2;
+
+import frc.lib.team3061.util.CANDeviceFinder;
+import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
+import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
 // import frc.robot.util.CANDeviceFinder;
 // import frc.robot.util.CANDeviceId.CANDeviceType;
 
-public class ElevatorIOHardware implements ElevatorIOInputs {
+public class ElevatorIOHardware implements ElevatorIO {
   private boolean isControlEnabled;
 
-  // private final WPI_TalonFX leftElevatorMotor;
-  // private final WPI_TalonFX rightElevatorMotor;
-  // private final Pigeon2 pigeon;
+  private  WPI_TalonFX leftElevatorMotor;
+  private WPI_TalonFX rightElevatorMotor;
+  private Pigeon2 pigeon;
 
   public void ElevatorIOTalonFX() {
-    // CANDeviceFinder can = new CANDeviceFinder();
+    CANDeviceFinder can = new CANDeviceFinder();
 
     this.isControlEnabled = false;
 
-    // can.isDevicePresent(CANDeviceType.TALON, LEFT_ELEVATOR_MOTOR_CAN_ID, "Left Elevator Motor");
-    // can.isDevicePresent(CANDeviceType.TALON, RIGHT_ELEVATOR_MOTOR_CAN_ID, "Right Elevator
-    // Motor");
-    // this.leftElevatorMotor = new WPI_TalonFX(LEFT_ELEVATOR_MOTOR_CAN_ID);
-    // this.rightElevatorMotor = new WPI_TalonFX(RIGHT_ELEVATOR_MOTOR_CAN_ID);
+    can.isDevicePresent(CANDeviceType.TALON, LEFT_ELEVATOR_MOTOR_CAN_ID, "Left Elevator Motor");
+    can.isDevicePresent(CANDeviceType.TALON, RIGHT_ELEVATOR_MOTOR_CAN_ID, "Right Elevator Motor");
+    this.leftElevatorMotor = new WPI_TalonFX(LEFT_ELEVATOR_MOTOR_CAN_ID);
+    this.rightElevatorMotor = new WPI_TalonFX(RIGHT_ELEVATOR_MOTOR_CAN_ID);
 
     // the following configuration is based on the CTRE example code
 
     /* Factory Default all hardware to prevent unexpected behaviour */
-    // this.rightElevatorMotor.configFactoryDefault();
-    // this.leftElevatorMotor.configFactoryDefault();
+    this.rightElevatorMotor.configFactoryDefault();
+    this.leftElevatorMotor.configFactoryDefault();
 
     /** Config Objects for motor controllers */
     TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
     /* Disable all motors */
-    // this.rightElevatorMotor.set(TalonFXControlMode.PercentOutput, 0);
-    // this.leftElevatorMotor.set(TalonFXControlMode.PercentOutput, 0);
+    this.rightElevatorMotor.set(TalonFXControlMode.PercentOutput, 0);
+    this.leftElevatorMotor.set(TalonFXControlMode.PercentOutput, 0);
 
     /* Set neutral modes */
-    // this.leftElevatorMotor.setNeutralMode(NeutralMode.Brake);
-    // this.rightElevatorMotor.setNeutralMode(NeutralMode.Brake);
-
-    // this.leftElevatorMotor.follow(this.rightElevatorMotor);
+    this.leftElevatorMotor.setNeutralMode(NeutralMode.Brake);
+    this.rightElevatorMotor.setNeutralMode(NeutralMode.Brake);
+    
+    this.leftElevatorMotor.follow(this.rightElevatorMotor);
 
     /* Configure output */
-    // this.rightElevatorMotor.setInverted(TalonFXInvertType.Clockwise);
-    // this.leftElevatorMotor.setInverted(TalonFXInvertType.FollowMaster);
+    this.rightElevatorMotor.setInverted(TalonFXInvertType.Clockwise);
+    this.leftElevatorMotor.setInverted(TalonFXInvertType.FollowMaster);
 
     /*
      * Talon FX does not need sensor phase set for its integrated sensor
@@ -73,12 +84,12 @@ public class ElevatorIOHardware implements ElevatorIOInputs {
     // Source
 
     // /* FPID for Distance */
-    // rightConfig.slot0.kF = POSITION_PID_F;
-    // rightConfig.slot0.kP = POSITION_PID_P;
-    // rightConfig.slot0.kI = POSITION_PID_I;
-    // rightConfig.slot0.kD = POSITION_PID_D;
-    // rightConfig.slot0.integralZone = POSITION_PID_I_ZONE;
-    // rightConfig.slot0.closedLoopPeakOutput = POSITION_PID_PEAK_OUTPUT;
+    rightConfig.slot0.kF = POSITION_PID_F;
+    rightConfig.slot0.kP = POSITION_PID_P;
+    rightConfig.slot0.kI = POSITION_PID_I;
+    rightConfig.slot0.kD = POSITION_PID_D;
+    rightConfig.slot0.integralZone = POSITION_PID_I_ZONE;
+    rightConfig.slot0.closedLoopPeakOutput = POSITION_PID_PEAK_OUTPUT;
 
     /* Config the neutral deadband. */
     rightConfig.neutralDeadband = 0.001;
@@ -96,46 +107,46 @@ public class ElevatorIOHardware implements ElevatorIOInputs {
     rightConfig.slot3.closedLoopPeriod = closedLoopTimeMs;
 
     /* Motion Magic Configs */
-    // rightConfig.motionAcceleration =
-    //     ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    // rightConfig.motionCruiseVelocity = MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    // rightConfig.motionCurveStrength = SCURVE_STRENGTH;
+    rightConfig.motionAcceleration =
+        ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
+    rightConfig.motionCruiseVelocity = MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
+    rightConfig.motionCurveStrength = SCURVE_STRENGTH;
 
     /* APPLY the config settings */
-    // this.rightElevatorMotor.configAllSettings(rightConfig);
+    this.rightElevatorMotor.configAllSettings(rightConfig);
 
     /* Initialize */
-    // this.rightElevatorMotor.getSensorCollection().setIntegratedSensorPosition(0, TIMEOUT_MS);
+    this.rightElevatorMotor.getSensorCollection().setIntegratedSensorPosition(0, TIMEOUT_MS);
 
     // these status frames aren't read; so, set these CAN frame periods to the maximum value
     // //  to reduce traffic on the bus
-    // this.leftElevatorMotor.setStatusFramePeriod(
-    //     StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
-    // this.leftElevatorMotor.setStatusFramePeriod(
-    //     StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
+    this.leftElevatorMotor.setStatusFramePeriod(
+        StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
+    this.leftElevatorMotor.setStatusFramePeriod(
+        StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
 
-    // this.pigeon = new Pigeon2(PIGEON_ID);
+    this.pigeon = new Pigeon2(PIGEON_ID);
   }
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    // inputs.isControlEnabled = isControlEnabled;
+    inputs.isControlEnabled = isControlEnabled;
 
-    // inputs.leftPosition = leftElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
-    // inputs.leftVelocity = leftElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
-    // inputs.leftClosedLoopError = leftElevatorMotor.getClosedLoopError(SLOT_INDEX);
-    // inputs.leftAppliedVolts = leftElevatorMotor.getMotorOutputVoltage();
-    // inputs.leftCurrentAmps = new double[] {leftElevatorMotor.getStatorCurrent()};
-    // inputs.leftTempCelcius = new double[] {leftElevatorMotor.getTemperature()};
+    inputs.leftPosition = leftElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
+    inputs.leftVelocity = leftElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
+    inputs.leftClosedLoopError = leftElevatorMotor.getClosedLoopError(SLOT_INDEX);
+    inputs.leftAppliedVolts = leftElevatorMotor.getMotorOutputVoltage();
+    inputs.leftCurrentAmps = new double[] {leftElevatorMotor.getStatorCurrent()};
+    inputs.leftTempCelcius = new double[] {leftElevatorMotor.getTemperature()};
 
-    // inputs.rightPosition = rightElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
-    // inputs.rightVelocity = rightElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
-    // inputs.rightClosedLoopError = rightElevatorMotor.getClosedLoopError(SLOT_INDEX);
-    // inputs.rightAppliedVolts = rightElevatorMotor.getMotorOutputVoltage();
-    // inputs.rightCurrentAmps = new double[] {rightElevatorMotor.getStatorCurrent()};
-    // inputs.rightTempCelcius = new double[] {rightElevatorMotor.getTemperature()};
+    inputs.rightPosition = rightElevatorMotor.getSelectedSensorPosition(SLOT_INDEX);
+    inputs.rightVelocity = rightElevatorMotor.getSelectedSensorVelocity(SLOT_INDEX);
+    inputs.rightClosedLoopError = rightElevatorMotor.getClosedLoopError(SLOT_INDEX);
+    inputs.rightAppliedVolts = rightElevatorMotor.getMotorOutputVoltage();
+    inputs.rightCurrentAmps = new double[] {rightElevatorMotor.getStatorCurrent()};
+    inputs.rightTempCelcius = new double[] {rightElevatorMotor.getTemperature()};
 
-    // inputs.pitch = pigeon.getPitch();
+    inputs.pitch = pigeon.getPitch();
   }
 
   @Override
@@ -143,46 +154,46 @@ public class ElevatorIOHardware implements ElevatorIOInputs {
     isControlEnabled = controlEnabled;
   }
 
-  // @Override
-  // public void setMotorPercentage(double percentage) {
-  //   leftElevatorMotor.set(ControlMode.PercentOutput, percentage);
-  //   rightElevatorMotor.set(ControlMode.PercentOutput, percentage);
-  // }
+  @Override
+  public void setMotorPercentage(double percentage) {
+    leftElevatorMotor.set(ControlMode.PercentOutput, percentage);
+    rightElevatorMotor.set(ControlMode.PercentOutput, percentage);
+  }
 
-  // @Override
-  // public void setPosition(double position, double arbitraryFeedForward) {
-  //   leftElevatorMotor.follow(rightElevatorMotor);
-  //   rightElevatorMotor.set(
-  //       TalonFXControlMode.Position,
-  //       position,
-  //       DemandType.ArbitraryFeedForward,
-  //       arbitraryFeedForward);
-  // }
+  @Override
+  public void setPosition(double position, double arbitraryFeedForward) {
+    leftElevatorMotor.follow(rightElevatorMotor);
+    rightElevatorMotor.set(
+        TalonFXControlMode.Position,
+        position,
+        DemandType.ArbitraryFeedForward,
+        arbitraryFeedForward);
+  }
 
-  // @Override
-  // public void configureKF(double kF) {
-  //   rightElevatorMotor.config_kF(SLOT_INDEX, kF, TIMEOUT_MS);
-  // }
+  @Override
+  public void configureKF(double kF) {
+    rightElevatorMotor.config_kF(SLOT_INDEX, kF, TIMEOUT_MS);
+  }
 
-  // @Override
-  // public void configureKP(double kP) {
-  //   rightElevatorMotor.config_kP(SLOT_INDEX, kP, TIMEOUT_MS);
-  // }
+  @Override
+  public void configureKP(double kP) {
+    rightElevatorMotor.config_kP(SLOT_INDEX, kP, TIMEOUT_MS);
+  }
 
-  // @Override
-  // public void configureKI(double kI) {
-  //   rightElevatorMotor.config_kI(SLOT_INDEX, kI, TIMEOUT_MS);
-  // }
+  @Override
+  public void configureKI(double kI) {
+    rightElevatorMotor.config_kI(SLOT_INDEX, kI, TIMEOUT_MS);
+  }
 
-  // @Override
-  // public void configureKD(double kD) {
-  //   rightElevatorMotor.config_kD(SLOT_INDEX, kD, TIMEOUT_MS);
-  // }
+  @Override
+  public void configureKD(double kD) {
+    rightElevatorMotor.config_kD(SLOT_INDEX, kD, TIMEOUT_MS);
+  }
 
-  // @Override
-  // public void configClosedLoopPeakOutput(double peakOutput) {
-  //   rightElevatorMotor.configClosedLoopPeakOutput(SLOT_INDEX, peakOutput);
-  // }
+  @Override
+  public void configClosedLoopPeakOutput(double peakOutput) {
+    rightElevatorMotor.configClosedLoopPeakOutput(SLOT_INDEX, peakOutput);
+  }
 
   public boolean getElevatorControl(){
     return this.isControlEnabled;

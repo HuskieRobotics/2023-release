@@ -7,16 +7,17 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
 public class Elevator extends SubsystemBase {
 
-  private final ElevatorIOInputs io;
-  private final ElevatorIOHardware inputs = new ElevatorIOHardware();
+  private final ElevatorIOInputs inputs = new ElevatorIOInputs();
   private final ElevatorIOSim sim = new ElevatorIOSim();
 
   private Encoder m_Encoder = sim.getElevatorEncoder();
+  public ElevatorIO io;
 
-  public Elevator(ElevatorIOInputs io) {
+  public Elevator(ElevatorIO io) {
     this.io = io;
   }
 

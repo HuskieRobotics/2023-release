@@ -13,6 +13,30 @@ public class ElevatorConstants {
 
   public static final int MIN_HEIGHT = 0; 
   public static final int MAX_HEIGHT = 0;
+
+  public static final int PIGEON_ID = 18;
+  public static final int LEFT_ELEVATOR_MOTOR_CAN_ID = 22;
+  public static final int RIGHT_ELEVATOR_MOTOR_CAN_ID = 19;
+  public static final int CLIMBER_CAMERA_PORT = 0;
+
+  public static final int POSITION_PID_F = 0;
+  public static final int POSITION_PID_P = 0;
+  public static final int POSITION_PID_I = 0;
+  public static final int POSITION_PID_D = 0; 
+  public static final int POSITION_PID_I_ZONE = 0;
+  public static final int POSITION_PID_PEAK_OUTPUT = 0;
   
-  
+  public static final double SLOW_PEAK_OUTPUT = 0.15;
+  public static final double MAX_ELEVATOR_VELOCITY = 20000; // theoretical maximum 21305
+  public static final double ELEVATOR_ACCELERATION = MAX_ELEVATOR_VELOCITY * 10;
+  public static final int SCURVE_STRENGTH = 0;
+
+  public static final int ELEVATOR_POSITION_TOLERANCE = 1000;
+  public static final double ARBITRARY_FEED_FORWARD_EXTEND = .02;
+  public static final double ARBITRARY_FEED_FORWARD_RETRACT = -0.07;
+  public static final double DEFAULT_MOTOR_POWER = 0.5;
+
+  public static final int TIMEOUT_MS = 30;
+  public static final int SLOT_INDEX = 0;
+
 }

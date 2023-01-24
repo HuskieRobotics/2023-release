@@ -4,8 +4,11 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -16,8 +19,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotType;
 import frc.robot.operator_interface.OperatorInterface;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
-public class ElevatorIOSim implements ElevatorIOInputs {
+
+public class ElevatorIOSim extends TimedRobot {
   public RobotType robot;
   private ElevatorIOHardware elevatorHardware;
   private static final DCMotor m_elevatorGearbox = DCMotor.getVex775Pro(4); // CHANGE MOTOR
@@ -26,6 +32,9 @@ public class ElevatorIOSim implements ElevatorIOInputs {
   private static final double kElevatorGearing = 10; // NEED ACTUAL VALUES FOR THESE
   private static final double kMinElevatorHeight = 0;
   private static final double kMaxElevatorHeight = Units.inchesToMeters(50);// CHANGE
+  private static final int kMotorPort = 0; // CHANGE
+  private final PWMSparkMax m_motor = new PWMSparkMax(kMotorPort);
+
 
   private static final int kEncoderAChannel = 0; // CHANGE
   private static final int kEncoderBChannel = 1; // CHANGE, maybe use a constant
@@ -40,66 +49,76 @@ public class ElevatorIOSim implements ElevatorIOInputs {
     kMinElevatorHeight,
     kMaxElevatorHeight,
     true, VecBuilder.fill(0.01));
+    private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
+
     //https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/physics-sim.html
-  public Mechanism2d elevator;
+
+  private final Mechanism2d elevator = new Mechanism2d(20, 50);
+  private final MechanismRoot2d m_mech2dRoot = elevator.getRoot("Elevator Root", 10, 0);
+  private final MechanismLigament2d m_elevatorMech2d =
+      m_mech2dRoot.append(
+          new MechanismLigament2d(
+              "Elevator", Units.metersToInches(m_elevatorSim.getPositionMeters()), 90));
 
   public ElevatorIOSim() {
 
     // the main mechanism object
     robot = Constants.getRobot();
 
-
-
-
-
-
-
-
-
-
-
-    //  elevator = new Mechanism2d(3, 3);
-
-    // MechanismRoot2d elevator_root = elevator.getRoot("elevator", 2, 0);
-
-    // // MechanismLigament2d objects represent each "section"/"stage" of the mechanism, and are based
-    // // off the root node or another ligament object
-    // MechanismLigament2d m_elevator =
-    //     elevator_root.append(new MechanismLigament2d("elevator", 1, 90));
-    // MechanismLigament2d m_wrist =
-    //     m_elevator.append(
-    //         new MechanismLigament2d("wrist", 0.5, 90, 6, new Color8Bit(Color.kPurple)));
-
-    // // post the mechanism to the dashboard
-    // SmartDashboard.putData("Mech2d", elevator);
   }
   
   public Encoder getElevatorEncoder(){
     return m_encoder;
+
   }
 
  
+  @Override
+  public void robotInit() {
+    // TODO Auto-generated method stub
+    m_encoder.setDistancePerPulse(kElevatorEncoderDistPerPulse);
 
-  // public Mechanism2d elevatorSimConstruct(){
-  //     MechanismRoot2d elevator_root = elevator.getRoot("elevator", 2, 0);
+    // Publish Mechanism2d to SmartDashboard
+    // To view the Elevator Sim in the simulator, select Network Tables -> SmartDashboard ->
+    // Elevator Sim
+    SmartDashboard.putData("Elevator Sim", elevator);
+  }
+  
+  @Override
+  public void simulationPeriodic() {
+    // In this method, we update our simulation of what our elevator is doing
+    // First, we set our "inputs" (voltages)
+    m_elevatorSim.setInput(m_motor.get() * RobotController.getBatteryVoltage());
 
-  //     // MechanismLigament2d objects represent each "section"/"stage" of the mechanism, and are
-  // based
-  //     // off the root node or another ligament object
-  //     MechanismLigament2d m_elevator = elevator_root.append(new MechanismLigament2d("elevator",
-  // 1, 90));
-  //     MechanismLigament2d m_wrist = m_elevator.append(
-  //             new MechanismLigament2d("wrist", 0.5, 90, 6, new Color8Bit(Color.kPurple)));
+    // Next, we update it. The standard loop time is 20ms.
+    m_elevatorSim.update(0.020);
 
-  //      // post the mechanism to the dashboard
-  //     SmartDashboard.putData("Mech2d", elevator);
+    // Finally, we set our simulated encoder's readings and simulated battery voltage
+    m_encoderSim.setDistance(m_elevatorSim.getPositionMeters());
+    // SimBattery estimates loaded battery voltages
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps()));
 
-  //     return elevator;
-  // }
+    // Update elevator visualization with simulated position
+    m_elevatorMech2d.setLength(Units.metersToInches(m_elevatorSim.getPositionMeters()));
+  }
+  
+  @Override
+  public void teleopPeriodic() {
+    if (m_joystick.getTrigger()) {
+      // Here, we run PID control like normal, with a constant setpoint of 30in.
+      double pidOutput = m_controller.calculate(m_encoder.getDistance(), Units.inchesToMeters(30));
+      m_motor.setVoltage(pidOutput);
+    } else {
+      // Otherwise, we disable the motor.
+      m_motor.set(0.0);
+    }
+  }
 
-  // public void updateElevatorSim(){
-  //     // post the mechanism to the dashboard
-  //     SmartDashboard.putData("Mech2d", elevator);
-  // }
-
+  
+  @Override
+  public void disabledInit() {
+    // This just makes sure that our simulation code knows that the motor's off.
+    m_motor.set(0.0);
+  }
 }

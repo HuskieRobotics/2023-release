@@ -4,27 +4,26 @@ import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 /** Intake subsystem hardware interface. */
-public interface ElevatorIOInputs {
+public interface ElevatorIO {
   /** Contains all of the input data received from hardware. */
-  public static class ElevatorIO implements LoggableInputs {
+  public static class ElevatorIOInputs implements LoggableInputs {
     boolean isControlEnabled = false;
 
-    double angledPosition = 0.0;
-    double angledVelocity = 0.0;
-    double angledClosedLoopError = 0.0;
-    double angledAppliedVolts = 0.0;
-    double[] angledCurrentAmps = new double[] {};
-    double[] angledTempCelcius = new double[] {};
+    double leftPosition = 0.0;
+    double leftVelocity = 0.0;
+    double leftClosedLoopError = 0.0;
+    double leftAppliedVolts = 0.0;
+    double[] leftCurrentAmps = new double[] {};
+    double[] leftTempCelcius = new double[] {};
 
-    double extendPosition = 0.0;
-    double extendVelocity = 0.0;
-    double extendClosedLoopError = 0.0;
-    double extendAppliedVolts = 0.0;
-    double[] extendCurrentAmps = new double[] {};
-    double[] extendTempCelcius = new double[] {};
+    double rightPosition = 0.0;
+    double rightVelocity = 0.0;
+    double rightClosedLoopError = 0.0;
+    double rightAppliedVolts = 0.0;
+    double[] rightCurrentAmps = new double[] {};
+    double[] rightTempCelcius = new double[] {};
 
     double pitch = 0.0;
-
     public void toLog(LogTable table) {
      
     }
@@ -34,6 +33,7 @@ public interface ElevatorIOInputs {
 
     }
   }
+
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ElevatorIOInputs inputs) {}

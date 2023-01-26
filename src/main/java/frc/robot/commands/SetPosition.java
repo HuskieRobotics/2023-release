@@ -7,14 +7,17 @@ import frc.robot.subsystems.Elevator.Elevator;
 
 public class SetHigh extends CommandBase {
     private final Elevator elevator;
-
+    private double rotation;
+    private double extension;
     /**
      * Constructs a new ExtendClimberToMidRungCommand object.
      *
      * @param subsystem the elevator subsystem this command will control
      */
-    public SetElevatorExtension(Elevator subsystem, double rotation) {
+    public SetElevatorExtension(Elevator subsystem, double rotation, double extension) {
       elevator = subsystem;
+      this.rotation = rotation;
+      this.extension = extension;
       addRequirements(elevator);
     }
   
@@ -26,12 +29,13 @@ public class SetHigh extends CommandBase {
      */
     @Override
     public void initialize() {
-    
+      
+      elevator.setPosition(this.rotation, this.extension);
     }
   
     @Override
     public void execute() {
-        elevator.setExtensionMotorPosition(TOP_ROTATION);
+
     }
   
     /**
@@ -51,6 +55,6 @@ public class SetHigh extends CommandBase {
      */
     @Override
     public boolean isFinished() {
-      return elevator.atRotationSetPoint();
+      return elevator.atSetpoint();
     }
 }

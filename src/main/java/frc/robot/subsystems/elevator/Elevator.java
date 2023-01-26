@@ -2,7 +2,6 @@ package frc.robot.subsystems.elevator;
 
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
-// import frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
@@ -25,31 +24,56 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    
-    // Logger.getInstance().processInputs(SUBSYSTEM_NAME, inputs);
-
-    // double pitch = inputs.pitch;
+  io.updateInputs(inputs);
+  Logger.getInstance().processInputs(SUBSYSTEM_NAME, inputs);
   }
 
-  public void setElevatorMotorPower(double power) {}
+  public void setElevatorExtensionMotorPower(double power) {
+    if(
+      (this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0) ||
+      (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500 && power < 0)) {
+      stopExtension();
+    }
+    else {
+      io.setExtensionMotorPercentage(power);
+    }
+  }
+  public void setElevatorRotationMotorPower(double power) {
+    if(
+      (this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0) ||
+      (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0)) {
+      stopExtension();
+    }
+    else {
+      io.setRotationMotorPercentage(power);
+    }
+  }
 
-  /**
-   * @param desiredEncoderPosition this may not be an encoder, check in teh future
-   */
   public void setElevatorExtension(double desiredEncoderPosition) {
-    if(getRotationElevatorEncoderAngle() < MIN_ELEVATOR_EXTENSION_ANGLE){
-      setRotationMotorPosition(elevator, MIN_ELEVATOR_EXTENSION_ANGLE);
-    }    this.extensionSetpoint = desiredEncoderPosition;
-    io.setExtensionnPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTENSION);
+    if(
+      (this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0) ||
+      (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500 && power < 0)) {
+      stopExtension();
+    }
+    else{
+      if(getRotationElevatorEncoderAngle() < MIN_ELEVATOR_EXTENSION_ANGLE){
+        setRotationMotorPosition(elevator, MIN_ELEVATOR_EXTENSION_ANGLE);
+      }
+      this.extensionSetpoint = desiredEncoderPosition;
+      io.setExtensionnPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTENSION);
+    }
   }
 
-  /**
-   * @param desiredEncoderPosition this may not be an encoder, check in teh future
-   */
   public void setElevatorRotation(double desiredEncoderPosition) {
-    io.setRotationPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_ROTATION);
-    this.rotationSetpoint = desiredEncoderPosition;
+    if(
+      (this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0) ||
+      (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0)) {
+      stopExtension();
+    }
+    else {
+      io.setRotationPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_ROTATION);
+      this.rotationSetpoint = desiredEncoderPosition;
+    }
   }
 
   public boolean atExtensionSetpoint() {
@@ -67,12 +91,26 @@ public class Elevator extends SubsystemBase {
   public void stopRotation() {
     io.setRotationMotorPercentage(0.0);
   }
+
+  public void stopElevator() {
+    this.stopExtension();
+    this.stopRotation();
+  }
   
-  private double getExtensionElevatorEncoderHeight() {
+  public double getExtensionElevatorEncoderHeight() {
      return inputs.extensionPosition;
   }
 
-  private double getRotationElevatorEncoderHeight() {
+  public double getRotationElevatorEncoderAngle() {
     return inputs.rotationPosition;
  }
+
+  public void setPosition(double rotation, double extension) {
+    this.setElevatorExtension(extension);
+    this.setElevatorRotation(rotation);
+  }
+
+  public boolean atSetpoint() { 
+    return this.atRotationSetpoint() && this.atExtensionSetpoint();
+  }
 }

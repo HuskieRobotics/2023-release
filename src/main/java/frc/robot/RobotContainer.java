@@ -244,11 +244,11 @@ public class RobotContainer {
     oi.getElevatorUpButton().onFalse(Commands.runOnce(elevator::disableElevatorControl, elevator));
   }
 
-  public void simPeriodic() {
-    if () {
+  public void simPeriodic() { //FIXME  if loop & setVoltage 
+    if (true) {
       // Here, we run PID control like normal, with a constant setpoint of 30in.
       double pidOutput = m_controller.calculate(m_encoder.getDistance(), Units.inchesToMeters(30));
-      .setVoltage(pidOutput);
+      setVoltage(pidOutput);
     } else {
       // Otherwise, we disable the motor.
       m_motor.set(0.0);

@@ -64,5 +64,4 @@ public class ElevatorConstants {
 
   public static final int TIMEOUT_MS = 30;
   public static final int SLOT_INDEX = 0;
-
 }

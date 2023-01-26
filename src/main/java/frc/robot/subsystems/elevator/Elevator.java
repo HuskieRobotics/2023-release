@@ -68,7 +68,7 @@ public class Elevator extends SubsystemBase {
     if(
       (this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0) ||
       (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0)) {
-      stopExtension();
+      this.stopExtension();
     }
     else {
       io.setRotationPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_ROTATION);
@@ -77,19 +77,19 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atExtensionSetpoint() {
-    return Math.abs(inputs.extensionPosition - extensionSetpoint) < ELEVATOR_EXTENSION_POSITION_TOLERANCE; 
+    return Math.abs(this.inputs.extensionPosition - extensionSetpoint) < ELEVATOR_EXTENSION_POSITION_TOLERANCE; 
   }
 
   public boolean atRotationSetpoint() {
-    return Math.abs(inputs.rotationPosition - rotationSetpoint) < ELEVATOR_ROTATION_POSITION_TOLERANCE;
+    return Math.abs(this.inputs.rotationPosition - rotationSetpoint) < ELEVATOR_ROTATION_POSITION_TOLERANCE;
   }
 
   public void stopExtension() {
-    io.setExtensionMotorPercentage(0.0);
+    this.io.setExtensionMotorPercentage(0.0);
   }
 
   public void stopRotation() {
-    io.setRotationMotorPercentage(0.0);
+    this.io.setRotationMotorPercentage(0.0);
   }
 
   public void stopElevator() {
@@ -98,11 +98,11 @@ public class Elevator extends SubsystemBase {
   }
   
   public double getExtensionElevatorEncoderHeight() {
-     return inputs.extensionPosition;
+     return this.inputs.extensionPosition;
   }
 
   public double getRotationElevatorEncoderAngle() {
-    return inputs.rotationPosition;
+    return this.nputs.rotationPosition;
  }
 
   public void setPosition(double rotation, double extension) {

@@ -16,7 +16,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.*;
 import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team3061.gyro.GyroIOPigeon2;
 import frc.lib.team3061.pneumatics.Pneumatics;
@@ -42,6 +48,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIOHardware;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import main.java.frc.robot.commands.setPosition;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -239,9 +246,6 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
-
-    oi.getElevatorUpButton().onTrue(Commands.runOnce(elevator::enableElevatorControl, elevator));
-    oi.getElevatorUpButton().onFalse(Commands.runOnce(elevator::disableElevatorControl, elevator));
   }
 
   public void simPeriodic() { //FIXME  if loop & setVoltage 
@@ -308,7 +312,11 @@ public class RobotContainer {
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
   }
 
-  private void configureElevatorCommands(){ 
+  private void configureElevatorCommands(){
+    this.operatorButtons[1].whenPressed( //FIXME sample use of SetPosition 
+      new SequentialCommandGroup(
+        new SetPosition(elevator, 100, 100)
+        ));
   }
 
   /**

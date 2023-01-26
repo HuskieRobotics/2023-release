@@ -38,24 +38,26 @@ public class Elevator extends SubsystemBase {
    * @param desiredEncoderPosition this may not be an encoder, check in teh future
    */
   public void setElevatorExtension(double desiredEncoderPosition) {
-    setExtensionMotorPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTEND);
-    this.extensionSetpoint = desiredEncoderPosition;
+    if(getRotationElevatorEncoderAngle() < MIN_ELEVATOR_EXTENSION_ANGLE){
+      setRotationMotorPosition(elevator, MIN_ELEVATOR_EXTENSION_ANGLE);
+    }    this.extensionSetpoint = desiredEncoderPosition;
+    io.setExtensionnPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTENSION);
   }
 
   /**
    * @param desiredEncoderPosition this may not be an encoder, check in teh future
    */
   public void setElevatorRotation(double desiredEncoderPosition) {
-    setRotationMotorPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTEND);
+    io.setRotationPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_ROTATION);
     this.rotationSetpoint = desiredEncoderPosition;
   }
 
   public boolean atExtensionSetpoint() {
-    return inputs.extensionPosition == extensionSetpoint; //FIXME add deadzone
+    return Math.abs(inputs.extensionPosition - extensionSetpoint) < ELEVATOR_EXTENSION_POSITION_TOLERANCE; 
   }
 
   public boolean atRotationSetpoint() {
-    return inputs.rotationPosition == rotationSetpoint; //FIXME add deadzone
+    return Math.abs(inputs.rotationPosition - rotationSetpoint) < ELEVATOR_ROTATION_POSITION_TOLERANCE;
   }
 
   public void stopExtension() {

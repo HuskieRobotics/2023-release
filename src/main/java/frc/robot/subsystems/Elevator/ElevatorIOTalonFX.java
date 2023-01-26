@@ -75,18 +75,27 @@ public class ElevatorIOHardware implements ElevatorIO {
     /** Distance Configs */
 
     /* Configure the left Talon's selected sensor as integrated sensor */
+    extensionMotorConfig.primaryPID.selectedFeedbackSensor =
+        TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
     rotationMotorConfig.primaryPID.selectedFeedbackSensor =
         TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice(); // Local
     // Feedback
     // Source
 
     // /* FPID for Distance */
-    rotationMotorConfig.slot0.kF = POSITION_PID_F;
-    rotationMotorConfig.slot0.kP = POSITION_PID_P;
-    rotationMotorConfig.slot0.kI = POSITION_PID_I;
-    rotationMotorConfig.slot0.kD = POSITION_PID_D;
-    rotationMotorConfig.slot0.integralZone = POSITION_PID_I_ZONE;
-    rotationMotorConfig.slot0.closedLoopPeakOutput = POSITION_PID_PEAK_OUTPUT;
+    rotationMotorConfig.slot0.kF = ROTATION_POSITION_PID_F;
+    rotationMotorConfig.slot0.kP = ROTATION_POSITION_PID_P;
+    rotationMotorConfig.slot0.kI = ROTATION_POSITION_PID_I;
+    rotationMotorConfig.slot0.kD = ROTATION_POSITION_PID_D;
+    rotationMotorConfig.slot0.integralZone = ROTATION_POSITION_PID_I_ZONE;
+    rotationMotorConfig.slot0.closedLoopPeakOutput = ROTATION_POSITION_PID_PEAK_OUTPUT;
+
+    extensionMotorConfig.slot0.kF = EXTENSION_POSITION_PID_F;
+    extensionMotorConfig.slot0.kP = EXTENSION_POSITION_PID_P;
+    extensionMotorConfig.slot0.kI = EXTENSION_POSITION_PID_I;
+    extensionMotorConfig.slot0.kD = EXTENSION_POSITION_PID_D;
+    extensionMotorConfig.slot0.integralZone = EXTENSION_POSITION_PID_I_ZONE;
+    extensionMotorConfig.slot0.closedLoopPeakOutput = EXTENSION_POSITION_PID_PEAK_OUTPUT;
 
     /* Config the neutral deadband. */
     rotationMotorConfig.neutralDeadband = 0.001;
@@ -103,6 +112,11 @@ public class ElevatorIOHardware implements ElevatorIO {
     rotationMotorConfig.slot2.closedLoopPeriod = closedLoopTimeMs;
     rotationMotorConfig.slot3.closedLoopPeriod = closedLoopTimeMs;
 
+    extensionMotorConfig.slot0.closedLoopPeriod = closedLoopTimeMs;
+    extensionMotorConfig.slot1.closedLoopPeriod = closedLoopTimeMs;
+    extensionMotorConfig.slot2.closedLoopPeriod = closedLoopTimeMs;
+    extensionMotorConfig.slot3.closedLoopPeriod = closedLoopTimeMs;
+
     /* Motion Magic Configs */
     rotationMotorConfig.motionAcceleration =
         ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
@@ -114,6 +128,7 @@ public class ElevatorIOHardware implements ElevatorIO {
     extensionMotorConfig.motionCruiseVelocity = MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
     extensionMotorConfig.motionCurveStrength = SCURVE_STRENGTH;
 
+
     /* APPLY the config settings */
     this.rotationMotor.configAllSettings(rotationMotorConfig);
     this.extensionMotor.configAllSettings(extensionMotorConfig);
@@ -123,6 +138,11 @@ public class ElevatorIOHardware implements ElevatorIO {
 
     // these status frames aren't read; so, set these CAN frame periods to the maximum value
     // //  to reduce traffic on the bus
+    this.rotationMotor.setStatusFramePeriod(
+      StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
+    this.rotationMotor.setStatusFramePeriod(
+      StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
+
     this.extensionMotor.setStatusFramePeriod(
         StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
     this.extensionMotor.setStatusFramePeriod(

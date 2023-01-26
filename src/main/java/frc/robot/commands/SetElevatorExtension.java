@@ -36,7 +36,7 @@ public class SetElevatorExtension extends CommandBase {
   @Override
   public void initialize() {
     if(getRotationElevatorEncoderAngle() < MIN_ELEVATOR_ANGLE){  // FIXME
-        setRotationMotorEncoderAngle(MIN_EXTENSION_ANGLE, ARBITRARY_FEED_FORWARD_EXTEND);
+        new setElevatorRotation(elevator, MIN_ELEVATOR_ANGLE)
     }
     }
 

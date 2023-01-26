@@ -13,6 +13,8 @@ public class Elevator extends SubsystemBase {
 
   private final ElevatorIOInputs inputs = new ElevatorIOInputs();
   private final ElevatorIOSim sim = new ElevatorIOSim();
+  public double rotationSetpoint = 0.0;
+  public double extensionSetpoint = 0.0;
 
   private Encoder m_Encoder = sim.getElevatorEncoder();
   public ElevatorIO io;
@@ -35,29 +37,40 @@ public class Elevator extends SubsystemBase {
   /**
    * @param desiredEncoderPosition this may not be an encoder, check in teh future
    */
-  public void setElevatorMotorPosition(double desiredEncoderPosition) {}
-
-  public boolean atSetpoint() {
-    return true;
+  public void setElevatorExtension(double desiredEncoderPosition) {
+    setExtensionMotorPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTEND);
+    this.extensionSetpoint = desiredEncoderPosition;
   }
 
-  public void stopElevator() {
-    io.setMotorPercentage(0.0);
+  /**
+   * @param desiredEncoderPosition this may not be an encoder, check in teh future
+   */
+  public void setElevatorRotation(double desiredEncoderPosition) {
+    setRotationMotorPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTEND);
+    this.rotationSetpoint = desiredEncoderPosition;
   }
 
-  public void enableElevatorControl() {
-    io.setControlEnabled(true);
+  public boolean atExtensionSetpoint() {
+    return inputs.extensionPosition == extensionSetpoint; //FIXME add deadzone
   }
 
-  public void disableElevatorControl() {
-    io.setControlEnabled(false);
+  public boolean atRotationSetpoint() {
+    return inputs.rotationPosition == rotationSetpoint; //FIXME add deadzone
+  }
+
+  public void stopExtension() {
+    io.setExtensionMotorPercentage(0.0);
+  }
+
+  public void stopRotation() {
+    io.setRotationMotorPercentage(0.0);
   }
   
-  // private double getElevatorEncoderHeight() {
-  //    return inputs.rightPosition;
-  // }
-  /** CHECK THIS - not sure about about encoder */
-  private double getSetPoint() {
-    return 10;
+  private double getExtensionElevatorEncoderHeight() {
+     return inputs.extensionPosition;
   }
+
+  private double getRotationElevatorEncoderHeight() {
+    return inputs.rotationPosition;
+ }
 }

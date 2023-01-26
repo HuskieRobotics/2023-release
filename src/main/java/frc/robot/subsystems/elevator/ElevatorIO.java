@@ -9,19 +9,19 @@ public interface ElevatorIO {
   public static class ElevatorIOInputs implements LoggableInputs {
     boolean isControlEnabled = false;
 
-    double leftPosition = 0.0;
-    double leftVelocity = 0.0;
-    double leftClosedLoopError = 0.0;
-    double leftAppliedVolts = 0.0;
-    double[] leftCurrentAmps = new double[] {};
-    double[] leftTempCelcius = new double[] {};
+    double extensionPosition = 0.0;
+    double extensionVelocity = 0.0;
+    double extensionClosedLoopError = 0.0;
+    double extensionAppliedVolts = 0.0;
+    double[] extensionCurrentAmps = new double[] {};
+    double[] extensionTempCelcius = new double[] {};
 
-    double rightPosition = 0.0;
-    double rightVelocity = 0.0;
-    double rightClosedLoopError = 0.0;
-    double rightAppliedVolts = 0.0;
-    double[] rightCurrentAmps = new double[] {};
-    double[] rightTempCelcius = new double[] {};
+    double rotationPosition = 0.0;
+    double rotationVelocity = 0.0;
+    double rotationClosedLoopError = 0.0;
+    double rotationAppliedVolts = 0.0;
+    double[] rotationCurrentAmps = new double[] {};
+    double[] rotationTempCelcius = new double[] {};
 
     double pitch = 0.0;
     public void toLog(LogTable table) {
@@ -34,31 +34,48 @@ public interface ElevatorIO {
     }
   }
 
-
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ElevatorIOInputs inputs) {}
 
-  /** Enable/Disable collector. */
-  public default void setControlEnabled(boolean controlEnabled) {}
-
   /** Run the climber open loop at the specified voltage. */
-  public default void setMotorPercentage(double percentage) {}
+  public default void setExtensionMotorPercentage(double percentage) {}
 
   /** Run the climber closed loop to the specified position. */
-  public default void setPosition(double position, double arbitraryFeedForward) {}
+  public default void setExtensionPosition(double position, double arbitraryFeedForward) {}
 
   /** Set position feed forward constant. */
-  public default void configureKF(double kF) {}
+  public default void configureExtensionKF(double kF) {}
 
   /** Set position proportional constant. */
-  public default void configureKP(double kP) {}
+  public default void configureExtensionKP(double kP) {}
 
   /** Set position integrative constant. */
-  public default void configureKI(double kI) {}
+  public default void configureExtensionKI(double kI) {}
 
   /** Set position derivative constant. */
-  public default void configureKD(double kD) {}
+  public default void configureExtensionKD(double kD) {}
 
   /** Set closed loop peak output. */
-  public default void configClosedLoopPeakOutput(double peakOutput) {}
+  public default void configExtensionClosedLoopPeakOutput(double peakOutput) {}
+
+  /** Run the climber open loop at the specified voltage. */
+  public default void setRotationMotorPercentage(double percentage) {}
+
+  /** Run the climber closed loop to the specified position. */
+  public default void setRotationPosition(double position, double arbitraryFeedForward) {}
+  
+  /** Set position feed forward constant. */
+  public default void configureRotationKF(double kF) {}
+  
+  /** Set position proportional constant. */
+  public default void configureRotationKP(double kP) {}
+  
+  /** Set position integrative constant. */
+  public default void configureRotationKI(double kI) {}
+  
+  /** Set position derivative constant. */
+  public default void configureRotationKD(double kD) {}
+  
+  /** Set closed loop peak output. */
+  public default void configRotationClosedLoopPeakOutput(double peakOutput) {}
 }

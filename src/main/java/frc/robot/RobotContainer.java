@@ -60,6 +60,7 @@ public class RobotContainer {
   private Elevator elevator;
   private Drivetrain drivetrain;
 
+  private final JoystickButton[] operatorButtons;
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
@@ -69,14 +70,16 @@ public class RobotContainer {
 
   /** Create the container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    this.operatorButtons = new JoystickButton[16];
+
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.getRobot()) {
         case ROBOT_2022_PRESEASON:
           {
             GyroIO gyro = new GyroIOPigeon2(PIGEON_ID);
-
             elevator = new Elevator(new ElevatorIOHardware());
+
             SwerveModule flModule =
                 new SwerveModule(
                     new SwerveModuleIOTalonFX(
@@ -303,6 +306,9 @@ public class RobotContainer {
             drivetrain::getCharacterizationVelocity));
 
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
+  }
+
+  private void configureElevatorCommands(){ 
   }
 
   /**

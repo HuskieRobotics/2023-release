@@ -5,13 +5,13 @@ public class ElevatorExtensionConstants {
   /** Make constants for each positions */
 
   //FIXME extension and rotation setpoints
-  public static final int EXTENSION_TOP_EXTENSION = 0;
-  public static final int EXTENSION_MID_BLUE_POS = 0;
-  public static final int EXTENSION_LOW_BLUE_POS = 0;
+  public static final int TOP_ROTATION = 0;
+  public static final int MID_ROTATION = 0;
+  public static final int LOW_ROTATION = 0;
 
-  public static final int ROTATION_TOP_EXTENSION = 0;
-  public static final int ROTATION_MID_BLUE_POS = 0;
-  public static final int ROTATION_LOW_BLUE_POS = 0;
+  public static final int TOP_EXTENSION = 0;
+  public static final int MID_EXTENSION = 0;
+  public static final int LOW_EXTENSION = 0;
 
   public static final int MIN_HEIGHT = 0; 
   public static final int MAX_HEIGHT = 0;

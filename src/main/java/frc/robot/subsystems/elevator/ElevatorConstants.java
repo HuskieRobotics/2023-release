@@ -1,9 +1,17 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import edu.wpi.first.networktables.DoubleSubscriber;
+
 //FIXME ALL CONSTANTS
 public class ElevatorConstants {
 
   /** Make constants for each positions */
+  public static final boolean DEBUGGING = true;
+  public static final boolean TESTING = true;
+  public static final boolean TUNING = true;
+  public static final String SUBSYSTEM_NAME = "Elevator";
 
   public static final int TOP_ROTATION_POSITION = 0;
   public static final int MID_ROTATION_POSITION = 0;

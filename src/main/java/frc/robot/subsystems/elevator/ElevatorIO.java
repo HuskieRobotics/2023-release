@@ -3,12 +3,14 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
 /** Intake subsystem hardware interface. */
 public interface ElevatorIO {
   /** Contains all of the input data received from hardware. */
   public static class ElevatorIOInputs implements LoggableInputs {
     boolean isControlEnabled = false;
-
+    
     double extensionPosition = 0.0;
     double extensionVelocity = 0.0;
     double extensionClosedLoopError = 0.0;
@@ -78,4 +80,7 @@ public interface ElevatorIO {
   
   /** Set closed loop peak output. */
   public default void configRotationClosedLoopPeakOutput(double peakOutput) {}
+
+  public default void setControlEnabled(boolean controlEnabled) {}
+
 }

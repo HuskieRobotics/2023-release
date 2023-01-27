@@ -20,8 +20,7 @@ import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 // import frc.robot.util.CANDeviceFinder;
 // import frc.robot.util.CANDeviceId.CANDeviceType;
 
-public class ElevatorIOHardware implements ElevatorIO {
-  private boolean isControlEnabled;
+public class ElevatorIOTalonFX implements ElevatorIO {
 
   private  WPI_TalonFX extensionMotor;
   private WPI_TalonFX rotationMotor;
@@ -170,11 +169,6 @@ public class ElevatorIOHardware implements ElevatorIO {
     inputs.rotationTempCelcius = new double[] {rotationMotor.getTemperature()};
 
     inputs.pitch = pigeon.getPitch();
-  }
-
-  @Override
-  public void setControlEnabled(boolean controlEnabled) {
-    isControlEnabled = controlEnabled;
   }
 
   @Override

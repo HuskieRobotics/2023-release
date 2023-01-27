@@ -25,9 +25,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.gyro.GyroIO;
-import frc.lib.team3061.gyro.GyroIO.GyroIOInputs;
 import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
-import frc.lib.team3061.gyro.GyroIOPigeon2;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.TunableNumber;
@@ -175,7 +173,7 @@ public class Drivetrain extends SubsystemBase {
    *
    * @return the rotation of the robot
    */
-  private Rotation2d getRotation() {
+  public Rotation2d getRotation() {
     if (gyroInputs.connected) {
       return Rotation2d.fromDegrees(gyroInputs.positionDeg + this.gyroOffset);
     } else {
@@ -184,12 +182,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getPitch() {
-    gyroIO.updateInputs(gyroInputs);
     return gyroInputs.pitch;
   }
 
   public double getRoll() {
-    gyroIO.updateInputs(gyroInputs);
     return gyroInputs.roll;
   }
 

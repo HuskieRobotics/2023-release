@@ -9,7 +9,7 @@ public class SimpleAutoBalance extends PIDCommand {
 
   public SimpleAutoBalance(Drivetrain drivetrain) {
     super(
-        new PIDController(.1, 0, 0),
+        new PIDController(1, 0, 0),
         drivetrain::getPitch,
         0,
         output -> drivetrain.drive(output, 0, 0));
@@ -24,6 +24,7 @@ public class SimpleAutoBalance extends PIDCommand {
    */
   @Override
   public void end(boolean interrupted) {
+    drivetrain.stop();
     drivetrain.enableXstance();
     super.end(interrupted);
   }
@@ -34,6 +35,6 @@ public class SimpleAutoBalance extends PIDCommand {
    */
   @Override
   public boolean isFinished() {
-    return drivetrain.getPitch() < .1 && drivetrain.getPitch() > -.1;
+    return drivetrain.getPitch() < 5 && drivetrain.getPitch() > -5;
   }
 }

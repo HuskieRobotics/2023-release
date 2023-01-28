@@ -29,6 +29,8 @@ import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.TunableNumber;
+import frc.robot.commands.AutoBalance.SimpleAutoBalance;
+
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -133,6 +135,12 @@ public class Drivetrain extends SubsystemBase {
     tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
     tabMain.addBoolean("X-Stance On?", this::isXstance);
     tabMain.addBoolean("Field-Relative Enabled?", () -> this.isFieldRelative);
+    
+    //tab for gyro
+    // ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
+    // gyroTab.addNumber("Gyro Pitch", this::getPitch);
+    // gyroTab.addNumber("Gyro Roll", this::getRoll);
+    // gyroTab.add("Simple Balance", new SimpleAutoBalance(this));
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);

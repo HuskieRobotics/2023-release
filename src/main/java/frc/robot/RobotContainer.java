@@ -364,8 +364,7 @@ public class RobotContainer {
             new FollowPath(blueLoadingSide2ConeEngagePath.get(0), drivetrain, true),
             blueLoadingSide2ConeEngagePath.get(0).getMarkers(),
             autoEventMap);
-    autoChooser.addOption(
-        "Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeEngageCommand);
+    autoChooser.addOption("Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeEngageCommand);
 
     // "auto" for Blue-LoadingSide 3 Cone
     List<PathPlannerTrajectory> blueLoadingSide3ConePath =
@@ -387,6 +386,20 @@ public class RobotContainer {
             autoEventMap);
     autoChooser.addOption("Blue Loading Side 4 Cone Path", blueLoadingSide4ConeCommand);
 
+    // "auto" path for Tuning auto turn PID
+    PathPlannerTrajectory autoTurnPidTuningPath =
+        PathPlanner.loadPath("AutoTurnPidTuning", 1.0, 1.0);
+    Command autoTurnPidTuningCommand =
+        new FollowPath(autoTurnPidTuningPath, drivetrain, true);
+    autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
+    
+    // "auto" path with no holnomic rotation
+    PathPlannerTrajectory noHolonomicRotationPath =
+        PathPlanner.loadPath("NoHolonomicRotation", 1.0, 1.0);
+    Command noHolonomicRotationCommand =
+        new FollowPath(noHolonomicRotationPath, drivetrain, true);
+    autoChooser.addOption("No Holonomic Rotation", noHolonomicRotationCommand);
+    
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
   }
 

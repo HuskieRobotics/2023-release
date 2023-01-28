@@ -40,7 +40,6 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -235,6 +234,10 @@ public class RobotContainer {
   private void configureAutoCommands() {
     AUTO_EVENT_MAP.put("event1", Commands.print("passed marker 1"));
     AUTO_EVENT_MAP.put("event2", Commands.print("passed marker 2"));
+    AUTO_EVENT_MAP.put("IntakeCone", Commands.print("passed marker: IntakeCone"));
+    AUTO_EVENT_MAP.put("PrepareToScoreHigh", Commands.print("passed marker: PrepareToScoreHigh"));
+    AUTO_EVENT_MAP.put("ScoreHigh", Commands.print("passed marker: ScoreHigh"));
+    AUTO_EVENT_MAP.put("RetractArm", Commands.print("passed marker: RetractArm"));
 
     // build auto path commands
     List<PathPlannerTrajectory> auto1Paths =
@@ -280,74 +283,67 @@ public class RobotContainer {
             new FeedForwardCharacterizationData("drive"),
             drivetrain::runCharacterizationVolts,
             drivetrain::getCharacterizationVelocity));
-    
+
     // "auto" path for Blue-CableSide 2 Cone + Engage
     List<PathPlannerTrajectory> blueCableSide2ConeEngagePath =
-        PathPlanner.loadPathGroup(
-            "Blue-CableSide 2 Cone + Engage",
-            2.0,
-            2.0);        
-        Command  blueCableSide2ConeEngageCommand = new FollowPathWithEvents(
+        PathPlanner.loadPathGroup("Blue-CableSide 2 Cone + Engage", 2.0, 2.0);
+    Command blueCableSide2ConeEngageCommand =
+        new FollowPathWithEvents(
             new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true),
             blueCableSide2ConeEngagePath.get(0).getMarkers(),
             AUTO_EVENT_MAP);
-    autoChooser.addOption("Blue-CableSide 2 Cone + Engage (test due to event markers, may fail)", blueCableSide2ConeEngageCommand);         
+    autoChooser.addOption(
+        "Blue-CableSide 2 Cone + Engage (test due to event markers, may fail)",
+        blueCableSide2ConeEngageCommand);
 
     // "auto" path for Blue-CableSide 3 Cone
     List<PathPlannerTrajectory> blueCableSide3ConePath =
-        PathPlanner.loadPathGroup(
-            "Blue-CableSide 3 Cone",
-            1.5,
-            1.5);        
-        Command  blueCableSide3ConeCommand = new FollowPathWithEvents(
+        PathPlanner.loadPathGroup("Blue-CableSide 3 Cone", 1.5, 1.5);
+    Command blueCableSide3ConeCommand =
+        new FollowPathWithEvents(
             new FollowPath(blueCableSide3ConePath.get(0), drivetrain, true),
             blueCableSide3ConePath.get(0).getMarkers(),
             AUTO_EVENT_MAP);
-    autoChooser.addOption("Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);  
-    
+    autoChooser.addOption(
+        "Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);
+
     // "auto" path for Blue-CenterCable 2 Cone + Engage Copy
     List<PathPlannerTrajectory> blueCenterCable2ConeEngageCopyPath =
-        PathPlanner.loadPathGroup(
-            "Blue-CenterCable 2 Cone + Engage Copy",
-            2.0,
-            2.0);        
-        Command  blueCenterCable2ConeEngageCopyCommand = new FollowPathWithEvents(
+        PathPlanner.loadPathGroup("Blue-CenterCable 2 Cone + Engage Copy", 2.0, 2.0);
+    Command blueCenterCable2ConeEngageCopyCommand =
+        new FollowPathWithEvents(
             new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true),
             blueCenterCable2ConeEngageCopyPath.get(0).getMarkers(),
             AUTO_EVENT_MAP);
-    autoChooser.addOption("Blue Center Cable 2 Cone Engage Copy Path", blueCenterCable2ConeEngageCopyCommand);
-    
+    autoChooser.addOption(
+        "Blue Center Cable 2 Cone Engage Copy Path", blueCenterCable2ConeEngageCopyCommand);
+
     // "auto" path for Blue-CenterLoad 2 Cone + Engage
     List<PathPlannerTrajectory> blueCenterLoad2ConeEngagePath =
-        PathPlanner.loadPathGroup(
-            "Blue-CenterLoad 2 Cone + Engage",
-            2.0,
-            2.0);        
-        Command  blueCenterLoad2ConeEngageCommand = new FollowPathWithEvents(
+        PathPlanner.loadPathGroup("Blue-CenterLoad 2 Cone + Engage", 2.0, 2.0);
+    Command blueCenterLoad2ConeEngageCommand =
+        new FollowPathWithEvents(
             new FollowPath(blueCenterLoad2ConeEngagePath.get(0), drivetrain, true),
             blueCenterLoad2ConeEngagePath.get(0).getMarkers(),
             AUTO_EVENT_MAP);
-    autoChooser.addOption("Blue Center Load 2 Cone Engage Path", blueCenterLoad2ConeEngageCommand); 
-    
+    autoChooser.addOption("Blue Center Load 2 Cone Engage Path", blueCenterLoad2ConeEngageCommand);
+
     // "auto" path for Blue-LoadingSide 2 Cone + Engage
     List<PathPlannerTrajectory> blueLoadingSide2ConeEngagePath =
-        PathPlanner.loadPathGroup(
-            "Blue-LoadingSide 2 Cone + Engage",
-            2.0,
-            2.0);        
-        Command  blueLoadingSide2ConeEngageCommand = new FollowPathWithEvents(
+        PathPlanner.loadPathGroup("Blue-LoadingSide 2 Cone + Engage", 2.0, 2.0);
+    Command blueLoadingSide2ConeEngageCommand =
+        new FollowPathWithEvents(
             new FollowPath(blueLoadingSide2ConeEngagePath.get(0), drivetrain, true),
             blueLoadingSide2ConeEngagePath.get(0).getMarkers(),
             AUTO_EVENT_MAP);
-    autoChooser.addOption("Blue Loading Side 2 Cone Engage Path", blueLoadingSide2ConeEngageCommand);
-    
+    autoChooser.addOption(
+        "Blue Loading Side 2 Cone Engage Path", blueLoadingSide2ConeEngageCommand);
+
     // "auto" for Blue-LoadingSide 3 Cone
     List<PathPlannerTrajectory> blueLoadingSide3ConePath =
-        PathPlanner.loadPathGroup(
-            "Blue-LoadingSide 3 Cone",
-            2.0,
-            2.0);        
-        Command  blueLoadingSide3ConeCommand = new FollowPathWithEvents(
+        PathPlanner.loadPathGroup("Blue-LoadingSide 3 Cone", 2.0, 2.0);
+    Command blueLoadingSide3ConeCommand =
+        new FollowPathWithEvents(
             new FollowPath(blueLoadingSide3ConePath.get(0), drivetrain, true),
             blueLoadingSide3ConePath.get(0).getMarkers(),
             AUTO_EVENT_MAP);
@@ -355,11 +351,9 @@ public class RobotContainer {
 
     // "auto" path for Blue-LoadingSide 4 Cone
     List<PathPlannerTrajectory> blueLoadingSide4ConePath =
-        PathPlanner.loadPathGroup(
-            "Blue-LoadingSide 4 Cone",
-            2.0,
-            2.0);        
-        Command  blueLoadingSide4ConeCommand = new FollowPathWithEvents(
+        PathPlanner.loadPathGroup("Blue-LoadingSide 4 Cone", 2.0, 2.0);
+    Command blueLoadingSide4ConeCommand =
+        new FollowPathWithEvents(
             new FollowPath(blueLoadingSide4ConePath.get(0), drivetrain, true),
             blueLoadingSide4ConePath.get(0).getMarkers(),
             AUTO_EVENT_MAP);

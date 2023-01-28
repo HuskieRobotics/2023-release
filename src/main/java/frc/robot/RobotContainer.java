@@ -262,12 +262,12 @@ public class RobotContainer {
 
   /** Use this method to define your commands for autonomous mode. */
   private void configureAutoCommands() {
-    AUTO_EVENT_MAP.put("event1", Commands.print("passed marker 1"));
-    AUTO_EVENT_MAP.put("event2", Commands.print("passed marker 2"));
-    AUTO_EVENT_MAP.put("IntakeCone", Commands.print("passed marker: IntakeCone"));
-    AUTO_EVENT_MAP.put("PrepareToScoreHigh", Commands.print("passed marker: PrepareToScoreHigh"));
-    AUTO_EVENT_MAP.put("ScoreHigh", Commands.print("passed marker: ScoreHigh"));
-    AUTO_EVENT_MAP.put("RetractArm", Commands.print("passed marker: RetractArm"));
+    autoEventMap.put("event1", Commands.print("passed marker 1"));
+    autoEventMap.put("event2", Commands.print("passed marker 2"));
+    autoEventMap.put("IntakeCone", Commands.print("passed marker: IntakeCone"));
+    autoEventMap.put("PrepareToScoreHigh", Commands.print("passed marker: PrepareToScoreHigh"));
+    autoEventMap.put("ScoreHigh", Commands.print("passed marker: ScoreHigh"));
+    autoEventMap.put("RetractArm", Commands.print("passed marker: RetractArm"));
 
     // build auto path commands
     List<PathPlannerTrajectory> auto1Paths =
@@ -319,7 +319,7 @@ public class RobotContainer {
         new FollowPathWithEvents(
             new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true),
             blueCableSide2ConeEngagePath.get(0).getMarkers(),
-            AUTO_EVENT_MAP);
+            autoEventMap);
     autoChooser.addOption(
         "Blue-CableSide 2 Cone + Engage (test due to event markers, may fail)",
         blueCableSide2ConeEngageCommand);
@@ -331,7 +331,7 @@ public class RobotContainer {
         new FollowPathWithEvents(
             new FollowPath(blueCableSide3ConePath.get(0), drivetrain, true),
             blueCableSide3ConePath.get(0).getMarkers(),
-            AUTO_EVENT_MAP);
+            autoEventMap);
     autoChooser.addOption(
         "Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);
 
@@ -342,7 +342,7 @@ public class RobotContainer {
         new FollowPathWithEvents(
             new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true),
             blueCenterCable2ConeEngageCopyPath.get(0).getMarkers(),
-            AUTO_EVENT_MAP);
+            autoEventMap);
     autoChooser.addOption(
         "Blue Center Cable 2 Cone Engage Copy Path", blueCenterCable2ConeEngageCopyCommand);
 
@@ -353,7 +353,7 @@ public class RobotContainer {
         new FollowPathWithEvents(
             new FollowPath(blueCenterLoad2ConeEngagePath.get(0), drivetrain, true),
             blueCenterLoad2ConeEngagePath.get(0).getMarkers(),
-            AUTO_EVENT_MAP);
+            autoEventMap);
     autoChooser.addOption("Blue Center Load 2 Cone Engage Path", blueCenterLoad2ConeEngageCommand);
 
     // "auto" path for Blue-LoadingSide 2 Cone + Engage
@@ -363,7 +363,7 @@ public class RobotContainer {
         new FollowPathWithEvents(
             new FollowPath(blueLoadingSide2ConeEngagePath.get(0), drivetrain, true),
             blueLoadingSide2ConeEngagePath.get(0).getMarkers(),
-            AUTO_EVENT_MAP);
+            autoEventMap);
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path", blueLoadingSide2ConeEngageCommand);
 
@@ -374,7 +374,7 @@ public class RobotContainer {
         new FollowPathWithEvents(
             new FollowPath(blueLoadingSide3ConePath.get(0), drivetrain, true),
             blueLoadingSide3ConePath.get(0).getMarkers(),
-            AUTO_EVENT_MAP);
+            autoEventMap);
     autoChooser.addOption("Blue Loading Side 3 Cone Path", blueLoadingSide3ConeCommand);
 
     // "auto" path for Blue-LoadingSide 4 Cone
@@ -384,7 +384,7 @@ public class RobotContainer {
         new FollowPathWithEvents(
             new FollowPath(blueLoadingSide4ConePath.get(0), drivetrain, true),
             blueLoadingSide4ConePath.get(0).getMarkers(),
-            AUTO_EVENT_MAP);
+            autoEventMap);
     autoChooser.addOption("Blue Loading Side 4 Cone Path", blueLoadingSide4ConeCommand);
 
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());

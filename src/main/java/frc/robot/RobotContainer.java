@@ -314,14 +314,14 @@ public class RobotContainer {
 
     // "auto" path for Blue-CableSide 2 Cone + Engage
     List<PathPlannerTrajectory> blueCableSide2ConeEngagePath =
-        PathPlanner.loadPathGroup("Blue-CableSide 2 Cone + Engage", 2.0, 2.0);
+        PathPlanner.loadPathGroup("Blue-CableSide 2 Cone + Engage", 1.0, 1.0);
     Command blueCableSide2ConeEngageCommand =
         new FollowPathWithEvents(
             new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true),
             blueCableSide2ConeEngagePath.get(0).getMarkers(),
             autoEventMap);
     autoChooser.addOption(
-        "Blue-CableSide 2 Cone + Engage (test due to event markers, may fail)",
+        "Blue-CableSide 2 Cone + Engage ",
         blueCableSide2ConeEngageCommand);
 
     // "auto" path for Blue-CableSide 3 Cone
@@ -365,7 +365,7 @@ public class RobotContainer {
             blueLoadingSide2ConeEngagePath.get(0).getMarkers(),
             autoEventMap);
     autoChooser.addOption(
-        "Blue Loading Side 2 Cone Engage Path", blueLoadingSide2ConeEngageCommand);
+        "Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeEngageCommand);
 
     // "auto" for Blue-LoadingSide 3 Cone
     List<PathPlannerTrajectory> blueLoadingSide3ConePath =

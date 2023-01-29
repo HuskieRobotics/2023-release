@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
+import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -200,7 +203,6 @@ public class RobotContainer {
       SwerveModule brModule =
           new SwerveModule(new SwerveModuleIO() {}, 3, config.getRobotMaxVelocity());
       drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
-      new Pneumatics(new PneumaticsIO() {});
       new Vision(new VisionIO() {});
     }
 
@@ -316,6 +318,10 @@ public class RobotContainer {
             drivetrain::getCharacterizationVelocity));
 
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
+
+    if (TUNING_MODE) {
+      PathPlannerServer.startServer(3061);
+    }
   }
 
   /**

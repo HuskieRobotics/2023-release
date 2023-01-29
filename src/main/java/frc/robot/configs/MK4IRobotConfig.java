@@ -15,7 +15,7 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 13;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 12;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 36.47;
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 36.65;
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 16;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 15;
@@ -25,12 +25,12 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 258.22;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 260.68;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 10;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 9;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 8.52;
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 7.91;
 
   private static final int GYRO_ID = 18;
 
@@ -42,7 +42,7 @@ public class MK4IRobotConfig extends RobotConfig {
   // FIXME: tune PID values for the angle and drive motors for the swerve modules
 
   /* Angle Motor PID Values */
-  private static final double ANGLE_KP = 0.6;
+  private static final double ANGLE_KP = 0.4;
   private static final double ANGLE_KI = 0.0;
   private static final double ANGLE_KD = 12.0;
   private static final double ANGLE_KF = 0.0;
@@ -50,7 +50,7 @@ public class MK4IRobotConfig extends RobotConfig {
   /* Drive Motor PID Values */
   private static final double DRIVE_KP = 0.10;
   private static final double DRIVE_KI = 0.0;
-  private static final double DRIVE_KD = 0.0;
+  private static final double DRIVE_KD = 5.5;
   private static final double DRIVE_KF = 0.0;
 
   private static final double DRIVE_KS = 0.66883;
@@ -68,7 +68,7 @@ public class MK4IRobotConfig extends RobotConfig {
 
   // FIXME: update this with the actual transform from the robot to the camera
   private static final Transform3d ROBOT_TO_CAMERA =
-      new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
+      new Transform3d(new Translation3d(0.356, 0.0, 0.465), new Rotation3d(0, 0, 0));
 
   private static final int PNEUMATICS_HUB_ID = 20;
   private static final int FLOW_SENSOR_CHANNEL = 0;

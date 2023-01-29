@@ -33,7 +33,8 @@ public final class Constants {
     ROBOT_2022_SIERRA,
     ROBOT_2023_MK4I,
     ROBOT_DEFAULT,
-    ROBOT_SIMBOT
+    ROBOT_SIMBOT,
+    TEST_BOARD
   }
 
   public static RobotType getRobot() {
@@ -54,6 +55,7 @@ public final class Constants {
       case ROBOT_DEFAULT:
       case ROBOT_2022_SIERRA:
       case ROBOT_2023_MK4I:
+      case TEST_BOARD:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case ROBOT_SIMBOT:

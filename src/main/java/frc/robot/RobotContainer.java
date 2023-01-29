@@ -36,6 +36,7 @@ import frc.robot.commands.FollowPath;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
+import frc.robot.configs.TestBoardConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -144,6 +145,12 @@ public class RobotContainer {
               new Pneumatics(new PneumaticsIORev());
             }
 
+            break;
+          }
+        case TEST_BOARD:
+          {
+            // create the specific RobotConfig subclass instance first
+            config = new TestBoardConfig();
             break;
           }
         case ROBOT_SIMBOT:

@@ -6,8 +6,8 @@ import frc.robot.subsystems.Elevator.Elevator;
 
 public class SetPosition extends CommandBase {
     private Elevator elevator;
-    private position rotation;
-    private position extension;
+    private Position rotation;
+    private Position extension;
     /**
      * Constructs a new ExtendClimberToMidRungCommand object.
      *
@@ -15,12 +15,11 @@ public class SetPosition extends CommandBase {
      * @return 
      */
 
-     public enum  position{
+     public enum  Position{
       CONE_FROM_FLOOR,
       CUBE_FROM_FLOOR,
-
     }
-    public void SetElevatorPosition(Elevator subsystem, position pos) {
+    public void SetElevatorPosition(Elevator subsystem, Position pos) {
       elevator = subsystem;
       this.rotation = pos;
       this.extension = pos;

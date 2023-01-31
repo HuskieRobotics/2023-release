@@ -1,7 +1,6 @@
-package frc.robot.subsystems.elevator;
+package frc.robot.subsystems.Elevator;
 
-import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
-import static frc.robot.subsystems.elevator.ElevatorConstants.*;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -19,8 +18,10 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.SetPosition;
+import frc.robot.commands.SetPosition.Position;
 import frc.robot.commands.SetPosition.position;
-import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
+import frc.robot.subsystems.Elevator.ElevatorIO.ElevatorIOInputs;
 
 public class Elevator extends SubsystemBase {
 
@@ -38,24 +39,10 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-
-    final DoubleSubscriber ySub;
-    final AtomicReference<Double> yValue = new AtomicReference<Double>();
     
     ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
      // get the default instance of NetworkTables
      NetworkTableInstance instListner = NetworkTableInstance.getDefault();
-
-     ySub = instListner.getDoubleTopic("Y").subscribe(0.0);
-
-     valueListenerHandle = instListner.addListener(
-      ySub,
-      EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-      event -> {
-        // can only get doubles because it's a DoubleSubscriber, but
-        // could check value.isDouble() here too
-        yValue.set(event.valueData.value.getDouble());
-      });
 
     if (DEBUGGING) {
       tab.add("elevator", this);
@@ -79,54 +66,6 @@ public class Elevator extends SubsystemBase {
       tab.addNumber("Extension Velocity", () -> inputs.rotationVelocity);
       tab.addNumber("Extension Left Motor Volts", () -> inputs.extensionAppliedVolts);
 
-      tab.add("Extension Motor", 0.0)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", -1, "max", 1))
-          .getEntry()
-          .addListener(
-              event -> this.setElevatorExtensionMotorPower(event.getEntry().getValue().getDouble()),  
-              EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);  // FIXME
-
-      tab.add("Extension Position Setpoint", 0.0)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", 0, "max", MAX_EXTENSION_POSITION))
-          .getEntry()
-          .addListener(
-              event -> this.setElevatorExtension(event.getEntry().getValue().getDouble(), true),  
-              EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-
-      tab.add("Extension Position PID F", EXTENSION_POSITION_PID_F)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", 0, "max", 1.0)) // specify widget properties here
-          .getEntry()
-          .addListener(
-              event -> io.configureExtensionKF(event.getEntry().getValue().getDouble()),
-              EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-
-      tab.add("Extension Position PID P", EXTENSION_POSITION_PID_P)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", 0, "max", 1.0)) // specify widget properties here
-          .getEntry()
-          .addListener(
-              event -> io.configureExtensionKP(event.getEntry().getValue().getDouble()),
-              EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-
-      tab.add("Extension Position PID I", EXTENSION_POSITION_PID_I)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", 0, "max", 1.0)) // specify widget properties here
-          .getEntry()
-          .addListener(
-              event -> io.configureExtensionKI(event.getEntry().getValue().getDouble()),
-              EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-
-      tab.add("Extension Position PID D", EXTENSION_POSITION_PID_D)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", 0, "max", 1.0)) // specify widget properties here
-          .getEntry()
-          .addListener(
-              event -> io.configureExtensionKD(event.getEntry().getValue().getDouble()),
-              EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-    }
   }
 
   @Override
@@ -149,14 +88,14 @@ public class Elevator extends SubsystemBase {
     if(
       (this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0) ||
       (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0)) {
-      stopExtension();
+      stopRotation();
     }
     else {
       io.setRotationMotorPercentage(power);
     }
   }
 
-  public void setElevatorExtension(position extension) {
+  public void setElevatorExtension(Position extension) {
     if(
       (this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0) ||
       (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500 && power < 0)) {
@@ -167,7 +106,7 @@ public class Elevator extends SubsystemBase {
         setRotationMotorPosition(elevator, MIN_ELEVATOR_EXTENSION_ANGLE);
       }
       this.extensionSetpoint = extension;
-      io.setExtensionnPosition(extension, ARBITRARY_FEED_FORWARD_EXTENSION);
+      io.setExtensionPosition(, extensionSetpoint);
     }
   }
 
@@ -212,7 +151,7 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPosition;
  }
 
-  public void setPosition(position rotation, position extension) {
+  public void setPosition(Position rotation, Position extension) {
     this.setElevatorExtension(extension);
     this.setElevatorRotation(rotation);
   }

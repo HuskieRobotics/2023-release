@@ -4,17 +4,27 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
-public class SimpleAutoBalance extends PIDCommand {
+public class SimpleAutoBalanceFrontBack extends PIDCommand {
   private Drivetrain drivetrain;
 
-  public SimpleAutoBalance(Drivetrain drivetrain) {
+  public SimpleAutoBalanceFrontBack(Drivetrain drivetrain) {
     super(
         new PIDController(1, 0, 0),
-        drivetrain::getPitch,
+        drivetrain::getRoll,
         0,
         output -> drivetrain.drive(output, 0, 0));
+    addRequirements(drivetrain);
     this.drivetrain = drivetrain;
   }
+
+
+  /*
+   *     __X_
+   *    |Frnt|
+   *    -Y   Y
+   *    |_-X_|
+   * 
+   */
 
   /**
    * This method will be invoked when this command finishes or is interrupted. It stops the motion
@@ -35,6 +45,6 @@ public class SimpleAutoBalance extends PIDCommand {
    */
   @Override
   public boolean isFinished() {
-    return drivetrain.getPitch() < 5 && drivetrain.getPitch() > -5;
+    return drivetrain.getRoll() < 7 && drivetrain.getRoll() > -7;
   }
 }

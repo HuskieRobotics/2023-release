@@ -37,7 +37,8 @@ import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.commands.AutoBalance.SimpleAutoBalance;
+import frc.robot.commands.AutoBalance.AutoBalance;
+import frc.robot.commands.AutoBalance.SimpleAutoBalanceLeftRight;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -120,11 +121,7 @@ public class RobotContainer {
             drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
             new Pneumatics(new PneumaticsIORev());
             new Vision(new VisionIOPhotonVision(CAMERA_NAME));
-            //tab for gyro
-            ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
-            gyroTab.addNumber("Gyro Pitch", drivetrain::getPitch);
-            gyroTab.addNumber("Gyro Roll", drivetrain::getRoll);
-            gyroTab.add("Simple Balance", new SimpleAutoBalance(drivetrain));
+            
             break;
           }
         case ROBOT_SIMBOT:
@@ -174,6 +171,13 @@ public class RobotContainer {
       new Vision(new VisionIO() {});
     }
 
+    //tab for gyro
+    ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
+    gyroTab.addNumber("Gyro Pitch", drivetrain::getPitch);
+    gyroTab.addNumber("Gyro Roll", drivetrain::getRoll);
+    gyroTab.add("Simple Balance", new SimpleAutoBalanceLeftRight(drivetrain));
+    gyroTab.add("Directional Auto Balance", new AutoBalance(drivetrain));
+    gyroTab.add("Disable XStance", Commands.runOnce(drivetrain::enableXstance, drivetrain));
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 

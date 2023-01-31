@@ -18,6 +18,8 @@ public class AutoBalance extends CommandBase {
   public void initialize() {
     drivetrain.disableFieldRelative();
     double yaw = Math.abs(drivetrain.getRotation().getDegrees()%360.0);
+    // double pitch = drivetrain.getPitch();
+    // double roll = drivetrain.getRoll();
     // if (Math.max(pitch, roll) > 1) {
     //   if (Math.abs(pitch) > Math.abs(roll)) {
     //     new NewAutoBalanceFrontBack(drivetrain);
@@ -25,6 +27,7 @@ public class AutoBalance extends CommandBase {
     //     new NewAutoBalanceLeftRight(drivetrain);
     //   }
     // }
+
 
 
     if((yaw>=-15.0 && yaw<15.0) || (yaw>=165.0 && yaw<195.0) ) {
@@ -45,8 +48,8 @@ public class AutoBalance extends CommandBase {
 
     public NewAutoBalanceFrontBack(Drivetrain drivetrain) {
       super(
-          new PIDController(.1, 0, 0),
-          drivetrain::getPitch,
+          new PIDController(1, 0, 0),
+          drivetrain::getRoll,
           0,
           output -> drivetrain.drive(output, 0, 0));
       this.drivetrain = drivetrain;
@@ -70,7 +73,7 @@ public class AutoBalance extends CommandBase {
      */
     @Override
     public boolean isFinished() {
-      return drivetrain.getPitch() < .1 && drivetrain.getPitch() > -.1;
+      return drivetrain.getRoll() < .1 && drivetrain.getRoll() > -.1;
     }
   }
 
@@ -79,7 +82,7 @@ public class AutoBalance extends CommandBase {
 
     public NewAutoBalanceLeftRight(Drivetrain drivetrain) {
       super(
-          new PIDController(.1, 0, 0),
+          new PIDController(1, 0, 0),
           drivetrain::getRoll,
           0,
           output -> drivetrain.drive(0, output, 0));

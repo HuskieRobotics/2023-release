@@ -29,7 +29,7 @@ import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.TunableNumber;
-import frc.robot.commands.AutoBalance.SimpleAutoBalance;
+import frc.robot.commands.AutoBalance.SimpleAutoBalanceLeftRight;
 
 import org.littletonrobotics.junction.Logger;
 

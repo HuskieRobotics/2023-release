@@ -1,6 +1,4 @@
-package frc.robot.subsystems.elevator;
-
-import java.util.concurrent.atomic.AtomicReference;
+package frc.robot.subsystems.Elevator;
 
 import edu.wpi.first.networktables.DoubleSubscriber;
 

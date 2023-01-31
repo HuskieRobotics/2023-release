@@ -1,23 +1,29 @@
-package main.java.frc.robot.commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Elevator.Elevator;
 
 
-public class SetHigh extends CommandBase {
-    private final Elevator elevator;
-    private double rotation;
-    private double extension;
+public class SetPosition extends CommandBase {
+    private Elevator elevator;
+    private position rotation;
+    private position extension;
     /**
      * Constructs a new ExtendClimberToMidRungCommand object.
      *
      * @param subsystem the elevator subsystem this command will control
+     * @return 
      */
-    public SetElevatorExtension(Elevator subsystem, double rotation, double extension) {
+
+     public enum  position{
+      CONE_FROM_FLOOR,
+      CUBE_FROM_FLOOR,
+
+    }
+    public void SetElevatorPosition(Elevator subsystem, position pos) {
       elevator = subsystem;
-      this.rotation = rotation;
-      this.extension = extension;
+      this.rotation = pos;
+      this.extension = pos;
       addRequirements(elevator);
     }
   

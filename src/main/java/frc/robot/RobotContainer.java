@@ -45,10 +45,10 @@ import frc.robot.configs.SierraRobotConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIOHardware;
-import frc.robot.subsystems.elevator.ElevatorIOSim;
-import main.java.frc.robot.commands.setPosition;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.Elevator.Elevator;
+import frc.robot.subsystems.Elevator.ElevatorIO;
+import frc.robot.subsystems.Elevator.ElevatorIOSim;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,7 +70,6 @@ public class RobotContainer {
   private RobotConfig config;
   private Drivetrain drivetrain;
 
-  private final JoystickButton[] operatorButtons;
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
@@ -81,7 +80,6 @@ public class RobotContainer {
 
   /** Create the container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    this.operatorButtons = new JoystickButton[16];
     /*
      * IMPORTANT: The RobotConfig subclass object *must* be created before any other objects
      * that use it directly or indirectly. If this isn't done, a null pointer exception will result.
@@ -101,7 +99,7 @@ public class RobotContainer {
               config = new MK4IRobotConfig();
             }
 
-            elevator = new Elevator(new ElevatorIOHardware());
+            elevator = new Elevator(new ElevatorIOTalonFX());
             GyroIO gyro = new GyroIOPigeon2(config.getGyroCANID());
 
             int[] driveMotorCANIDs = config.getSwerveDriveMotorCANIDs();
@@ -164,8 +162,9 @@ public class RobotContainer {
           }
         case ROBOT_SIMBOT:
           {
+            Elevator elevator;
             config = new MK4IRobotConfig();
-            elevator = new Elevator(new ElevatorIOSim() {});
+            elevator = new Elevator(new ElevatorIO());
             SwerveModule flModule =
                 new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
 
@@ -277,16 +276,6 @@ public class RobotContainer {
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
   }
 
-  public void simPeriodic() { //FIXME  if loop & setVoltage 
-    if (true) {
-      // Here, we run PID control like normal, with a constant setpoint of 30in.
-      double pidOutput = m_controller.calculate(m_encoder.getDistance(), Units.inchesToMeters(30));
-      setVoltage(pidOutput);
-    } else {
-      // Otherwise, we disable the motor.
-      m_motor.set(0.0);
-    }
-  }
 
   /** Use this method to define your commands for autonomous mode. */
   private void configureAutoCommands() {
@@ -339,12 +328,12 @@ public class RobotContainer {
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
   }
 
-  private void configureElevatorCommands(){
-    this.operatorButtons[1].whenPressed( //FIXME sample use of SetPosition 
-      new SequentialCommandGroup(
-        new SetPosition(elevator, 100, 100)
-        ));
-  }
+  // private void configureElevatorCommands(){
+  //   io.operatorButtons[1].whenPressed( //FIXME sample use of SetPosition 
+  //     new SequentialCommandGroup(
+  //       new io.SetPosition(elevator, 100, 100)
+  //       ));
+  // }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

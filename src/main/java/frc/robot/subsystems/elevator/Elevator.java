@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.SetPosition.position;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
 public class Elevator extends SubsystemBase {
@@ -155,7 +156,7 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  public void setElevatorExtension(double desiredEncoderPosition) {
+  public void setElevatorExtension(position extension) {
     if(
       (this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0) ||
       (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500 && power < 0)) {
@@ -165,20 +166,20 @@ public class Elevator extends SubsystemBase {
       if(getRotationElevatorEncoderAngle() < MIN_ELEVATOR_EXTENSION_ANGLE){
         setRotationMotorPosition(elevator, MIN_ELEVATOR_EXTENSION_ANGLE);
       }
-      this.extensionSetpoint = desiredEncoderPosition;
-      io.setExtensionnPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_EXTENSION);
+      this.extensionSetpoint = extension;
+      io.setExtensionnPosition(extension, ARBITRARY_FEED_FORWARD_EXTENSION);
     }
   }
 
-  public void setElevatorRotation(double desiredEncoderPosition) {
+  public void setElevatorRotation(position rotation) {
     if(
       (this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0) ||
       (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0)) {
       this.stopExtension();
     }
     else {
-      io.setRotationPosition(desiredEncoderPosition, ARBITRARY_FEED_FORWARD_ROTATION);
-      this.rotationSetpoint = desiredEncoderPosition;
+      io.setRotationPosition(rotation, ARBITRARY_FEED_FORWARD_ROTATION);
+      this.rotationSetpoint = rotation;
     }
   }
 
@@ -211,7 +212,7 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPosition;
  }
 
-  public void setPosition(double rotation, double extension) {
+  public void setPosition(position rotation, position extension) {
     this.setElevatorExtension(extension);
     this.setElevatorRotation(rotation);
   }

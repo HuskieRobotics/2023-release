@@ -1,6 +1,6 @@
-package frc.robot.subsystems.elevator;
+package frc.robot.subsystems.Elevator;
 
-import static frc.robot.subsystems.elevator.ElevatorConstants.*;
+import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -9,28 +9,34 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import frc.lib.team254.drivers.TalonFXFactory;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.CANDeviceFinder;
 import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
-import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
+import frc.lib.team6328.util.TunableNumber;
+import frc.robot.subsystems.Elevator.ElevatorIOTalonFX;
 
 // import frc.robot.util.CANDeviceFinder;
 // import frc.robot.util.CANDeviceId.CANDeviceType;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
-  private  WPI_TalonFX extensionMotor;
-  private WPI_TalonFX rotationMotor;
+  private  TalonFX extensionMotor;
+  private TalonFX rotationMotor;
+  private final String canBusName = RobotConfig.getInstance().getCANBusName();
 
   public void ElevatorIOTalonFX() {
     CANDeviceFinder can = new CANDeviceFinder();
 
-    can.isDevicePresent(CANDeviceType.TALON, EXTENSION_MOTOR_CAN_ID, "Extension Motor");
-    this.extensionMotor = new WPI_TalonFX(LEFT_ELEVATOR_MOTOR_CAN_ID);
-    this.rotationMotor = new WPI_TalonFX(RIGHT_ELEVATOR_MOTOR_CAN_ID);
+    extensionMotor = TalonFXFactory.createDefaultTalon(0, canBusName);
+    rotationMotor = TalonFXFactory.createDefaultTalon(1, canBusName);
 
     // the following configuration is based on the CTRE example code
 
@@ -82,19 +88,24 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // Source
 
     // /* FPID for Distance */
-    rotationMotorConfig.slot0.kF = ROTATION_POSITION_PID_F;
-    rotationMotorConfig.slot0.kP = ROTATION_POSITION_PID_P;
-    rotationMotorConfig.slot0.kI = ROTATION_POSITION_PID_I;
-    rotationMotorConfig.slot0.kD = ROTATION_POSITION_PID_D;
-    rotationMotorConfig.slot0.integralZone = ROTATION_POSITION_PID_I_ZONE;
-    rotationMotorConfig.slot0.closedLoopPeakOutput = ROTATION_POSITION_PID_PEAK_OUTPUT;
+   
+    final TunableNumber rkF = new TunableNumber("ElevatorRotation/kF", ROTATION_POSITION_PID_F);
+    final TunableNumber rkP = new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
+    final TunableNumber rkI = new TunableNumber("ElevatorRotation/kI", ROTATION_POSITION_PID_I);
+    final TunableNumber rkD = new TunableNumber("ElevatorRotation/kD", ROTATION_POSITION_PID_D);
+    final TunableNumber rkIz = new TunableNumber("ElevatorRotation/kIz", ROTATION_POSITION_PID_I_ZONE);
+    final TunableNumber rkPeakOutput = new TunableNumber("ElevatorRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
+    
+    final TunableNumber ekF = new TunableNumber("ElevatorExtension/kF", EXTENSION_POSITION_PID_F);
+    final TunableNumber ekP = new TunableNumber("ElevatorExtension/kP", EXTENSION_POSITION_PID_P);
+    final TunableNumber ekI = new TunableNumber("ElevatorExtension/kI", EXTENSION_POSITION_PID_I);
+    final TunableNumber ekD = new TunableNumber("ElevatorExtension/kD", EXTENSION_POSITION_PID_D);
+    final TunableNumber ekIz = new TunableNumber("ElevatorExtension/kIz", EXTENSION_POSITION_PID_I_ZONE);
+    final TunableNumber ekPeakOutput = new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
 
-    extensionMotorConfig.slot0.kF = EXTENSION_POSITION_PID_F;
-    extensionMotorConfig.slot0.kP = EXTENSION_POSITION_PID_P;
-    extensionMotorConfig.slot0.kI = EXTENSION_POSITION_PID_I;
-    extensionMotorConfig.slot0.kD = EXTENSION_POSITION_PID_D;
-    extensionMotorConfig.slot0.integralZone = EXTENSION_POSITION_PID_I_ZONE;
-    extensionMotorConfig.slot0.closedLoopPeakOutput = EXTENSION_POSITION_PID_PEAK_OUTPUT;
+    final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ekF.get(), ekP.get(), ekD.get());
+    final PIDController extensionController = new PIDController(ekP.get(), ekI.get(), ekD.get());
+    final PIDController rotationController = new PIDController(rkP.get(), rkI.get(), rkD.get());
 
     /* Config the neutral deadband. */
     rotationMotorConfig.neutralDeadband = 0.001;

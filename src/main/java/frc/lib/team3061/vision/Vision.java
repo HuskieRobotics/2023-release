@@ -89,6 +89,7 @@ public class Vision extends SubsystemBase {
             Pose3d robotPose =
                 cameraPose.transformBy(
                     RobotConfig.getInstance().getRobotToCameraTransform().inverse());
+            Logger.getInstance().recordOutput("Vision/NVRobotPose", robotPose.toPose2d());
 
             if (poseEstimator
                     .getEstimatedPosition()

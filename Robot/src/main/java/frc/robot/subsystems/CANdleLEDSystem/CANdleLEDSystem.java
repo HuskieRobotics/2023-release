@@ -4,9 +4,9 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
-import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.ColorFlowAnimation;
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
@@ -62,11 +62,10 @@ public class CANdleLEDSystem extends SubsystemBase {
     configSettings.vBatOutputMode = VBatOutputMode.Modulated;
     m_candle.configAllSettings(configSettings, 100);
   }
-    
 
   public CANdleLEDSystem() {
     m_candle = new CANdle(25);
-    //this.m_Controller = null;
+    // this.m_Controller = null;
     changeAnimationTo(Animations.SetAll);
 
     CANdleConfiguration configSettings = new CANdleConfiguration();
@@ -74,15 +73,20 @@ public class CANdleLEDSystem extends SubsystemBase {
     configSettings.disableWhenLOS = false;
     configSettings.stripType = LEDStripType.GRB;
     configSettings.brightnessScalar = 0.1;
-    //configSettings.brightnessScalar = 0.1;
+    // configSettings.brightnessScalar = 0.1;
     configSettings.vBatOutputMode = VBatOutputMode.Modulated;
     m_candle.configAllSettings(configSettings, 100);
   }
 
   public void setLED(int r, int g, int b, int w) {
-    m_candle.setLEDs(r, g, b, w, 0, 16);
-    System.out.println("Bus Voltage: "+ m_candle.getBusVoltage());
-    System.out.println("5V Voltage: "+ m_candle.get5VRailVoltage());
+    m_candle.setLEDs(r, g, b, w, 0, 27);
+    System.out.println("Bus Voltage: " + m_candle.getBusVoltage());
+    System.out.println("5V Voltage: " + m_candle.get5VRailVoltage());
+  }
+
+  public void setLEDAnimiation(){
+    FireAnimation rainbow = new FireAnimation();
+    m_candle.animate(rainbow);
   }
 
   /** Increments the animation by one more in the enum type */
@@ -249,17 +253,21 @@ public class CANdleLEDSystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    /* 
-    if (m_toAnimate == null) {
-      m_candle.setLEDs(
-          (int) (m_Controller.getLeftTriggerAxis() * 255),
-          (int) (m_Controller.getRightTriggerAxis() * 255),
-          (int) (m_Controller.getLeftX() * 255));
-    } else {
-      m_candle.animate(m_toAnimate);
-    }
-    m_candle.modulateVBatOutput(m_Controller.getRightY());
-  */
+    /*
+      if (m_toAnimate == null) {
+        m_candle.setLEDs(
+            (int) (m_Controller.getLeftTriggerAxis() * 255),
+            (int) (m_Controller.getRightTriggerAxis() * 255),
+            (int) (m_Controller.getLeftX() * 255));
+      } else {
+        m_candle.animate(m_toAnimate);
+      }
+      m_candle.modulateVBatOutput(m_Controller.getRightY());
+    */
+
+    //System.out.println("The animation is "+m_toAnimate); 
+    //m_candle.animate(m_toAnimate); 
   }
-  
+
+
 }

@@ -1,5 +1,3 @@
 package frc.robot.subsystems;
 
-public class ExampleSubsystem {
-    
-}
+public class ExampleSubsystem {}

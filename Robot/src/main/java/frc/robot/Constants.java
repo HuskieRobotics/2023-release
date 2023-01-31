@@ -22,6 +22,4 @@ public final class Constants {
   public static class LEDConstants {
     public static final int CANdle_LED_CAN_ID = 6;
   }
-
-
 }

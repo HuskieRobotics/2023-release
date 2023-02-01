@@ -135,8 +135,8 @@ public class Drivetrain extends SubsystemBase {
     tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
     tabMain.addBoolean("X-Stance On?", this::isXstance);
     tabMain.addBoolean("Field-Relative Enabled?", () -> this.isFieldRelative);
-    
-    //tab for gyro
+
+    // tab for gyro
     // ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
     // gyroTab.addNumber("Gyro Pitch", this::getPitch);
     // gyroTab.addNumber("Gyro Roll", this::getRoll);

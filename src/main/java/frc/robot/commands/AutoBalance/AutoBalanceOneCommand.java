@@ -25,7 +25,7 @@ public class AutoBalanceOneCommand extends CommandBase {
   @Override
   public void initialize() {
     drivetrain.disableFieldRelative();
-    double yaw=drivetrain.getRotation().getDegrees();
+    double yaw = drivetrain.getRotation().getDegrees();
     // if (Math.max(pitch, roll) > 1) {
     //   if (Math.abs(drivetrain.getPitch()) > Math.abs(drivetrain.getRoll())) {
     //     direction = FORWARD_BACK;
@@ -33,11 +33,10 @@ public class AutoBalanceOneCommand extends CommandBase {
     //     direction = LEFT_RIGHT;
     //   }
     // }
-    if((yaw>=-15.0 && yaw<15.0) || (yaw>=165.0 && yaw<195.0)) {
-        direction=FORWARD_BACK;
-    }
-    else {
-        direction=LEFT_RIGHT;
+    if ((yaw >= -15.0 && yaw < 15.0) || (yaw >= 165.0 && yaw < 195.0)) {
+      direction = FORWARD_BACK;
+    } else {
+      direction = LEFT_RIGHT;
     }
   }
 

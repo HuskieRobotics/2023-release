@@ -17,13 +17,12 @@ public class SimpleAutoBalanceLeftRight extends PIDCommand {
     this.drivetrain = drivetrain;
   }
 
-
   /*
    *     __X_
    *    |Frnt|
    *    -Y   Y
    *    |_-X_|
-   * 
+   *
    */
 
   /**

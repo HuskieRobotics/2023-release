@@ -33,12 +33,12 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.AutoBalance.AutoBalance;
+import frc.robot.commands.AutoBalance.SimpleAutoBalanceLeftRight;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.commands.AutoBalance.AutoBalance;
-import frc.robot.commands.AutoBalance.SimpleAutoBalanceLeftRight;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -121,7 +121,7 @@ public class RobotContainer {
             drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
             new Pneumatics(new PneumaticsIORev());
             new Vision(new VisionIOPhotonVision(CAMERA_NAME));
-            
+
             break;
           }
         case ROBOT_SIMBOT:
@@ -171,7 +171,7 @@ public class RobotContainer {
       new Vision(new VisionIO() {});
     }
 
-    //tab for gyro
+    // tab for gyro
     ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
     gyroTab.addNumber("Gyro Pitch", drivetrain::getPitch);
     gyroTab.addNumber("Gyro Roll", drivetrain::getRoll);

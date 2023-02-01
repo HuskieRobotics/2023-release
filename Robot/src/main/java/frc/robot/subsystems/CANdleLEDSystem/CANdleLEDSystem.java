@@ -24,16 +24,18 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class CANdleLEDSystem extends SubsystemBase {
   private final CANdle m_candle;
-  private final int LED_COUNT = 13; // that is how many are there for testing
+  private final int LED_COUNT = 30; // that is how many are there for testing
   private CommandXboxController m_Controller;
 
   // initiation of what the animation will be (switch later)
   private Animation m_toAnimate = null;
 
-  // enumerated type of the different types of animations
+  private RainbowAnimation m_RainbowAnimationD = new RainbowAnimation(1, 0.75, 27);
+
+  // enumerated type of the different types of AnimationTypes
   // not all of these will be used or are that important but it is just good to have a
   // storage of everything
-  public enum Animations {
+  public enum AnimationTypes {
     ColorFlow,
     Fire,
     Larson,
@@ -46,13 +48,13 @@ public class CANdleLEDSystem extends SubsystemBase {
     SetAll
   }
 
-  private Animations m_currentAnimation;
+  private AnimationTypes m_currentAnimation;
 
   // if we use an xbox controller as a tester
   public CANdleLEDSystem(CommandXboxController controller) {
     m_candle = new CANdle(25);
     this.m_Controller = controller;
-    changeAnimationTo(Animations.SetAll);
+    changeAnimationTo(AnimationTypes.SetAll);
 
     CANdleConfiguration configSettings = new CANdleConfiguration();
     configSettings.statusLedOffWhenActive = true;
@@ -66,7 +68,7 @@ public class CANdleLEDSystem extends SubsystemBase {
   public CANdleLEDSystem() {
     m_candle = new CANdle(25);
     // this.m_Controller = null;
-    changeAnimationTo(Animations.SetAll);
+    changeAnimationTo(AnimationTypes.SetAll);
 
     CANdleConfiguration configSettings = new CANdleConfiguration();
     configSettings.statusLedOffWhenActive = true;
@@ -84,7 +86,7 @@ public class CANdleLEDSystem extends SubsystemBase {
     System.out.println("5V Voltage: " + m_candle.get5VRailVoltage());
   }
 
-  public void setLEDAnimiation(){
+  public void setLEdAnimation(){
     FireAnimation rainbow = new FireAnimation();
     m_candle.animate(rainbow);
   }
@@ -93,34 +95,34 @@ public class CANdleLEDSystem extends SubsystemBase {
   public void increaseAnimation() {
     switch (m_currentAnimation) {
       case ColorFlow:
-        changeAnimationTo(Animations.Fire);
+        changeAnimationTo(AnimationTypes.Fire);
         break;
       case Fire:
-        changeAnimationTo(Animations.Larson);
+        changeAnimationTo(AnimationTypes.Larson);
         break;
       case Larson:
-        changeAnimationTo(Animations.Rainbow);
+        changeAnimationTo(AnimationTypes.Rainbow);
         break;
       case Rainbow:
-        changeAnimationTo(Animations.RgbFade);
+        changeAnimationTo(AnimationTypes.RgbFade);
         break;
       case RgbFade:
-        changeAnimationTo(Animations.SingleFade);
+        changeAnimationTo(AnimationTypes.SingleFade);
         break;
       case SingleFade:
-        changeAnimationTo(Animations.Strobe);
+        changeAnimationTo(AnimationTypes.Strobe);
         break;
       case Strobe:
-        changeAnimationTo(Animations.Twinkle);
+        changeAnimationTo(AnimationTypes.Twinkle);
         break;
       case Twinkle:
-        changeAnimationTo(Animations.TwinkleOff);
+        changeAnimationTo(AnimationTypes.TwinkleOff);
         break;
       case TwinkleOff:
-        changeAnimationTo(Animations.ColorFlow);
+        changeAnimationTo(AnimationTypes.ColorFlow);
         break;
       case SetAll:
-        changeAnimationTo(Animations.ColorFlow);
+        changeAnimationTo(AnimationTypes.ColorFlow);
         break;
     }
   }
@@ -129,34 +131,34 @@ public class CANdleLEDSystem extends SubsystemBase {
   public void decreaseAnimation() {
     switch (m_currentAnimation) {
       case ColorFlow:
-        changeAnimationTo(Animations.TwinkleOff);
+        changeAnimationTo(AnimationTypes.TwinkleOff);
         break;
       case Fire:
-        changeAnimationTo(Animations.ColorFlow);
+        changeAnimationTo(AnimationTypes.ColorFlow);
         break;
       case Larson:
-        changeAnimationTo(Animations.Fire);
+        changeAnimationTo(AnimationTypes.Fire);
         break;
       case Rainbow:
-        changeAnimationTo(Animations.Larson);
+        changeAnimationTo(AnimationTypes.Larson);
         break;
       case RgbFade:
-        changeAnimationTo(Animations.Rainbow);
+        changeAnimationTo(AnimationTypes.Rainbow);
         break;
       case SingleFade:
-        changeAnimationTo(Animations.RgbFade);
+        changeAnimationTo(AnimationTypes.RgbFade);
         break;
       case Strobe:
-        changeAnimationTo(Animations.SingleFade);
+        changeAnimationTo(AnimationTypes.SingleFade);
         break;
       case Twinkle:
-        changeAnimationTo(Animations.Strobe);
+        changeAnimationTo(AnimationTypes.Strobe);
         break;
       case TwinkleOff:
-        changeAnimationTo(Animations.Twinkle);
+        changeAnimationTo(AnimationTypes.Twinkle);
         break;
       case SetAll:
-        changeAnimationTo(Animations.ColorFlow);
+        changeAnimationTo(AnimationTypes.ColorFlow);
         break;
     }
   }
@@ -165,7 +167,7 @@ public class CANdleLEDSystem extends SubsystemBase {
    * sets the animation to all the leds to one color
    */
   public void setColors() {
-    changeAnimationTo(Animations.SetAll);
+    changeAnimationTo(AnimationTypes.SetAll);
   }
 
   // Wrappers used for inside the subsystem
@@ -201,7 +203,7 @@ public class CANdleLEDSystem extends SubsystemBase {
     m_candle.configStatusLedState(offWhenActive, 0);
   }
 
-  public void changeAnimationTo(Animations newAnimation) {
+  public void changeAnimationTo(AnimationTypes newAnimation) {
     m_currentAnimation = newAnimation;
 
     switch (newAnimation) {
@@ -249,6 +251,8 @@ public class CANdleLEDSystem extends SubsystemBase {
     }
   }
 
+//public setM_toAnimate(){}
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -266,7 +270,13 @@ public class CANdleLEDSystem extends SubsystemBase {
     */
 
     //System.out.println("The animation is "+m_toAnimate); 
-    //m_candle.animate(m_toAnimate); 
+
+    if (m_toAnimate == null){
+     // m_candle.setLEDs(255, 255, 255); // default value  
+    } else {
+      m_candle.animate(m_toAnimate); 
+    }
+
   }
 
 

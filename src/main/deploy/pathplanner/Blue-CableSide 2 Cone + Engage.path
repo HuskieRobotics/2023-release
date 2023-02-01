@@ -39,7 +39,7 @@
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
@@ -64,7 +64,7 @@
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
@@ -114,7 +114,7 @@
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
@@ -139,7 +139,7 @@
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",

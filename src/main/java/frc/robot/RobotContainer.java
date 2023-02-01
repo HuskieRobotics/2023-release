@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
@@ -269,6 +270,10 @@ public class RobotContainer {
     autoEventMap.put("ScoreHigh", Commands.print("passed marker: ScoreHigh"));
     autoEventMap.put("RetractArm", Commands.print("passed marker: RetractArm"));
 
+    // creates 2 PathConstriats to be used in auto paths
+    PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
+    PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
+
     // build auto path commands
     List<PathPlannerTrajectory> auto1Paths =
         PathPlanner.loadPathGroup(
@@ -314,70 +319,102 @@ public class RobotContainer {
 
     // "auto" path for Blue-CableSide 2 Cone + Engage
     List<PathPlannerTrajectory> blueCableSide2ConeEngagePath =
-        PathPlanner.loadPathGroup("Blue-CableSide 2 Cone + Engage", 1.0, 1.0);
+        PathPlanner.loadPathGroup(
+            "Blue-CableSide 2 Cone + Engage",
+            regularSpeed,
+            overCableConnector,
+            regularSpeed,
+            overCableConnector,
+            regularSpeed);
     Command blueCableSide2ConeEngageCommand =
-            new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true);
-    autoChooser.addOption( "Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
+        new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true);
+    new FollowPath(blueCableSide2ConeEngagePath.get(1), drivetrain, false);
+    new FollowPath(blueCableSide2ConeEngagePath.get(2), drivetrain, false);
+    new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false);
+    autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
     // "auto" path for Blue-CableSide 3 Cone
     List<PathPlannerTrajectory> blueCableSide3ConePath =
-        PathPlanner.loadPathGroup("Blue-CableSide 3 Cone", 1.5, 1.5);
+        PathPlanner.loadPathGroup(
+            "Blue-CableSide 3 Cone",
+            regularSpeed,
+            overCableConnector,
+            regularSpeed,
+            overCableConnector,
+            regularSpeed,
+            overCableConnector,
+            regularSpeed,
+            overCableConnector,
+            regularSpeed,
+            overCableConnector);
     Command blueCableSide3ConeCommand =
-            new FollowPath(blueCableSide3ConePath.get(0), drivetrain, true);
-    autoChooser.addOption("Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);
+        Commands.sequence(
+            new FollowPath(blueCableSide3ConePath.get(0), drivetrain, true),
+            new FollowPath(blueCableSide3ConePath.get(1), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(2), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(3), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(4), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(5), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(6), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(7), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(8), drivetrain, false),
+            new FollowPath(blueCableSide3ConePath.get(9), drivetrain, false));
+    autoChooser.addOption(
+        "Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);
 
     // "auto" path for Blue-CenterCable 2 Cone + Engage Copy
     List<PathPlannerTrajectory> blueCenterCable2ConeEngageCopyPath =
         PathPlanner.loadPathGroup("Blue-CenterCable 2 Cone + Engage Copy", 2.0, 2.0);
     Command blueCenterCable2ConeEngageCopyCommand =
-            new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true);
-    autoChooser.addOption("Blue Center Cable 2 Cone Engage Copy Path", blueCenterCable2ConeEngageCopyCommand);
+        new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true);
+    autoChooser.addOption(
+        "Blue Center Cable 2 Cone Engage Copy Path", blueCenterCable2ConeEngageCopyCommand);
 
     // "auto" path for Blue-CenterLoad 2 Cone + Engage
     PathPlannerTrajectory blueCenterLoad2ConeEngagePath =
         PathPlanner.loadPath("Blue-CenterLoad 2 Cone + Engage", 2.0, 2.0);
     Command blueCenterLoad2ConeEngageCommand =
-            new FollowPath(blueCenterLoad2ConeEngagePath, drivetrain, true);
+        new FollowPath(blueCenterLoad2ConeEngagePath, drivetrain, true);
     autoChooser.addOption("Blue Center Load 2 Cone Engage Path", blueCenterLoad2ConeEngageCommand);
 
     // "auto" path for Blue-LoadingSide 2 Cone + Engage
     List<PathPlannerTrajectory> blueLoadingSide2ConeEngagePath =
         PathPlanner.loadPathGroup("Blue-LoadingSide 2 Cone + Engage", 2.0, 2.0);
     Command blueLoadingSide2ConeEngageCommand =
-            new FollowPathWithEvents(
+        new FollowPathWithEvents(
             new FollowPath(blueLoadingSide2ConeEngagePath.get(0), drivetrain, true),
             blueLoadingSide2ConeEngagePath.get(0).getMarkers(),
             autoEventMap);
-    autoChooser.addOption("Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeEngageCommand);
+    autoChooser.addOption(
+        "Blue Loading Side 2 Cone Engage Path ( with event markers)",
+        blueLoadingSide2ConeEngageCommand);
 
     // "auto" for Blue-LoadingSide 3 Cone
     PathPlannerTrajectory blueLoadingSide3ConePath =
         PathPlanner.loadPath("Blue-LoadingSide 3 Cone", 2.0, 2.0);
     Command blueLoadingSide3ConeCommand =
-            new FollowPath(blueLoadingSide3ConePath, drivetrain, true);
+        new FollowPath(blueLoadingSide3ConePath, drivetrain, true);
     autoChooser.addOption("Blue Loading Side 3 Cone Path", blueLoadingSide3ConeCommand);
 
     // "auto" path for Blue-LoadingSide 4 Cone
     PathPlannerTrajectory blueLoadingSide4ConePath =
         PathPlanner.loadPath("Blue-LoadingSide 4 Cone", 2.0, 2.0);
     Command blueLoadingSide4ConeCommand =
-            new FollowPath(blueLoadingSide4ConePath, drivetrain, true);
+        new FollowPath(blueLoadingSide4ConePath, drivetrain, true);
     autoChooser.addOption("Blue Loading Side 4 Cone Path", blueLoadingSide4ConeCommand);
 
     // "auto" path for Tuning auto turn PID
     PathPlannerTrajectory autoTurnPidTuningPath =
         PathPlanner.loadPath("AutoTurnPidTuning", 1.0, 1.0);
-    Command autoTurnPidTuningCommand =
-        new FollowPath(autoTurnPidTuningPath, drivetrain, true);
+    Command autoTurnPidTuningCommand = new FollowPath(autoTurnPidTuningPath, drivetrain, true);
     autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
-    
+
     // "auto" path with no holnomic rotation
     PathPlannerTrajectory noHolonomicRotationPath =
-        PathPlanner.loadPath("constantRolonomicRotationPath",1.0,1.0);
-    Command noHolonomicRotationCommand =
-        new FollowPath(noHolonomicRotationPath, drivetrain, true);
+        PathPlanner.loadPath("constantRolonomicRotationPath", 1.0, 1.0);
+    Command noHolonomicRotationCommand = new FollowPath(noHolonomicRotationPath, drivetrain, true);
     autoChooser.addOption("No Holonomic Rotation", noHolonomicRotationCommand);
-    
+
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
   }
 

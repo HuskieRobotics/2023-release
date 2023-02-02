@@ -324,13 +324,23 @@ public class RobotContainer {
             regularSpeed,
             overCableConnector,
             regularSpeed,
+            regularSpeed,
             overCableConnector,
             regularSpeed);
     Command blueCableSide2ConeEngageCommand =
-        new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true);
-    new FollowPath(blueCableSide2ConeEngagePath.get(1), drivetrain, false);
-    new FollowPath(blueCableSide2ConeEngagePath.get(2), drivetrain, false);
-    new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false);
+        Commands.sequence(
+            new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true),
+            Commands.waitSeconds(0),
+            new FollowPath(blueCableSide2ConeEngagePath.get(1), drivetrain, false),
+            Commands.waitSeconds(0),
+            new FollowPath(blueCableSide2ConeEngagePath.get(2), drivetrain, false),
+            Commands.waitSeconds(5),
+            new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false),
+            new FollowPath(blueCableSide2ConeEngagePath.get(4), drivetrain, false),
+            new FollowPath(blueCableSide2ConeEngagePath.get(5), drivetrain, false),
+            Commands.waitSeconds(5),
+            new FollowPath(blueCableSide2ConeEngagePath.get(6), drivetrain, false),
+            Commands.waitSeconds(5));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
     // "auto" path for Blue-CableSide 3 Cone
@@ -366,7 +376,10 @@ public class RobotContainer {
     List<PathPlannerTrajectory> blueCenterCable2ConeEngageCopyPath =
         PathPlanner.loadPathGroup("Blue-CenterCable 2 Cone + Engage Copy", 2.0, 2.0);
     Command blueCenterCable2ConeEngageCopyCommand =
-        new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true);
+        Commands.sequence(
+        new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true),
+        Commands.waitSeconds(5),
+        new FollowPath(blueCenterCable2ConeEngageCopyPath.get(1), drivetrain, false));
     autoChooser.addOption(
         "Blue Center Cable 2 Cone Engage Copy Path", blueCenterCable2ConeEngageCopyCommand);
 
@@ -405,7 +418,7 @@ public class RobotContainer {
 
     // "auto" path for Tuning auto turn PID
     PathPlannerTrajectory autoTurnPidTuningPath =
-        PathPlanner.loadPath("AutoTurnPidTuning", 1.0, 1.0);
+        PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
     Command autoTurnPidTuningCommand = new FollowPath(autoTurnPidTuningPath, drivetrain, true);
     autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
 

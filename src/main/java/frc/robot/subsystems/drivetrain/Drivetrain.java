@@ -189,6 +189,9 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  public double getYaw() {
+    return gyroInputs.positionDeg;
+  }
   public double getPitch() {
     return gyroInputs.pitch;
   }

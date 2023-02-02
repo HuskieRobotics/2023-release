@@ -9,12 +9,13 @@ public class SimpleAutoBalanceFrontBack extends PIDCommand {
 
   public SimpleAutoBalanceFrontBack(Drivetrain drivetrain) {
     super(
-        new PIDController(1, 0, 0),
+        new PIDController(.05, 0, 0),
         drivetrain::getRoll,
         0,
         output -> drivetrain.drive(output, 0, 0));
     addRequirements(drivetrain);
     this.drivetrain = drivetrain;
+    // this.drivetrain.disableXstance();
   }
 
   /*
@@ -44,6 +45,6 @@ public class SimpleAutoBalanceFrontBack extends PIDCommand {
    */
   @Override
   public boolean isFinished() {
-    return drivetrain.getRoll() < 7 && drivetrain.getRoll() > -7;
+    return drivetrain.getRoll() < 10 && drivetrain.getRoll() > -10;
   }
 }

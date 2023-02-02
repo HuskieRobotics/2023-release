@@ -34,6 +34,7 @@ import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance.AutoBalance;
+import frc.robot.commands.AutoBalance.SimpleAutoBalanceFrontBack;
 import frc.robot.commands.AutoBalance.SimpleAutoBalanceLeftRight;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
@@ -175,7 +176,9 @@ public class RobotContainer {
     ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
     gyroTab.addNumber("Gyro Pitch", drivetrain::getPitch);
     gyroTab.addNumber("Gyro Roll", drivetrain::getRoll);
-    gyroTab.add("Simple Balance", new SimpleAutoBalanceLeftRight(drivetrain));
+    gyroTab.addNumber("Gyro Yaw", drivetrain::getYaw);
+    gyroTab.add("Simple BalanceLeftRight", new SimpleAutoBalanceLeftRight(drivetrain));
+    gyroTab.add("Simple Balance Front Back", new SimpleAutoBalanceFrontBack(drivetrain));
     gyroTab.add("Directional Auto Balance", new AutoBalance(drivetrain));
     gyroTab.add("Disable XStance", Commands.runOnce(drivetrain::enableXstance, drivetrain));
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration

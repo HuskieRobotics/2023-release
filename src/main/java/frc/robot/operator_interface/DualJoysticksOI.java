@@ -4,9 +4,7 @@
 
 package frc.robot.operator_interface;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two Xbox controllers. */
@@ -61,10 +59,8 @@ public class DualJoysticksOI implements OperatorInterface {
     return translateJoystickButtons[1];
   }
 
-  @Override 
-  public Trigger getElevatorUpButton(){
+  @Override
+  public Trigger getElevatorUpButton() {
     return rotateJoystickButtons[4];
   }
-
-  
 }

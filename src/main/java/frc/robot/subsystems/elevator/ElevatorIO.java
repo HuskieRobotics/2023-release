@@ -3,14 +3,13 @@ package frc.robot.subsystems.Elevator;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-
 /** Intake subsystem hardware interface. */
 public interface ElevatorIO {
   /** Contains all of the input data received from hardware. */
   public static class ElevatorIOInputs implements LoggableInputs {
     boolean isControlEnabled = false;
-    
+
+    double extensionSetpoint = 0.0;
     double extensionPosition = 0.0;
     double extensionVelocity = 0.0;
     double extensionClosedLoopError = 0.0;
@@ -18,6 +17,7 @@ public interface ElevatorIO {
     double[] extensionCurrentAmps = new double[] {};
     double[] extensionTempCelcius = new double[] {};
 
+    double rotationSetpoint = 0.0;
     double rotationPosition = 0.0;
     double rotationVelocity = 0.0;
     double rotationClosedLoopError = 0.0;
@@ -26,13 +26,11 @@ public interface ElevatorIO {
     double[] rotationTempCelcius = new double[] {};
 
     double pitch = 0.0;
-    public void toLog(LogTable table) {
-     
-    }
+
+    public void toLog(LogTable table) {}
 
     public void fromLog(LogTable table) {
       isControlEnabled = table.getBoolean("ControlEnabled", isControlEnabled);
-
     }
   }
 
@@ -65,22 +63,21 @@ public interface ElevatorIO {
 
   /** Run the climber closed loop to the specified position. */
   public default void setRotationPosition(double position, double arbitraryFeedForward) {}
-  
+
   /** Set position feed forward constant. */
   public default void configureRotationKF(double kF) {}
-  
+
   /** Set position proportional constant. */
   public default void configureRotationKP(double kP) {}
-  
+
   /** Set position integrative constant. */
   public default void configureRotationKI(double kI) {}
-  
+
   /** Set position derivative constant. */
   public default void configureRotationKD(double kD) {}
-  
+
   /** Set closed loop peak output. */
   public default void configRotationClosedLoopPeakOutput(double peakOutput) {}
 
   public default void setControlEnabled(boolean controlEnabled) {}
-
 }

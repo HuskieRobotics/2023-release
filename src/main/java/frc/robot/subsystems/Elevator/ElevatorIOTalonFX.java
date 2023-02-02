@@ -11,26 +11,23 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.Pigeon2;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.CANDeviceFinder;
-import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
-import frc.robot.subsystems.Elevator.ElevatorIOTalonFX;
 
 // import frc.robot.util.CANDeviceFinder;
 // import frc.robot.util.CANDeviceId.CANDeviceType;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
-  private  TalonFX extensionMotor;
+  private TalonFX extensionMotor;
   private TalonFX rotationMotor;
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
+  private Pigeon2 pigeon;
 
   public void ElevatorIOTalonFX() {
     CANDeviceFinder can = new CANDeviceFinder();
@@ -55,7 +52,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     /* Set neutral modes */
     this.extensionMotor.setNeutralMode(NeutralMode.Brake);
     this.rotationMotor.setNeutralMode(NeutralMode.Brake);
-    
+
     this.extensionMotor.follow(this.rotationMotor);
 
     /* Configure output */
@@ -88,22 +85,27 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // Source
 
     // /* FPID for Distance */
-   
+
     final TunableNumber rkF = new TunableNumber("ElevatorRotation/kF", ROTATION_POSITION_PID_F);
     final TunableNumber rkP = new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
     final TunableNumber rkI = new TunableNumber("ElevatorRotation/kI", ROTATION_POSITION_PID_I);
     final TunableNumber rkD = new TunableNumber("ElevatorRotation/kD", ROTATION_POSITION_PID_D);
-    final TunableNumber rkIz = new TunableNumber("ElevatorRotation/kIz", ROTATION_POSITION_PID_I_ZONE);
-    final TunableNumber rkPeakOutput = new TunableNumber("ElevatorRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
-    
+    final TunableNumber rkIz =
+        new TunableNumber("ElevatorRotation/kIz", ROTATION_POSITION_PID_I_ZONE);
+    final TunableNumber rkPeakOutput =
+        new TunableNumber("ElevatorRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
+
     final TunableNumber ekF = new TunableNumber("ElevatorExtension/kF", EXTENSION_POSITION_PID_F);
     final TunableNumber ekP = new TunableNumber("ElevatorExtension/kP", EXTENSION_POSITION_PID_P);
     final TunableNumber ekI = new TunableNumber("ElevatorExtension/kI", EXTENSION_POSITION_PID_I);
     final TunableNumber ekD = new TunableNumber("ElevatorExtension/kD", EXTENSION_POSITION_PID_D);
-    final TunableNumber ekIz = new TunableNumber("ElevatorExtension/kIz", EXTENSION_POSITION_PID_I_ZONE);
-    final TunableNumber ekPeakOutput = new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
+    final TunableNumber ekIz =
+        new TunableNumber("ElevatorExtension/kIz", EXTENSION_POSITION_PID_I_ZONE);
+    final TunableNumber ekPeakOutput =
+        new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
 
-    final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ekF.get(), ekP.get(), ekD.get());
+    final SimpleMotorFeedforward feedforward =
+        new SimpleMotorFeedforward(ekF.get(), ekP.get(), ekD.get());
     final PIDController extensionController = new PIDController(ekP.get(), ekI.get(), ekD.get());
     final PIDController rotationController = new PIDController(rkP.get(), rkI.get(), rkD.get());
 
@@ -129,15 +131,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     /* Motion Magic Configs */
     rotationMotorConfig.motionAcceleration =
-        ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    rotationMotorConfig.motionCruiseVelocity = MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    rotationMotorConfig.motionCurveStrength = SCURVE_STRENGTH;
+        ROTATION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
+    rotationMotorConfig.motionCruiseVelocity =
+        ROTATION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
+    rotationMotorConfig.motionCurveStrength = ROTATION_SCURVE_STRENGTH;
 
     extensionMotorConfig.motionAcceleration =
-        ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    extensionMotorConfig.motionCruiseVelocity = MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    extensionMotorConfig.motionCurveStrength = SCURVE_STRENGTH;
-
+        EXTENSION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
+    extensionMotorConfig.motionCruiseVelocity =
+        EXTENSION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
+    extensionMotorConfig.motionCurveStrength = EXTENSION_SCURVE_STRENGTH;
 
     /* APPLY the config settings */
     this.rotationMotor.configAllSettings(rotationMotorConfig);
@@ -148,13 +151,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     // these status frames aren't read; so, set these CAN frame periods to the maximum value
     // //  to reduce traffic on the bus
+    this.rotationMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
     this.rotationMotor.setStatusFramePeriod(
-      StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
-    this.rotationMotor.setStatusFramePeriod(
-      StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
+        StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
 
-    this.extensionMotor.setStatusFramePeriod(
-        StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
+    this.extensionMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
     this.extensionMotor.setStatusFramePeriod(
         StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
 
@@ -163,7 +164,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    inputs.isControlEnabled = isControlEnabled;
 
     inputs.extensionPosition = extensionMotor.getSelectedSensorPosition(SLOT_INDEX);
     inputs.extensionVelocity = extensionMotor.getSelectedSensorVelocity(SLOT_INDEX);
@@ -235,7 +235,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, peakOutput);
   }
 
-  
   @Override
   public void configureRotationKF(double kF) {
     rotationMotor.config_kF(SLOT_INDEX, kF, TIMEOUT_MS);

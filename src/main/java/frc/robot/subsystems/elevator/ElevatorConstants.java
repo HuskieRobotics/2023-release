@@ -1,15 +1,22 @@
 package frc.robot.subsystems.Elevator;
 
-import edu.wpi.first.networktables.DoubleSubscriber;
-
-//FIXME ALL CONSTANTS
+// FIXME ALL CONSTANTS
 public class ElevatorConstants {
 
   /** Make constants for each positions */
   public static final boolean DEBUGGING = true;
+
   public static final boolean TESTING = true;
   public static final boolean TUNING = true;
   public static final String SUBSYSTEM_NAME = "Elevator";
+
+  public enum Position {
+    CONE_INTAKE_FLOOR,
+    CUBE_INTAKE_FLOOR,
+  }
+
+  public static final int EXTENSION_POSTION = 0;
+  public static final int ROTATION_POSITION = 0;
 
   public static final int TOP_ROTATION_POSITION = 0;
   public static final int MID_ROTATION_POSITION = 0;
@@ -27,10 +34,10 @@ public class ElevatorConstants {
   public static final int SHELF_EXTENSION_POSITION = 0;
   public static final int CHUTE_EXTENSION_POSITION = 0;
 
-  public static final int MIN_EXTENSION_POSITION = 0; 
+  public static final int MIN_EXTENSION_POSITION = 0;
   public static final int MAX_EXTENSION_POSITION = 0;
 
-  public static final int MIN_ROTATION_POSITION = 0; 
+  public static final int MIN_ROTATION_POSITION = 0;
   public static final int MAX_ROTATION_POSITION = 0;
 
   public static final int ELEVATOR_MOTOR_CAN_ID = 0;
@@ -39,25 +46,26 @@ public class ElevatorConstants {
   public static final int EXTENSION_POSITION_PID_F = 0;
   public static final int EXTENSION_POSITION_PID_P = 0;
   public static final int EXTENSION_POSITION_PID_I = 0;
-  public static final int EXTENSION_POSITION_PID_D = 0; 
+  public static final int EXTENSION_POSITION_PID_D = 0;
   public static final int EXTENSION_POSITION_PID_I_ZONE = 0;
   public static final int EXTENSION_POSITION_PID_PEAK_OUTPUT = 0;
 
   public static final int ROTATION_POSITION_PID_F = 0;
   public static final int ROTATION_POSITION_PID_P = 0;
   public static final int ROTATION_POSITION_PID_I = 0;
-  public static final int ROTATION_POSITION_PID_D = 0; 
+  public static final int ROTATION_POSITION_PID_D = 0;
   public static final int ROTATION_POSITION_PID_I_ZONE = 0;
   public static final int ROTATION_POSITION_PID_PEAK_OUTPUT = 0;
-  
-  public static final double EXTENSION_SLOW_PEAK_OUTPUT = 0.15;             
+
+  public static final int PIGEON_ID = 0;
+  public static final double EXTENSION_SLOW_PEAK_OUTPUT = 0.15;
   public static final double EXTENSION_MAX_ELEVATOR_VELOCITY = 20000; // theoretical maximum 21305
-  public static final double EXTENSION_ELEVATOR_ACCELERATION = MAX_ELEVATOR_VELOCITY * 10;
+  public static final double EXTENSION_ELEVATOR_ACCELERATION = EXTENSION_MAX_ELEVATOR_VELOCITY * 10;
   public static final int EXTENSION_SCURVE_STRENGTH = 0;
 
-  public static final double ROTATION_SLOW_PEAK_OUTPUT = 0.15;     
+  public static final double ROTATION_SLOW_PEAK_OUTPUT = 0.15;
   public static final double ROTATION_MAX_ELEVATOR_VELOCITY = 20000; // theoretical maximum 21305
-  public static final double ROTATION_ELEVATOR_ACCELERATION = MAX_ELEVATOR_VELOCITY * 10;
+  public static final double ROTATION_ELEVATOR_ACCELERATION = ROTATION_MAX_ELEVATOR_VELOCITY * 10;
   public static final int ROTATION_SCURVE_STRENGTH = 0;
 
   public static final int ELEVATOR_EXTENSION_POSITION_TOLERANCE = 1000;

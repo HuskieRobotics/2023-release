@@ -8,10 +8,7 @@
 
 package frc.robot.operator_interface;
 
-import java.lang.reflect.Parameter;
-
 import edu.wpi.first.wpilibj2.command.button.*;
-
 
 /** Interface for all driver and operator controls. */
 public interface OperatorInterface {
@@ -40,7 +37,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getElevatorUpButton(){ // Joystickbutton
+  public default Trigger getElevatorUpButton() { // Joystickbutton
     return new Trigger(() -> false);
   }
 }

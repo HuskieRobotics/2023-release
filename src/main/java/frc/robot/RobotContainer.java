@@ -13,12 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.gyro.GyroIO;
@@ -44,12 +39,9 @@ import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.Elevator.Elevator;
-import frc.robot.subsystems.Elevator.ElevatorIO;
-import frc.robot.subsystems.Elevator.ElevatorIOSim;
-
+import frc.robot.subsystems.Elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +57,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
-  
+
   private Elevator elevator;
   private RobotConfig config;
   private Drivetrain drivetrain;
@@ -164,7 +156,6 @@ public class RobotContainer {
           {
             Elevator elevator;
             config = new MK4IRobotConfig();
-            elevator = new Elevator(new ElevatorIO());
             SwerveModule flModule =
                 new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
 
@@ -276,7 +267,6 @@ public class RobotContainer {
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
   }
 
-
   /** Use this method to define your commands for autonomous mode. */
   private void configureAutoCommands() {
     autoEventMap.put("event1", Commands.print("passed marker 1"));
@@ -329,7 +319,7 @@ public class RobotContainer {
   }
 
   // private void configureElevatorCommands(){
-  //   io.operatorButtons[1].whenPressed( //FIXME sample use of SetPosition 
+  //   io.operatorButtons[1].whenPressed( //FIXME sample use of SetPosition
   //     new SequentialCommandGroup(
   //       new io.SetPosition(elevator, 100, 100)
   //       ));

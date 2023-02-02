@@ -14,7 +14,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.RobotConfig;
@@ -36,6 +35,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
+import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
@@ -219,12 +219,11 @@ public class RobotContainer {
    * new OI objects and binds all of the buttons to commands.
    */
   public void updateOI() {
-    if (!OISelector.didJoysticksChange()) {
+    OperatorInterface prevOI = oi;
+    oi = OISelector.getOperatorInterface();
+    if (oi == prevOI) {
       return;
     }
-
-    CommandScheduler.getInstance().getActiveButtonLoop().clear();
-    oi = OISelector.findOperatorInterface();
 
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
@@ -267,6 +266,9 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
+
+    // move to grid
+    oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
   }
 
   /** Use this method to define your commands for autonomous mode. */
@@ -292,12 +294,20 @@ public class RobotContainer {
                 auto1Paths.get(1).getMarkers(),
                 autoEventMap));
 
+    PathPlannerTrajectory startPointPath =
+        PathPlanner.loadPath(
+            "StartPoint", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
+    Command startPoint =
+        Commands.runOnce(
+            () -> drivetrain.resetOdometry(startPointPath.getInitialState()), drivetrain);
+
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     // demonstration of PathPlanner path group with event markers
     autoChooser.addOption("Test Path", autoTest);
 
+    autoChooser.addOption("Start Point", startPoint);
     // "auto" command for tuning the drive velocity PID
     autoChooser.addOption(
         "Drive Velocity Tuning",

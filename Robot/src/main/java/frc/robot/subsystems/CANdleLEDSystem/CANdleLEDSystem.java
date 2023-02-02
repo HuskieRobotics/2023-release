@@ -24,13 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class CANdleLEDSystem extends SubsystemBase {
   private final CANdle m_candle;
-  private final int LED_COUNT = 30; // that is how many are there for testing
+  private final int LED_COUNT = 250; // that is how many are there for testing
   private CommandXboxController m_Controller;
 
   // initiation of what the animation will be (switch later)
   private Animation m_toAnimate = null;
-
-  private RainbowAnimation m_RainbowAnimationD = new RainbowAnimation(1, 0.75, 27);
 
   // enumerated type of the different types of AnimationTypes
   // not all of these will be used or are that important but it is just good to have a
@@ -221,7 +219,7 @@ public class CANdleLEDSystem extends SubsystemBase {
         break;
 
       case Rainbow:
-        m_toAnimate = new RainbowAnimation(1, 0.1, LED_COUNT);
+        m_toAnimate = new RainbowAnimation(0.5, 0.1, LED_COUNT);
         break;
 
       case RgbFade:

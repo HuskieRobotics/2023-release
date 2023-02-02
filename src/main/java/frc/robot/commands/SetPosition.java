@@ -2,9 +2,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Elevator.Elevator;
+import frc.robot.subsystems.Elevator.ElevatorConstants.Position;
 
 public class SetPosition extends CommandBase {
   private Elevator elevator;
+  private Position position;
   private double rotation;
   private double extension;
   /**
@@ -13,10 +15,58 @@ public class SetPosition extends CommandBase {
    * @param subsystem the elevator subsystem this command will control
    * @return
    */
-  public void SetElevatorPosition(Elevator subsystem, double rot, double ext) {
+  public SetPosition(Elevator subsystem, Position position) {
     elevator = subsystem;
-    this.rotation = rot;
-    this.extension = ext;
+    this.position = position;
+
+    switch(position){ 
+      case CONE_INTAKE_FLOOR:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CONE_INTAKE_SHELF:
+        this.extension = 0;
+        this.rotation = 0;
+        break; 
+      case CONE_LOW_LEVEL:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CONE_MID_LEVEL:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CONE_HIGH_LEVEL:
+        this.extension = 0;
+        this.rotation = 0;
+        break;    
+        
+        case CUBE_INTAKE_FLOOR:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CUBE_INTAKE_SHELF:
+        this.extension = 0;
+        this.rotation = 0;
+        break; 
+      case CUBE_LOW_LEVEL:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CUBE_MID_LEVEL:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CUBE_HIGH_LEVEL:
+        this.extension = 0;
+        this.rotation = 0;
+        break;    
+    }
+
+    if(position == Position.CONE_INTAKE_FLOOR){
+      this.extension = 0;
+      this.rotation = 0;
+    }
 
     addRequirements(elevator);
   }

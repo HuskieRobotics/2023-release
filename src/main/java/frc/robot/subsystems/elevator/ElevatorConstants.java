@@ -13,26 +13,35 @@ public class ElevatorConstants {
   public enum Position {
     CONE_INTAKE_FLOOR,
     CUBE_INTAKE_FLOOR,
+    CONE_INTAKE_SHELF,
+    CUBE_INTAKE_SHELF,
+
+    CONE_LOW_LEVEL,
+    CONE_MID_LEVEL,
+    CONE_HIGH_LEVEL,
+    CUBE_LOW_LEVEL,
+    CUBE_MID_LEVEL,
+    CUBE_HIGH_LEVEL,
   }
 
-  public static final int EXTENSION_POSTION = 0;
-  public static final int ROTATION_POSITION = 0;
+  // public static final int EXTENSION_POSTION = 0;
+  // public static final int ROTATION_POSITION = 0;
 
-  public static final int TOP_ROTATION_POSITION = 0;
-  public static final int MID_ROTATION_POSITION = 0;
-  public static final int LOW_ROTATION_POSITION = 0;
-  public static final int CONE_INTAKE_ROTATION_POSITION = 0;
-  public static final int CUBE_INTAKE_ROTATION_POSITION = 0;
-  public static final int SHELF_ROTATION_POSITION = 0;
-  public static final int CHUTE_ROTATION_POSITION = 0;
+  // public static final int TOP_ROTATION_POSITION = 0;
+  // public static final int MID_ROTATION_POSITION = 0;
+  // public static final int LOW_ROTATION_POSITION = 0;
+  // public static final int CONE_INTAKE_ROTATION_POSITION = 0;
+  // public static final int CUBE_INTAKE_ROTATION_POSITION = 0;
+  // public static final int SHELF_ROTATION_POSITION = 0;
+  // public static final int CHUTE_ROTATION_POSITION = 0;
 
-  public static final int TOP_EXTENSION_POSITION = 0;
-  public static final int MID_EXTENSION_POSITION = 0;
-  public static final int LOW_EXTENSION_POSITION = 0;
-  public static final int CONE_INTAKE_EXTENSION_POSITION = 0;
-  public static final int CUBE_INTAKE_EXTENSION_POSITION = 0;
-  public static final int SHELF_EXTENSION_POSITION = 0;
-  public static final int CHUTE_EXTENSION_POSITION = 0;
+  // public static final int TOP_EXTENSION_POSITION = 0;
+  // public static final int MID_EXTENSION_POSITION = 0;
+  // public static final int LOW_EXTENSION_POSITION = 0;
+  // public static final int CONE_INTAKE_EXTENSION_POSITION = 0;
+  // public static final int CUBE_INTAKE_EXTENSION_POSITION = 0;
+  // public static final int SHELF_EXTENSION_POSITION = 0;
+  // public static final int CHUTE_EXTENSION_POSITION = 0;
 
   public static final int MIN_EXTENSION_POSITION = 0;
   public static final int MAX_EXTENSION_POSITION = 0;

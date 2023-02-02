@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.*;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.gyro.GyroIO;
@@ -34,13 +35,16 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
+import frc.robot.commands.SetPosition;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
+import frc.robot.operator_interface.DualJoysticksOI;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.Elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,6 +61,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
+  private DualJoysticksOI dualJoysticks = new DualJoysticksOI(0, 0); // FIXME need import numbers
 
   private Elevator elevator;
   private RobotConfig config;
@@ -318,12 +323,12 @@ public class RobotContainer {
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
   }
 
-  // private void configureElevatorCommands(){
-  //   io.operatorButtons[1].whenPressed( //FIXME sample use of SetPosition
-  //     new SequentialCommandGroup(
-  //       new io.SetPosition(elevator, 100, 100)
-  //       ));
-  // }
+  private void configureElevatorCommands(){
+     dualJoysticks.translateJoystickButtons[1].whenPressed( //FIXME sample use of SetPosition
+       new SequentialCommandGroup(
+               new SetPosition(elevator, Position.CONE_INTAKE_FLOOR )
+         ));
+   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

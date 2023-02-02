@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class CANdleLEDSystem extends SubsystemBase {
   private final CANdle m_candle;
-  private final int LED_COUNT = 250; // that is how many are there for testing
+  private final int LED_COUNT = 210; // that is how many are there for testing
   private CommandXboxController m_Controller;
 
   // initiation of what the animation will be (switch later)
@@ -211,7 +211,7 @@ public class CANdleLEDSystem extends SubsystemBase {
         break;
 
       case Fire:
-        m_toAnimate = new FireAnimation(0.5, 0.7, LED_COUNT, 0.5, 0.7);
+        m_toAnimate = new FireAnimation(0.1, 0.3, LED_COUNT, 0.5, 0.7);
         break;
 
       case Larson:
@@ -219,7 +219,7 @@ public class CANdleLEDSystem extends SubsystemBase {
         break;
 
       case Rainbow:
-        m_toAnimate = new RainbowAnimation(0.5, 0.1, LED_COUNT);
+        m_toAnimate = new RainbowAnimation(0.1, 0.1, LED_COUNT);
         break;
 
       case RgbFade:

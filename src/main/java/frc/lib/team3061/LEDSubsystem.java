@@ -42,7 +42,12 @@ public class LEDSubsystem extends SubsystemBase {
     Strobe,
     Twinkle,
     TwinkleOff,
-    SetAll
+    SetAll,
+    Yellow,
+    Purple,
+    Green,
+    Blue,
+    Orange
   }
 
   private AnimationTypes m_currentAnimation;
@@ -83,7 +88,7 @@ public class LEDSubsystem extends SubsystemBase {
     System.out.println("5V Voltage: " + m_candle.get5VRailVoltage());
   }
 
-  public void setLEdAnimation(){
+  public void setLEDAnimation(){
     FireAnimation rainbow = new FireAnimation();
     m_candle.animate(rainbow);
   }
@@ -204,6 +209,26 @@ public class LEDSubsystem extends SubsystemBase {
     m_currentAnimation = newAnimation;
 
     switch (newAnimation) {
+      case Yellow:
+        m_toAnimate = null; 
+        break;
+      
+      case Purple:
+        m_toAnimate = null; 
+        break;
+
+      case Green:
+        m_toAnimate = null; 
+        break;
+
+      case Blue:
+        m_toAnimate = null; 
+        break;
+      
+      case Orange:
+        m_toAnimate = null; 
+        break;
+
       case ColorFlow:
         Direction direction = Direction.Forward;
         m_toAnimate = new ColorFlowAnimation(255, 0, 255, 125, 0.6, LED_COUNT, direction);
@@ -269,7 +294,27 @@ public class LEDSubsystem extends SubsystemBase {
     //System.out.println("The animation is "+m_toAnimate); 
 
     if (m_toAnimate == null){
-     // m_candle.setLEDs(255, 255, 255); // default value  
+     switch (m_currentAnimation) {
+      case Yellow:
+        m_candle.setLEDs(255, 255, 0);
+        break;
+      
+      case Purple:
+        m_candle.setLEDs(255, 0, 255);
+        break;
+
+      case Green:
+        m_candle.setLEDs(0, 255, 0);
+        break;
+
+      case Blue:
+        m_candle.setLEDs(0, 0, 255);
+        break;
+      
+      case Orange:
+        m_candle.setLEDs(255, 165, 0);
+        break;
+     }
     } else {
       m_candle.animate(m_toAnimate); 
     }

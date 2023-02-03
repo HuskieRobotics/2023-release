@@ -377,9 +377,9 @@ public class RobotContainer {
         PathPlanner.loadPathGroup("Blue-CenterCable 2 Cone + Engage Copy", 2.0, 2.0);
     Command blueCenterCable2ConeEngageCopyCommand =
         Commands.sequence(
-        new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true),
-        Commands.waitSeconds(5),
-        new FollowPath(blueCenterCable2ConeEngageCopyPath.get(1), drivetrain, false));
+            new FollowPath(blueCenterCable2ConeEngageCopyPath.get(0), drivetrain, true),
+            Commands.waitSeconds(5),
+            new FollowPath(blueCenterCable2ConeEngageCopyPath.get(1), drivetrain, false));
     autoChooser.addOption(
         "Blue Center Cable 2 Cone Engage Copy Path", blueCenterCable2ConeEngageCopyCommand);
 

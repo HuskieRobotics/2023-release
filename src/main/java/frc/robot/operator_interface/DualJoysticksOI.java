@@ -28,7 +28,7 @@ public class DualJoysticksOI implements OperatorInterface {
     this.rotateJoystickButtons = new Trigger[13];
 
     for (int i = 1; i < translateJoystickButtons.length; i++) {
-      translateJoystickButtons[i] = new JoystickButton(null, i);
+      translateJoystickButtons[i] = new JoystickButton(translateJoystick, i);
       rotateJoystickButtons[i] = rotateJoystick.button(i);
     }
   }

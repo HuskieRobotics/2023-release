@@ -324,9 +324,45 @@ public class RobotContainer {
   }
 
   private void configureElevatorCommands(){
-     dualJoysticks.translateJoystickButtons[1].whenPressed( //FIXME sample use of SetPosition
+     dualJoysticks.translateJoystickButtons[0].whenPressed( 
        new SequentialCommandGroup(
                new SetPosition(elevator, Position.CONE_INTAKE_FLOOR )
+         ));
+         dualJoysticks.translateJoystickButtons[1].whenPressed( 
+       new SequentialCommandGroup(
+               new SetPosition(elevator, Position.CONE_INTAKE_SHELF )
+         ));  
+         dualJoysticks.translateJoystickButtons[2].whenPressed( 
+       new SequentialCommandGroup(
+               new SetPosition(elevator, Position.CUBE_INTAKE_FLOOR )
+         ));
+         dualJoysticks.translateJoystickButtons[3].whenPressed( 
+       new SequentialCommandGroup(
+               new SetPosition(elevator, Position.CONE_INTAKE_SHELF )
+         ));
+         dualJoysticks.translateJoystickButtons[4].whenPressed( 
+         new SequentialCommandGroup(
+                new SetPosition(elevator, Position.CONE_LOW_LEVEL )
+           ));
+           dualJoysticks.translateJoystickButtons[5].whenPressed( 
+           new SequentialCommandGroup(
+                   new SetPosition(elevator, Position.CONE_MID_LEVEL )
+             ));   
+             dualJoysticks.translateJoystickButtons[6].whenPressed( 
+             new SequentialCommandGroup(
+                     new SetPosition(elevator, Position.CONE_HIGH_LEVEL )
+          ));
+          dualJoysticks.translateJoystickButtons[7].whenPressed( 
+       new SequentialCommandGroup(
+               new SetPosition(elevator, Position.CUBE_LOW_LEVEL )
+         ));
+         dualJoysticks.translateJoystickButtons[8].whenPressed( 
+       new SequentialCommandGroup(
+               new SetPosition(elevator, Position.CUBE_MID_LEVEL )
+         ));
+         dualJoysticks.translateJoystickButtons[9].whenPressed( 
+       new SequentialCommandGroup(
+               new SetPosition(elevator, Position.CUBE_HIGH_LEVEL )
          ));
    }
 

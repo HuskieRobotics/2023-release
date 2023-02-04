@@ -9,6 +9,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -214,8 +215,13 @@ public class RobotContainer {
     elevatorTab.addNumber("Gyro Pitch", elevator::getExtensionElevatorEncoderHeight);
     elevatorTab.addNumber("Gyro Pitch", elevator::getRotationElevatorEncoderAngle);
     elevatorTab.add("Elevator/Arm setPosition", new SetPosition(elevator, null)); // FIXME
-    elevatorTab.addSlider("Elevator/Arm setHeight", elevator::setHeight, 0, 100); // FIXME
-
+    Shuffleboard.getTab("elevator")
+      .add("Extension", elevatorTab) // FIXME
+      .withWidget(BuiltInWidgets.kNumberSlider)
+      .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
+      .
+      .getEntry();
+    
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 

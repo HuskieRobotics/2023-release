@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team3061.RobotConfig;
+import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.Elevator.ElevatorIO.ElevatorIOInputs;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
@@ -22,7 +24,6 @@ public class Elevator extends SubsystemBase {
 
   public boolean isControlEnabled = false;
 
-  private Encoder m_Encoder = sim.getElevatorEncoder();
   public ElevatorIO io;
   public int valueListenerHandle;
 
@@ -31,7 +32,6 @@ public class Elevator extends SubsystemBase {
 
     ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
     // get the default instance of NetworkTables
-    NetworkTableInstance instListner = NetworkTableInstance.getDefault();
 
     if (DEBUGGING) {
       tab.add("elevator", this);
@@ -39,15 +39,7 @@ public class Elevator extends SubsystemBase {
     }
 
     if (TESTING) {
-      tab.add("Set Extension Position", 0.0)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", -1, "max", 1))
-          .getEntry(); // FIXME create two sliders for rotation and extension
-
-      tab.add("Set Rotation Position", 0.0)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", -1, "max", 1))
-          .getEntry();
+      
     }
 
     if (TUNING) {
@@ -62,6 +54,24 @@ public class Elevator extends SubsystemBase {
       tab.addNumber("Extension Closed Loop Error", () -> inputs.extensionClosedLoopError);
       tab.addNumber("Extension Velocity", () -> inputs.extensionVelocity);
       tab.addNumber("Extension Left Motor Volts", () -> inputs.extensionAppliedVolts); // FIXME
+
+      final TunableNumber extensionKf =
+        new TunableNumber("Drive/DriveKp", RobotConfig.getInstance().getElevatorExtensionKP());
+      final TunableNumber extensionKp =
+        new TunableNumber("Drive/DriveKi", RobotConfig.getInstance().getSwerveDriveKI());
+      final TunableNumber extensionKi =
+        new TunableNumber("Drive/DriveKd", RobotConfig.getInstance().getSwerveDriveKD());
+      final TunableNumber extensionKd =
+        new TunableNumber("Drive/TurnKp", RobotConfig.getInstance().getSwerveAngleKP());
+
+      final TunableNumber rotationKf =
+        new TunableNumber("Drive/TurnKi", RobotConfig.getInstance().getSwerveAngleKI());
+      final TunableNumber rotationKp =
+        new TunableNumber("Drive/TurnKd", RobotConfig.getInstance().getSwerveAngleKD());
+      final TunableNumber rotationKi =
+        new TunableNumber("Drive/DriveKd", RobotConfig.getInstance().getSwerveDriveKD());
+      final TunableNumber rotationKd =
+        new TunableNumber("Drive/TurnKp", RobotConfig.getInstance().getSwerveAngleKP());
     }
   }
 

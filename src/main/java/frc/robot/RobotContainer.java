@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -209,6 +210,12 @@ public class RobotContainer {
       new Vision(new VisionIO() {});
     }
 
+    ShuffleboardTab elevatorTab = Shuffleboard.getTab("elevator");
+    elevatorTab.addNumber("Gyro Pitch", elevator::getExtensionElevatorEncoderHeight);
+    elevatorTab.addNumber("Gyro Pitch", elevator::getRotationElevatorEncoderAngle);
+    elevatorTab.add("Elevator/Arm setPosition", new SetPosition(elevator, null)); // FIXME
+    elevatorTab.addSlider("Elevator/Arm setHeight", elevator::setHeight, 0, 100); // FIXME
+
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 
@@ -324,7 +331,7 @@ public class RobotContainer {
   }
 
   private void configureElevatorCommands(){
-     dualJoysticks.translateJoystickButtons[0].whenPressed( 
+     dualJoysticks.translateJoystickButtons[0].whenPressed( //FIXME sample use of SetPosition
        new SequentialCommandGroup(
                new SetPosition(elevator, Position.CONE_INTAKE_FLOOR )
          ));

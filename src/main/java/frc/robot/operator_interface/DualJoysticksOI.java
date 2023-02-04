@@ -16,8 +16,6 @@ public class DualJoysticksOI implements OperatorInterface {
   public final JoystickButton[] translateJoystickButtons;
   private final Trigger[] rotateJoystickButtons;
 
-  private final GenericHID hand; // FIXME
-
   public DualJoysticksOI(int translatePort, int rotatePort) {
     translateJoystick = new CommandJoystick(translatePort);
     rotateJoystick = new CommandJoystick(rotatePort);
@@ -26,11 +24,6 @@ public class DualJoysticksOI implements OperatorInterface {
     // to null
     this.translateJoystickButtons = new JoystickButton[13];
     this.rotateJoystickButtons = new Trigger[13];
-
-    for (int i = 1; i < translateJoystickButtons.length; i++) {
-      translateJoystickButtons[i] = new JoystickButton(translateJoystick, i);
-      rotateJoystickButtons[i] = rotateJoystick.button(i);
-    }
   }
 
   @Override

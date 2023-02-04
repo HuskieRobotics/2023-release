@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class SparkMaxFactory {
     private static final int TIMEOUT_MS = 100;
@@ -86,9 +87,16 @@ public class SparkMaxFactory {
         CANSparkMax sparkMax = new CANSparkMax(id, CANSparkMax.MotorType.kBrushless);
         sparkMax.restoreFactoryDefaults();
         
-        sparkMax.set(0);
         sparkMax.setInverted(config.INVERTED);
+        
+        sparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        sparkMax.clearFaults();
+        
         sparkMax.setControlFramePeriodMs(config.CONTROL_FRAME_PERIOD_MS);
+        // the talonfx factory has different ports or sensors available
+        // in order to have different frame periods, but the sparkmax
+        // class does not have that. (ctre has StatusFrameEnhanced)
+        
 
         return sparkMax;
 

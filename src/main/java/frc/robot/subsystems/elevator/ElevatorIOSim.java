@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import frc.lib.team6328.util.TunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSim implements ElevatorIO {
   private final TunableNumber extensionKp =
@@ -27,12 +28,12 @@ public class ElevatorIOSim implements ElevatorIO {
       new TunableNumber("Elevator/RotationKd", SIM_ROTATION_KD);
 
   /* Simulated Angle Motor PID Values */
-  private static final double SIM_EXTENSION_KP = 1.0;
+  private static final double SIM_EXTENSION_KP = 10.0;
   private static final double SIM_EXTENSION_KI = 0.0;
   private static final double SIM_EXTENSION_KD = 0.0;
 
   /* Simulated Drive Motor PID Values */
-  private static final double SIM_ROTATION_KP = 1.0;
+  private static final double SIM_ROTATION_KP = 10.0;
   private static final double SIM_ROTATION_KI = 0.0;
   private static final double SIM_ROTATION_KD = 0.0;
 
@@ -74,6 +75,9 @@ public class ElevatorIOSim implements ElevatorIO {
     elevatorSim.update(LOOP_PERIOD_SECS);
     armSim.update(LOOP_PERIOD_SECS);
 
+    // FIXME: the arm changes length; worth modeling?
+    // FIXME: the force of gravity on the elevator changes; worth modeling?
+
     // update the inputs that will be logged
     inputs.isControlEnabled = false;
 
@@ -95,7 +99,8 @@ public class ElevatorIOSim implements ElevatorIO {
 
     // update the Mechanism2d
     elevator.setAngle(inputs.rotationPositionRadians * 180.0 / Math.PI);
-    elevator.setLength(inputs.extensionPositionMeters);
+    elevator.setLength(0.3 + inputs.extensionPositionMeters);
+    Logger.getInstance().recordOutput("Odometry/Mechanisms", this.arm);
 
     // update the tunable PID constants
     if (extensionKp.hasChanged() || extensionKi.hasChanged() || extensionKd.hasChanged()) {

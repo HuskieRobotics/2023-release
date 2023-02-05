@@ -62,8 +62,8 @@ public class SetPosition extends CommandBase {
         this.rotation = 0;
         break;
       case CONE_HIGH_LEVEL:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = .85;
+        this.rotation = 0.7853982;
         break;
 
       case CUBE_INTAKE_BUMPER:

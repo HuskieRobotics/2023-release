@@ -1,6 +1,7 @@
 {
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/Odometry/Mechanisms": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
@@ -14,6 +15,8 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/Shuffleboard/Elevator/SendableChooser[1]": "String Chooser",
+      "/Shuffleboard/Elevator/elevator": "Subsystem",
       "/Shuffleboard/MAIN/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Arm Position": "String Chooser",
       "/SmartDashboard/Auto Routine": "String Chooser",

@@ -1,105 +1,102 @@
 package frc.robot.subsystems.elevator;
 
-import edu.wpi.first.math.VecBuilder;
+import static frc.robot.Constants.*;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
-import frc.robot.Constants.RobotType;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.lib.team6328.util.TunableNumber;
 
-public class ElevatorIOSim extends TimedRobot {
-  public RobotType robot;
-  private ElevatorIOTalonFX elevatorHardware;
-  private static final DCMotor m_elevatorGearbox = DCMotor.getVex775Pro(4); // CHANGE MOTOR
-  private static final double kCarriageMass = 4; // Kg CHANGE
-  private static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
-  private static final double kElevatorGearing = 10; // NEED ACTUAL VALUES FOR THESE
-  private static final double kMinElevatorHeight = 0;
-  private static final double kMaxElevatorHeight = Units.inchesToMeters(50); // CHANGE
-  private static final int kMotorPort = 0; // CHANGE
-  private final PWMSparkMax m_motor = new PWMSparkMax(kMotorPort);
+public class ElevatorIOSim implements ElevatorIO {
+  private final TunableNumber extendKp = new TunableNumber("Elevator/ExtendKp", SIM_EXTEND_KP);
+  private final TunableNumber extendKi = new TunableNumber("Elevator/ExtendKi", SIM_EXTEND_KI);
+  private final TunableNumber extendKd = new TunableNumber("Elevator/ExtendKd", SIM_EXTEND_KD);
+  private final TunableNumber rotateKp = new TunableNumber("Elevator/RotateKp", SIM_ROTATE_KP);
+  private final TunableNumber rotateKi = new TunableNumber("Elevator/RotateKi", SIM_ROTATE_KI);
+  private final TunableNumber rotateKd = new TunableNumber("Elevator/RotateKd", SIM_ROTATE_KD);
 
-  private static final int kEncoderAChannel = 0; // CHANGE
-  private static final int kEncoderBChannel = 1; // CHANGE, maybe use a constant
-  public final Encoder m_encoder = new Encoder(kEncoderAChannel, kEncoderBChannel);
-  private static final double kElevatorEncoderDistPerPulse =
-      2.0 * Math.PI * kElevatorDrumRadius / 4096;
+  /* Simulated Angle Motor PID Values */
+  private static final double SIM_EXTEND_KP = 1.0;
+  private static final double SIM_EXTEND_KI = 0.0;
+  private static final double SIM_EXTEND_KD = 0.0;
 
-  private final ElevatorSim m_elevatorSim =
-      new ElevatorSim(
-          m_elevatorGearbox,
-          kCarriageMass,
-          kElevatorDrumRadius,
-          kElevatorGearing,
-          kMinElevatorHeight,
-          kMaxElevatorHeight,
-          true,
-          VecBuilder.fill(0.01));
-  private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
+  /* Simulated Drive Motor PID Values */
+  private static final double SIM_ROTATE_KP = 1.0;
+  private static final double SIM_ROTATE_KI = 0.0;
+  private static final double SIM_ROTATE_KD = 0.0;
 
-  // https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/physics-sim.html
+  private double extensionSetpointTicks = 0.0;
+  private double extensionAppliedVolts = 0.0;
+  private double rotationAppliedVolts = 0.0;
+  private double rotationSetpointRadians = 0.0;
 
-  private final Mechanism2d elevator = new Mechanism2d(20, 50);
-  private final MechanismRoot2d m_mech2dRoot = elevator.getRoot("Elevator Root", 10, 0);
-  private final MechanismLigament2d m_elevatorMech2d =
-      m_mech2dRoot.append(
-          new MechanismLigament2d(
-              "Elevator", Units.metersToInches(m_elevatorSim.getPositionMeters()), 90));
+  // FIXME: check all values based on CAD
+  private ElevatorSim elevatorSim =
+      new ElevatorSim(DCMotor.getFalcon500(1), 3.0, 4.5, .05, 0.0, 0.9, true);
+  private SingleJointedArmSim armSim =
+      new SingleJointedArmSim(
+          DCMotor.getFalcon500(1),
+          12.0,
+          SingleJointedArmSim.estimateMOI(.9, 10.0),
+          0.9,
+          0.0,
+          1.57,
+          10.0,
+          true);
 
-  public ElevatorIOSim() {
-
-    // the main mechanism object
-    robot = Constants.getRobot();
-  }
-
-  public Encoder getElevatorEncoder() {
-    return m_encoder;
-  }
+  // FIXME: add feedforward
+  private PIDController extensionController =
+      new PIDController(extendKp.get(), extendKi.get(), extendKd.get());
+  private PIDController rotationController =
+      new PIDController(rotateKp.get(), rotateKi.get(), rotateKd.get());
 
   @Override
-  public void robotInit() {
-    // TODO Auto-generated method stub
-    m_encoder.setDistancePerPulse(kElevatorEncoderDistPerPulse);
+  public void updateInputs(ElevatorIOInputs inputs) {
+    // update the models
+    elevatorSim.update(LOOP_PERIOD_SECS);
+    armSim.update(LOOP_PERIOD_SECS);
 
-    // Publish Mechanism2d to SmartDashboard
-    // To view the Elevator Sim in the simulator, select Network Tables -> SmartDashboard ->
-    // Elevator Sim
-    SmartDashboard.putData("Elevator Sim", elevator);
-  }
+    // update the inputs that will be logged
+    inputs.isControlEnabled = false;
 
-  @Override
-  public void simulationPeriodic() {
-    // In this method, we update our simulation of what our elevator is doing
-    // First, we set our "inputs" (voltages)
-    m_elevatorSim.setInput(m_motor.get() * RobotController.getBatteryVoltage());
+    inputs.extensionSetpoint = this.extensionSetpointTicks;
+    inputs.extensionPosition = elevatorSim.getPositionMeters();
+    inputs.extensionVelocity = elevatorSim.getVelocityMetersPerSecond();
+    inputs.extensionClosedLoopError = extensionController.getPositionError();
+    inputs.extensionAppliedVolts = this.extensionAppliedVolts;
+    inputs.extensionCurrentAmps = new double[] {Math.abs(elevatorSim.getCurrentDrawAmps())};
+    inputs.extensionTempCelsius = new double[] {};
 
-    // Next, we update it. The standard loop time is 20ms.
-    m_elevatorSim.update(0.020);
+    inputs.rotationSetpoint = this.rotationSetpointRadians;
+    inputs.rotationPosition = armSim.getAngleRads();
+    inputs.rotationVelocity = armSim.getVelocityRadPerSec();
+    inputs.rotationClosedLoopError = rotationController.getPositionError();
+    inputs.rotationAppliedVolts = this.rotationAppliedVolts;
+    inputs.rotationCurrentAmps = new double[] {Math.abs(armSim.getCurrentDrawAmps())};
+    inputs.rotationTempCelsius = new double[] {};
 
-    // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_encoderSim.setDistance(m_elevatorSim.getPositionMeters());
-    // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps()));
+    // update the tunable PID constants
+    if (driveKp.hasChanged() || driveKi.hasChanged() || driveKd.hasChanged()) {
+      driveController.setPID(driveKp.get(), driveKi.get(), driveKd.get());
+    }
+    if (turnKp.hasChanged() || turnKi.hasChanged() || turnKd.hasChanged()) {
+      turnController.setPID(turnKp.get(), turnKi.get(), turnKd.get());
+    }
 
-    // Update elevator visualization with simulated position
-    m_elevatorMech2d.setLength(Units.metersToInches(m_elevatorSim.getPositionMeters()));
-  }
+    // calculate and apply the "on-board" controllers for the turn and drive motors
+    turnAppliedVolts =
+        turnController.calculate(turnRelativePositionRad, angleSetpointDeg * (Math.PI / 180.0));
+    turnAppliedVolts = MathUtil.clamp(turnAppliedVolts, -12.0, 12.0);
+    turnSim.setInputVoltage(turnAppliedVolts);
 
-  @Override
-  public void disabledInit() {
-    // This just makes sure that our simulation code knows that the motor's off.
-    m_motor.set(0.0);
+    if (!isDriveOpenLoop) {
+      double velocityRadPerSec = driveSetpointMPS * (2.0 * Math.PI) / (MK4_L2_WHEEL_CIRCUMFERENCE);
+      driveAppliedVolts =
+          feedForward.calculate(velocityRadPerSec)
+              + driveController.calculate(inputs.driveVelocityMetersPerSec, velocityRadPerSec);
+      driveAppliedVolts = MathUtil.clamp(driveAppliedVolts, -12.0, 12.0);
+      driveSim.setInputVoltage(driveAppliedVolts);
+    }
   }
 }

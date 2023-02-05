@@ -162,15 +162,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
 
-    inputs.extensionPosition = extensionMotor.getSelectedSensorPosition(SLOT_INDEX);
-    inputs.extensionVelocity = extensionMotor.getSelectedSensorVelocity(SLOT_INDEX);
+    inputs.extensionPositionMeters = extensionMotor.getSelectedSensorPosition(SLOT_INDEX);
+    inputs.extensionVelocityMetersPerSec = extensionMotor.getSelectedSensorVelocity(SLOT_INDEX);
     inputs.extensionClosedLoopError = extensionMotor.getClosedLoopError(SLOT_INDEX);
     inputs.extensionAppliedVolts = extensionMotor.getMotorOutputVoltage();
     inputs.extensionCurrentAmps = new double[] {extensionMotor.getStatorCurrent()};
     inputs.extensionTempCelsius = new double[] {extensionMotor.getTemperature()};
 
-    inputs.rotationPosition = rotationMotor.getSelectedSensorPosition(SLOT_INDEX);
-    inputs.rotationVelocity = rotationMotor.getSelectedSensorVelocity(SLOT_INDEX);
+    inputs.rotationPositionRadians = rotationMotor.getSelectedSensorPosition(SLOT_INDEX);
+    inputs.rotationVelocityRadiansPerSec = rotationMotor.getSelectedSensorVelocity(SLOT_INDEX);
     inputs.rotationClosedLoopError = rotationMotor.getClosedLoopError(SLOT_INDEX);
     inputs.rotationAppliedVolts = rotationMotor.getMotorOutputVoltage();
     inputs.rotationCurrentAmps = new double[] {rotationMotor.getStatorCurrent()};

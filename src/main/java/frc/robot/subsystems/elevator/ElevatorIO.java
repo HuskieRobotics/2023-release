@@ -9,17 +9,17 @@ public interface ElevatorIO {
   public static class ElevatorIOInputs {
     boolean isControlEnabled = false;
 
-    double extensionSetpoint = 0.0;
-    double extensionPosition = 0.0;
-    double extensionVelocity = 0.0;
+    double extensionSetpointMeters = 0.0;
+    double extensionPositionMeters = 0.0;
+    double extensionVelocityMetersPerSec = 0.0;
     double extensionClosedLoopError = 0.0;
     double extensionAppliedVolts = 0.0;
     double[] extensionCurrentAmps = new double[] {};
     double[] extensionTempCelsius = new double[] {};
 
-    double rotationSetpoint = 0.0;
-    double rotationPosition = 0.0;
-    double rotationVelocity = 0.0;
+    double rotationSetpointRadians = 0.0;
+    double rotationPositionRadians = 0.0;
+    double rotationVelocityRadiansPerSec = 0.0;
     double rotationClosedLoopError = 0.0;
     double rotationAppliedVolts = 0.0;
     double[] rotationCurrentAmps = new double[] {};

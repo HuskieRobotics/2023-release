@@ -46,12 +46,12 @@ public class Elevator extends SubsystemBase {
 
       tab.addNumber("Rotation Closed Loop Target", this::getExtensionSetpoint);
       tab.addNumber("Rotation Closed Loop Error", () -> inputs.rotationClosedLoopError);
-      tab.addNumber("Rotation Velocity", () -> inputs.rotationVelocity);
+      tab.addNumber("Rotation Velocity", () -> inputs.rotationVelocityRadiansPerSec);
       tab.addNumber("Rotation Right Motor Volts", () -> inputs.rotationAppliedVolts);
 
       tab.addNumber("Extension Closed Loop Target", this::getRotationSetpoint);
       tab.addNumber("Extension Closed Loop Error", () -> inputs.extensionClosedLoopError);
-      tab.addNumber("Extension Velocity", () -> inputs.extensionVelocity);
+      tab.addNumber("Extension Velocity", () -> inputs.extensionVelocityMetersPerSec);
       tab.addNumber("Extension Left Motor Volts", () -> inputs.extensionAppliedVolts); // FIXME
 
       final TunableNumber extensionKf =
@@ -124,12 +124,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atExtensionSetpoint() {
-    return Math.abs(this.inputs.extensionPosition - extensionSetpoint)
+    return Math.abs(this.inputs.extensionPositionMeters - extensionSetpoint)
         < ELEVATOR_EXTENSION_POSITION_TOLERANCE;
   }
 
   public boolean atRotationSetpoint() {
-    return Math.abs(this.inputs.rotationPosition - rotationSetpoint)
+    return Math.abs(this.inputs.rotationPositionRadians - rotationSetpoint)
         < ELEVATOR_ROTATION_POSITION_TOLERANCE;
   }
 
@@ -147,11 +147,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getExtensionElevatorEncoderHeight() {
-    return this.inputs.extensionPosition;
+    return this.inputs.extensionPositionMeters;
   }
 
   public double getRotationElevatorEncoderAngle() {
-    return this.inputs.rotationPosition;
+    return this.inputs.rotationPositionRadians;
   }
 
   public void setPosition(Double rotation, Double extension) {

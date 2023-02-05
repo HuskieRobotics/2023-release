@@ -35,8 +35,8 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
-import frc.robot.commands.SetPosition;
 import frc.robot.commands.MoveToGrid;
+import frc.robot.commands.SetPosition;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
@@ -70,7 +70,7 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
 
-  private final LoggedDashboardChooser<Command> armChooser =
+  private final LoggedDashboardChooser<Position> armChooser =
       new LoggedDashboardChooser<>("Arm Position");
 
   // RobotContainer singleton
@@ -280,7 +280,7 @@ public class RobotContainer {
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
 
     configureElevatorCommands();
-    
+
     // move to grid
     oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
   }
@@ -349,28 +349,29 @@ public class RobotContainer {
   }
 
   private void configureElevatorCommands() {
-    armChooser.addDefaultOption("CONE_STORAGE", new SetPosition(elevator, Position.CONE_STORAGE));
-    armChooser.addOption("CUBE_STORAGE", new SetPosition(elevator, Position.CUBE_STORAGE));
-    armChooser.addOption(
-        "CONE_INTAKE_FLOOR", new SetPosition(elevator, Position.CONE_INTAKE_FLOOR));
-    armChooser.addOption(
-        "CUBE_INTAKE_BUMPER", new SetPosition(elevator, Position.CUBE_INTAKE_BUMPER));
-    armChooser.addOption(
-        "CONE_INTAKE_SHELF", new SetPosition(elevator, Position.CONE_INTAKE_SHELF));
-    armChooser.addOption(
-        "CUBE_INTAKE_SHELF", new SetPosition(elevator, Position.CUBE_INTAKE_SHELF));
-    armChooser.addOption(
-        "CONE_INTAKE_CHUTE", new SetPosition(elevator, Position.CONE_INTAKE_CHUTE));
-    armChooser.addOption(
-        "CUBE_INTAKE_CHUTE", new SetPosition(elevator, Position.CUBE_INTAKE_CHUTE));
-    armChooser.addOption(
-        "CONE_HYBRID_LEVEL", new SetPosition(elevator, Position.CONE_HYBRID_LEVEL));
-    armChooser.addOption("CONE_MID_LEVEL", new SetPosition(elevator, Position.CONE_MID_LEVEL));
-    armChooser.addOption("CONE_HIGH_LEVEL", new SetPosition(elevator, Position.CONE_HIGH_LEVEL));
-    armChooser.addOption(
-        "CUBE_HYBRID_LEVEL", new SetPosition(elevator, Position.CUBE_HYBRID_LEVEL));
-    armChooser.addOption("CUBE_MID_LEVEL", new SetPosition(elevator, Position.CUBE_MID_LEVEL));
-    armChooser.addOption("CUBE_HIGH_LEVEL", new SetPosition(elevator, Position.CUBE_HIGH_LEVEL));
+    armChooser.addDefaultOption("CONE_STORAGE", Position.CONE_STORAGE);
+    armChooser.addOption("CUBE_STORAGE", Position.CUBE_STORAGE);
+    armChooser.addOption("CONE_INTAKE_FLOOR", Position.CONE_INTAKE_FLOOR);
+    armChooser.addOption("CUBE_INTAKE_BUMPER", Position.CUBE_INTAKE_BUMPER);
+    armChooser.addOption("CONE_INTAKE_SHELF", Position.CONE_INTAKE_SHELF);
+    armChooser.addOption("CUBE_INTAKE_SHELF", Position.CUBE_INTAKE_SHELF);
+    armChooser.addOption("CONE_INTAKE_CHUTE", Position.CONE_INTAKE_CHUTE);
+    armChooser.addOption("CUBE_INTAKE_CHUTE", Position.CUBE_INTAKE_CHUTE);
+    armChooser.addOption("CONE_HYBRID_LEVEL", Position.CONE_HYBRID_LEVEL);
+    armChooser.addOption("CONE_MID_LEVEL", Position.CONE_MID_LEVEL);
+    armChooser.addOption("CONE_HIGH_LEVEL", Position.CONE_HIGH_LEVEL);
+    armChooser.addOption("CUBE_HYBRID_LEVEL", Position.CUBE_HYBRID_LEVEL);
+    armChooser.addOption("CUBE_MID_LEVEL", Position.CUBE_MID_LEVEL);
+    armChooser.addOption("CUBE_HIGH_LEVEL", Position.CUBE_HIGH_LEVEL);
+
+    oi.getMoveArmButton().onTrue(new SetPosition(elevator, armChooser.get()));
+
+    // FIXME: delete after testing
+    elevator.setDefaultCommand(
+        Commands.parallel(
+            Commands.run(
+                () -> elevator.setElevatorExtensionMotorPower(oi.getTranslateY()), elevator),
+            Commands.run(() -> elevator.setElevatorRotationMotorPower(oi.getRotate()), elevator)));
   }
 
   /**

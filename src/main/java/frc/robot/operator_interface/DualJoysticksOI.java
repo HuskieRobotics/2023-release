@@ -57,9 +57,9 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public Trigger getMoveArmButton() {
-    return rotateJoystickButtons[5];
+    return rotateJoystickButtons[1];
   }
-  
+
   // TODO: Remove when simulated testing is done!
   @Override
   public Trigger getMoveToGridButton() {

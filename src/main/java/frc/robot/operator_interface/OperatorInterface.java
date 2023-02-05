@@ -40,7 +40,7 @@ public interface OperatorInterface {
   public default Trigger getMoveArmButton() {
     return new Trigger(() -> false);
   }
-  
+
   public default Trigger getMoveToGridButton() {
     return new Trigger(() -> false);
   }

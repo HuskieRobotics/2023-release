@@ -9,32 +9,17 @@ public class SetPosition extends CommandBase {
   private Elevator elevator;
   private double rotation;
   private double extension;
+  private LoggedDashboardChooser<Position> armChooser;
 
-  private final LoggedDashboardChooser<Position> armChooser =
-      new LoggedDashboardChooser<>("Arm Position");
   /**
    * Constructs a new ElevatorPosition command that will set the elevator to the specified position.
    *
    * @param subsystem the elevator subsystem this command will control
    * @return
    */
-  public SetPosition(Elevator subsystem) {
+  public SetPosition(Elevator subsystem, LoggedDashboardChooser<Position> armChooser) {
     elevator = subsystem;
-
-    armChooser.addDefaultOption("CONE_STORAGE", Position.CONE_STORAGE);
-    armChooser.addOption("CUBE_STORAGE", Position.CUBE_STORAGE);
-    armChooser.addOption("CONE_INTAKE_FLOOR", Position.CONE_INTAKE_FLOOR);
-    armChooser.addOption("CUBE_INTAKE_BUMPER", Position.CUBE_INTAKE_BUMPER);
-    armChooser.addOption("CONE_INTAKE_SHELF", Position.CONE_INTAKE_SHELF);
-    armChooser.addOption("CUBE_INTAKE_SHELF", Position.CUBE_INTAKE_SHELF);
-    armChooser.addOption("CONE_INTAKE_CHUTE", Position.CONE_INTAKE_CHUTE);
-    armChooser.addOption("CUBE_INTAKE_CHUTE", Position.CUBE_INTAKE_CHUTE);
-    armChooser.addOption("CONE_HYBRID_LEVEL", Position.CONE_HYBRID_LEVEL);
-    armChooser.addOption("CONE_MID_LEVEL", Position.CONE_MID_LEVEL);
-    armChooser.addOption("CONE_HIGH_LEVEL", Position.CONE_HIGH_LEVEL);
-    armChooser.addOption("CUBE_HYBRID_LEVEL", Position.CUBE_HYBRID_LEVEL);
-    armChooser.addOption("CUBE_MID_LEVEL", Position.CUBE_MID_LEVEL);
-    armChooser.addOption("CUBE_HIGH_LEVEL", Position.CUBE_HIGH_LEVEL);
+    this.armChooser = armChooser;
 
     addRequirements(elevator);
   }

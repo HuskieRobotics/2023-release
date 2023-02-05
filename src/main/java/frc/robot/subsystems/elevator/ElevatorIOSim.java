@@ -40,6 +40,8 @@ public class ElevatorIOSim implements ElevatorIO {
   private double extensionAppliedVolts = 0.0;
   private double rotationAppliedVolts = 0.0;
   private double rotationSetpointRadians = 0.0;
+  private boolean isExtensionOpenLoop = true;
+  private boolean isRotationOpenLoop = true;
 
   // FIXME: check all values based on CAD
   private ElevatorSim elevatorSim =
@@ -48,7 +50,7 @@ public class ElevatorIOSim implements ElevatorIO {
       new SingleJointedArmSim(
           DCMotor.getFalcon500(1),
           12.0,
-          SingleJointedArmSim.estimateMOI(.9, 10.0),
+          SingleJointedArmSim.estimateMOI(.9, 1.0),
           0.9,
           0.0,
           1.57,
@@ -104,20 +106,25 @@ public class ElevatorIOSim implements ElevatorIO {
     }
 
     // calculate and apply the "on-board" controllers for the turn and drive motors
-    this.extensionAppliedVolts =
-        this.extensionController.calculate(
-            inputs.extensionPositionMeters, this.extensionSetpointMeters);
-    this.extensionAppliedVolts = MathUtil.clamp(this.extensionAppliedVolts, -12.0, 12.0);
-    this.elevatorSim.setInputVoltage(this.extensionAppliedVolts);
+    if (!isExtensionOpenLoop) {
+      this.extensionAppliedVolts =
+          this.extensionController.calculate(
+              inputs.extensionPositionMeters, this.extensionSetpointMeters);
+      this.extensionAppliedVolts = MathUtil.clamp(this.extensionAppliedVolts, -12.0, 12.0);
+      this.elevatorSim.setInputVoltage(this.extensionAppliedVolts);
+    }
 
-    rotationAppliedVolts =
-        rotationController.calculate(inputs.rotationPositionRadians, rotationSetpointRadians);
-    rotationAppliedVolts = MathUtil.clamp(rotationAppliedVolts, -12.0, 12.0);
-    armSim.setInputVoltage(rotationAppliedVolts);
+    if (!isRotationOpenLoop) {
+      rotationAppliedVolts =
+          rotationController.calculate(inputs.rotationPositionRadians, rotationSetpointRadians);
+      rotationAppliedVolts = MathUtil.clamp(rotationAppliedVolts, -12.0, 12.0);
+      armSim.setInputVoltage(rotationAppliedVolts);
+    }
   }
 
   @Override
   public void setExtensionMotorPercentage(double percentage) {
+    isExtensionOpenLoop = true;
     extensionController.reset();
     extensionAppliedVolts = MathUtil.clamp(percentage * 12.0, -12.0, 12.0);
     elevatorSim.setInputVoltage(extensionAppliedVolts);
@@ -125,12 +132,14 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
+    isExtensionOpenLoop = false;
     extensionController.reset();
     extensionSetpointMeters = position;
   }
 
   @Override
   public void setRotationMotorPercentage(double percentage) {
+    isRotationOpenLoop = true;
     rotationController.reset();
     rotationAppliedVolts = MathUtil.clamp(percentage * 12.0, -12.0, 12.0);
     armSim.setInputVoltage(rotationAppliedVolts);
@@ -138,6 +147,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setRotationPosition(double position, double arbitraryFeedForward) {
+    isRotationOpenLoop = false;
     rotationController.reset();
     rotationSetpointRadians = position;
   }

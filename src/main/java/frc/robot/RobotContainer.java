@@ -45,7 +45,6 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,9 +68,6 @@ public class RobotContainer {
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
-
-  private final LoggedDashboardChooser<Position> armChooser =
-      new LoggedDashboardChooser<>("Arm Position");
 
   // RobotContainer singleton
   private static RobotContainer robotContainer = new RobotContainer();
@@ -349,26 +345,12 @@ public class RobotContainer {
   }
 
   private void configureElevatorCommands() {
-    armChooser.addDefaultOption("CONE_STORAGE", Position.CONE_STORAGE);
-    armChooser.addOption("CUBE_STORAGE", Position.CUBE_STORAGE);
-    armChooser.addOption("CONE_INTAKE_FLOOR", Position.CONE_INTAKE_FLOOR);
-    armChooser.addOption("CUBE_INTAKE_BUMPER", Position.CUBE_INTAKE_BUMPER);
-    armChooser.addOption("CONE_INTAKE_SHELF", Position.CONE_INTAKE_SHELF);
-    armChooser.addOption("CUBE_INTAKE_SHELF", Position.CUBE_INTAKE_SHELF);
-    armChooser.addOption("CONE_INTAKE_CHUTE", Position.CONE_INTAKE_CHUTE);
-    armChooser.addOption("CUBE_INTAKE_CHUTE", Position.CUBE_INTAKE_CHUTE);
-    armChooser.addOption("CONE_HYBRID_LEVEL", Position.CONE_HYBRID_LEVEL);
-    armChooser.addOption("CONE_MID_LEVEL", Position.CONE_MID_LEVEL);
-    armChooser.addOption("CONE_HIGH_LEVEL", Position.CONE_HIGH_LEVEL);
-    armChooser.addOption("CUBE_HYBRID_LEVEL", Position.CUBE_HYBRID_LEVEL);
-    armChooser.addOption("CUBE_MID_LEVEL", Position.CUBE_MID_LEVEL);
-    armChooser.addOption("CUBE_HIGH_LEVEL", Position.CUBE_HIGH_LEVEL);
 
-    oi.getMoveArmButton().onTrue(new SetPosition(elevator, armChooser.get()));
+    oi.getMoveArmButton().onTrue(new SetPosition(elevator));
 
     // FIXME: delete after testing
     elevator.setDefaultCommand(
-        Commands.parallel(
+        Commands.sequence(
             Commands.run(
                 () -> elevator.setElevatorExtensionMotorPower(oi.getTranslateY()), elevator),
             Commands.run(() -> elevator.setElevatorRotationMotorPower(oi.getRotate()), elevator)));

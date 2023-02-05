@@ -2,13 +2,11 @@ package frc.robot.subsystems.elevator;
 
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.TunableNumber;
-import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
@@ -33,10 +31,6 @@ public class Elevator extends SubsystemBase {
       tab.add("elevator", this);
       tab.addNumber("Encoder", this::getExtensionElevatorEncoderHeight);
       tab.addNumber("Angle", this::getRotationElevatorEncoderAngle);
-      tab.add("Extension", tab)
-          .withWidget(BuiltInWidgets.kNumberSlider)
-          .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
-          .getEntry();
     }
 
     if (TESTING) {}
@@ -81,20 +75,23 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setElevatorExtensionMotorPower(double power) {
-    if ((this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0)
-        || (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500
-            && power < 0)) {
-      stopExtension();
-    } else {
+    // if ((this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0)
+    //     || (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500
+    //         && power < 0)) {
+    //   stopExtension();
+    // } else
+    {
       io.setExtensionMotorPercentage(power);
     }
   }
 
   public void setElevatorRotationMotorPower(double power) {
-    if ((this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0)
-        || (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0)) {
-      stopRotation();
-    } else {
+    // if ((this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0)
+    //     || (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0))
+    // {
+    //   stopRotation();
+    // } else
+    {
       io.setRotationMotorPercentage(power);
     }
   }

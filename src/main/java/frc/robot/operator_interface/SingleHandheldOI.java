@@ -50,6 +50,7 @@ public class SingleHandheldOI implements OperatorInterface {
     return new Trigger(controller::getAButton);
   }
 
+  @Override
   public Trigger getMoveToGridButton() {
     return new Trigger(controller::getXButton);
   }

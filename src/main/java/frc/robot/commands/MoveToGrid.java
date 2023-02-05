@@ -22,7 +22,8 @@ public class MoveToGrid extends CommandBase {
   private Alert noPathAlert = new Alert("No path between start and end pose", AlertType.WARNING);
 
   public MoveToGrid(Drivetrain subsystem) {
-    // no requirements for movetogrid, drivetrain for ppswerve
+    // no requirements for this command, require the drivetrain for the PPSwerveControllerCommand
+    // command
     this.drivetrain = subsystem;
 
     FieldConstants.COMMUNITY_REGION_1.addNeighbor(
@@ -69,6 +70,7 @@ public class MoveToGrid extends CommandBase {
     }
   }
 
+  @Override
   public void initialize() {
     this.oi = OISelector.getOperatorInterface();
 
@@ -106,10 +108,12 @@ public class MoveToGrid extends CommandBase {
     // FIXME: add alert that no path was found
   }
 
+  @Override
   public boolean isFinished() {
     return this.trajectory == null || ppSwerveControllerCommand.isFinished();
   }
 
+  @Override
   public void end(boolean interrupted) {
     if (this.trajectory != null) {
       this.drivetrain.stop();

@@ -4,14 +4,16 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
+import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.RobotConfig;
@@ -34,9 +36,11 @@ import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
 import frc.robot.commands.SetPosition;
+import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
+import frc.robot.configs.TestBoardConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -155,6 +159,12 @@ public class RobotContainer {
 
             break;
           }
+        case TEST_BOARD:
+          {
+            // create the specific RobotConfig subclass instance first
+            config = new TestBoardConfig();
+            break;
+          }
         case ROBOT_SIMBOT:
           {
             config = new MK4IRobotConfig();
@@ -205,7 +215,6 @@ public class RobotContainer {
       SwerveModule brModule =
           new SwerveModule(new SwerveModuleIO() {}, 3, config.getRobotMaxVelocity());
       drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
-      new Pneumatics(new PneumaticsIO() {});
       new Vision(new VisionIO() {});
     }
 
@@ -222,12 +231,11 @@ public class RobotContainer {
    * new OI objects and binds all of the buttons to commands.
    */
   public void updateOI() {
-    if (!OISelector.didJoysticksChange()) {
+    OperatorInterface prevOI = oi;
+    oi = OISelector.getOperatorInterface();
+    if (oi == prevOI) {
       return;
     }
-
-    CommandScheduler.getInstance().getActiveButtonLoop().clear();
-    oi = OISelector.findOperatorInterface();
 
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
@@ -272,6 +280,9 @@ public class RobotContainer {
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
 
     configureElevatorCommands();
+    
+    // move to grid
+    oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
   }
 
   /** Use this method to define your commands for autonomous mode. */
@@ -297,12 +308,20 @@ public class RobotContainer {
                 auto1Paths.get(1).getMarkers(),
                 autoEventMap));
 
+    PathPlannerTrajectory startPointPath =
+        PathPlanner.loadPath(
+            "StartPoint", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
+    Command startPoint =
+        Commands.runOnce(
+            () -> drivetrain.resetOdometry(startPointPath.getInitialState()), drivetrain);
+
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     // demonstration of PathPlanner path group with event markers
     autoChooser.addOption("Test Path", autoTest);
 
+    autoChooser.addOption("Start Point", startPoint);
     // "auto" command for tuning the drive velocity PID
     autoChooser.addOption(
         "Drive Velocity Tuning",
@@ -323,6 +342,10 @@ public class RobotContainer {
             drivetrain::getCharacterizationVelocity));
 
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
+
+    if (TUNING_MODE) {
+      PathPlannerServer.startServer(3061);
+    }
   }
 
   private void configureElevatorCommands() {

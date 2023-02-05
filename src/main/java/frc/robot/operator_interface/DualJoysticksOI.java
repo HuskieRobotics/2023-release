@@ -4,7 +4,6 @@
 
 package frc.robot.operator_interface;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -57,7 +56,7 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getElevatorUpButton() {
+  public Trigger getMoveArmButton() {
     return rotateJoystickButtons[4];
   }
 }

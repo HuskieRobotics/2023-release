@@ -9,15 +9,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.*;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team3061.gyro.GyroIOPigeon2;
@@ -41,13 +37,12 @@ import frc.robot.commands.SetPosition;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
-import frc.robot.operator_interface.DualJoysticksOI;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.Elevator.Elevator;
-import frc.robot.subsystems.Elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.Elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,8 +58,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
-  private DualJoysticksOI dualJoysticks = new DualJoysticksOI(0, 0); // FIXME need import numbers
-
   private Elevator elevator;
   private RobotConfig config;
   private Drivetrain drivetrain;
@@ -72,6 +65,9 @@ public class RobotContainer {
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
+
+  private final LoggedDashboardChooser<Command> armChooser =
+      new LoggedDashboardChooser<>("Arm Position");
 
   // RobotContainer singleton
   private static RobotContainer robotContainer = new RobotContainer();
@@ -161,8 +157,10 @@ public class RobotContainer {
           }
         case ROBOT_SIMBOT:
           {
-            Elevator elevator;
             config = new MK4IRobotConfig();
+
+            elevator = new Elevator(new ElevatorIOTalonFX());
+
             SwerveModule flModule =
                 new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
 
@@ -211,17 +209,6 @@ public class RobotContainer {
       new Vision(new VisionIO() {});
     }
 
-    ShuffleboardTab elevatorTab = Shuffleboard.getTab("elevator");
-    elevatorTab.addNumber("Gyro Pitch", elevator::getExtensionElevatorEncoderHeight);
-    elevatorTab.addNumber("Gyro Pitch", elevator::getRotationElevatorEncoderAngle);
-    elevatorTab.add("Elevator/Arm setPosition", new SetPosition(elevator, null)); // FIXME
-    Shuffleboard.getTab("elevator")
-      .add("Extension", elevatorTab) // FIXME
-      .withWidget(BuiltInWidgets.kNumberSlider)
-      .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
-      .
-      .getEntry();
-    
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 
@@ -283,6 +270,8 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
+
+    configureElevatorCommands();
   }
 
   /** Use this method to define your commands for autonomous mode. */
@@ -336,48 +325,30 @@ public class RobotContainer {
     Shuffleboard.getTab("MAIN").add(autoChooser.getSendableChooser());
   }
 
-  private void configureElevatorCommands(){
-     dualJoysticks.translateJoystickButtons[0].whenPressed( //FIXME sample use of SetPosition
-       new SequentialCommandGroup(
-               new SetPosition(elevator, Position.CONE_INTAKE_FLOOR )
-         ));
-         dualJoysticks.translateJoystickButtons[1].whenPressed( 
-       new SequentialCommandGroup(
-               new SetPosition(elevator, Position.CONE_INTAKE_SHELF )
-         ));  
-         dualJoysticks.translateJoystickButtons[2].whenPressed( 
-       new SequentialCommandGroup(
-               new SetPosition(elevator, Position.CUBE_INTAKE_FLOOR )
-         ));
-         dualJoysticks.translateJoystickButtons[3].whenPressed( 
-       new SequentialCommandGroup(
-               new SetPosition(elevator, Position.CONE_INTAKE_SHELF )
-         ));
-         dualJoysticks.translateJoystickButtons[4].whenPressed( 
-         new SequentialCommandGroup(
-                new SetPosition(elevator, Position.CONE_LOW_LEVEL )
-           ));
-           dualJoysticks.translateJoystickButtons[5].whenPressed( 
-           new SequentialCommandGroup(
-                   new SetPosition(elevator, Position.CONE_MID_LEVEL )
-             ));   
-             dualJoysticks.translateJoystickButtons[6].whenPressed( 
-             new SequentialCommandGroup(
-                     new SetPosition(elevator, Position.CONE_HIGH_LEVEL )
-          ));
-          dualJoysticks.translateJoystickButtons[7].whenPressed( 
-       new SequentialCommandGroup(
-               new SetPosition(elevator, Position.CUBE_LOW_LEVEL )
-         ));
-         dualJoysticks.translateJoystickButtons[8].whenPressed( 
-       new SequentialCommandGroup(
-               new SetPosition(elevator, Position.CUBE_MID_LEVEL )
-         ));
-         dualJoysticks.translateJoystickButtons[9].whenPressed( 
-       new SequentialCommandGroup(
-               new SetPosition(elevator, Position.CUBE_HIGH_LEVEL )
-         ));
-   }
+  private void configureElevatorCommands() {
+    armChooser.addDefaultOption("CONE_STORAGE", new SetPosition(elevator, Position.CONE_STORAGE));
+    armChooser.addOption("CUBE_STORAGE", new SetPosition(elevator, Position.CUBE_STORAGE));
+    armChooser.addOption(
+        "CONE_INTAKE_FLOOR", new SetPosition(elevator, Position.CONE_INTAKE_FLOOR));
+    armChooser.addOption(
+        "CUBE_INTAKE_BUMPER", new SetPosition(elevator, Position.CUBE_INTAKE_BUMPER));
+    armChooser.addOption(
+        "CONE_INTAKE_SHELF", new SetPosition(elevator, Position.CONE_INTAKE_SHELF));
+    armChooser.addOption(
+        "CUBE_INTAKE_SHELF", new SetPosition(elevator, Position.CUBE_INTAKE_SHELF));
+    armChooser.addOption(
+        "CONE_INTAKE_CHUTE", new SetPosition(elevator, Position.CONE_INTAKE_CHUTE));
+    armChooser.addOption(
+        "CUBE_INTAKE_CHUTE", new SetPosition(elevator, Position.CUBE_INTAKE_CHUTE));
+    armChooser.addOption(
+        "CONE_HYBRID_LEVEL", new SetPosition(elevator, Position.CONE_HYBRID_LEVEL));
+    armChooser.addOption("CONE_MID_LEVEL", new SetPosition(elevator, Position.CONE_MID_LEVEL));
+    armChooser.addOption("CONE_HIGH_LEVEL", new SetPosition(elevator, Position.CONE_HIGH_LEVEL));
+    armChooser.addOption(
+        "CUBE_HYBRID_LEVEL", new SetPosition(elevator, Position.CUBE_HYBRID_LEVEL));
+    armChooser.addOption("CUBE_MID_LEVEL", new SetPosition(elevator, Position.CUBE_MID_LEVEL));
+    armChooser.addOption("CUBE_HIGH_LEVEL", new SetPosition(elevator, Position.CUBE_HIGH_LEVEL));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

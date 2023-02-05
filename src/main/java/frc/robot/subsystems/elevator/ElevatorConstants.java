@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Elevator;
+package frc.robot.subsystems.elevator;
 
 // FIXME ALL CONSTANTS
 public class ElevatorConstants {
@@ -11,20 +11,26 @@ public class ElevatorConstants {
   public static final String SUBSYSTEM_NAME = "Elevator";
 
   public enum Position {
+    CONE_STORAGE,
+    CUBE_STORAGE,
+
     CONE_INTAKE_FLOOR,
-    CUBE_INTAKE_FLOOR,
+    CUBE_INTAKE_BUMPER,
+
     CONE_INTAKE_SHELF,
     CUBE_INTAKE_SHELF,
+    CONE_INTAKE_CHUTE,
+    CUBE_INTAKE_CHUTE,
 
-    CONE_LOW_LEVEL,
+    CONE_HYBRID_LEVEL,
     CONE_MID_LEVEL,
     CONE_HIGH_LEVEL,
-    CUBE_LOW_LEVEL,
+    CUBE_HYBRID_LEVEL,
     CUBE_MID_LEVEL,
     CUBE_HIGH_LEVEL,
   }
 
-  // public static final int EXTENSION_POSTION = 0;
+  // public static final int EXTENSION_POSITION = 0;
   // public static final int ROTATION_POSITION = 0;
 
   // public static final int TOP_ROTATION_POSITION = 0;

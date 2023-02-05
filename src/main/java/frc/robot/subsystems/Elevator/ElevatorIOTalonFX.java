@@ -1,6 +1,6 @@
-package frc.robot.subsystems.Elevator;
+package frc.robot.subsystems.elevator;
 
-import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
+import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -19,9 +19,6 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.CANDeviceFinder;
 import frc.lib.team6328.util.TunableNumber;
 
-// import frc.robot.util.CANDeviceFinder;
-// import frc.robot.util.CANDeviceId.CANDeviceType;
-
 public class ElevatorIOTalonFX implements ElevatorIO {
 
   private TalonFX extensionMotor;
@@ -29,7 +26,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
 
-  public void ElevatorIOTalonFX() {
+  public ElevatorIOTalonFX() {
     CANDeviceFinder can = new CANDeviceFinder();
 
     extensionMotor = TalonFXFactory.createDefaultTalon(0, canBusName);
@@ -37,7 +34,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     // the following configuration is based on the CTRE example code
 
-    /* Factory Default all hardware to prevent unexpected behaviour */
+    /* Factory Default all hardware to prevent unexpected behavior */
     this.rotationMotor.configFactoryDefault();
     this.extensionMotor.configFactoryDefault();
 
@@ -84,7 +81,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // Feedback
     // Source
 
-    // /* FPID for Distance */
+    // /* PID for Distance */
 
     final TunableNumber rkF = new TunableNumber("ElevatorRotation/kF", ROTATION_POSITION_PID_F);
     final TunableNumber rkP = new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
@@ -170,14 +167,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.extensionClosedLoopError = extensionMotor.getClosedLoopError(SLOT_INDEX);
     inputs.extensionAppliedVolts = extensionMotor.getMotorOutputVoltage();
     inputs.extensionCurrentAmps = new double[] {extensionMotor.getStatorCurrent()};
-    inputs.extensionTempCelcius = new double[] {extensionMotor.getTemperature()};
+    inputs.extensionTempCelsius = new double[] {extensionMotor.getTemperature()};
 
     inputs.rotationPosition = rotationMotor.getSelectedSensorPosition(SLOT_INDEX);
     inputs.rotationVelocity = rotationMotor.getSelectedSensorVelocity(SLOT_INDEX);
     inputs.rotationClosedLoopError = rotationMotor.getClosedLoopError(SLOT_INDEX);
     inputs.rotationAppliedVolts = rotationMotor.getMotorOutputVoltage();
     inputs.rotationCurrentAmps = new double[] {rotationMotor.getStatorCurrent()};
-    inputs.rotationTempCelcius = new double[] {rotationMotor.getTemperature()};
+    inputs.rotationTempCelsius = new double[] {rotationMotor.getTemperature()};
 
     inputs.pitch = pigeon.getPitch();
   }

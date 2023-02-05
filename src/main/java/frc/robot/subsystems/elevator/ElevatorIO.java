@@ -1,12 +1,12 @@
-package frc.robot.subsystems.Elevator;
+package frc.robot.subsystems.elevator;
 
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
+import org.littletonrobotics.junction.AutoLog;
 
 /** Intake subsystem hardware interface. */
 public interface ElevatorIO {
   /** Contains all of the input data received from hardware. */
-  public static class ElevatorIOInputs implements LoggableInputs {
+  @AutoLog
+  public static class ElevatorIOInputs {
     boolean isControlEnabled = false;
 
     double extensionSetpoint = 0.0;
@@ -15,7 +15,7 @@ public interface ElevatorIO {
     double extensionClosedLoopError = 0.0;
     double extensionAppliedVolts = 0.0;
     double[] extensionCurrentAmps = new double[] {};
-    double[] extensionTempCelcius = new double[] {};
+    double[] extensionTempCelsius = new double[] {};
 
     double rotationSetpoint = 0.0;
     double rotationPosition = 0.0;
@@ -23,15 +23,9 @@ public interface ElevatorIO {
     double rotationClosedLoopError = 0.0;
     double rotationAppliedVolts = 0.0;
     double[] rotationCurrentAmps = new double[] {};
-    double[] rotationTempCelcius = new double[] {};
+    double[] rotationTempCelsius = new double[] {};
 
     double pitch = 0.0;
-
-    public void toLog(LogTable table) {}
-
-    public void fromLog(LogTable table) {
-      isControlEnabled = table.getBoolean("ControlEnabled", isControlEnabled);
-    }
   }
 
   /** Updates the set of loggable inputs. */

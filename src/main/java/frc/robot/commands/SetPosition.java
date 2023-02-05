@@ -1,12 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Elevator.Elevator;
-import frc.robot.subsystems.Elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 
 public class SetPosition extends CommandBase {
   private Elevator elevator;
-  private Position position;
   private double rotation;
   private double extension;
   /**
@@ -17,9 +16,13 @@ public class SetPosition extends CommandBase {
    */
   public SetPosition(Elevator subsystem, Position position) {
     elevator = subsystem;
-    this.position = position;
 
-    switch(position){ 
+    switch (position) {
+      case CONE_STORAGE:
+      case CUBE_STORAGE:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
       case CONE_INTAKE_FLOOR:
         this.extension = 0;
         this.rotation = 0;
@@ -27,8 +30,12 @@ public class SetPosition extends CommandBase {
       case CONE_INTAKE_SHELF:
         this.extension = 0;
         this.rotation = 0;
-        break; 
-      case CONE_LOW_LEVEL:
+        break;
+      case CONE_INTAKE_CHUTE:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CONE_HYBRID_LEVEL:
         this.extension = 0;
         this.rotation = 0;
         break;
@@ -39,17 +46,21 @@ public class SetPosition extends CommandBase {
       case CONE_HIGH_LEVEL:
         this.extension = 0;
         this.rotation = 0;
-        break;    
-        
-        case CUBE_INTAKE_FLOOR:
+        break;
+
+      case CUBE_INTAKE_BUMPER:
         this.extension = 0;
         this.rotation = 0;
         break;
       case CUBE_INTAKE_SHELF:
         this.extension = 0;
         this.rotation = 0;
-        break; 
-      case CUBE_LOW_LEVEL:
+        break;
+      case CUBE_INTAKE_CHUTE:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
+      case CUBE_HYBRID_LEVEL:
         this.extension = 0;
         this.rotation = 0;
         break;
@@ -60,10 +71,10 @@ public class SetPosition extends CommandBase {
       case CUBE_HIGH_LEVEL:
         this.extension = 0;
         this.rotation = 0;
-        break;    
+        break;
     }
 
-    if(position == Position.CONE_INTAKE_FLOOR){
+    if (position == Position.CONE_INTAKE_FLOOR) {
       this.extension = 0;
       this.rotation = 0;
     }
@@ -82,9 +93,6 @@ public class SetPosition extends CommandBase {
 
     elevator.setPosition(this.rotation, this.extension);
   }
-
-  @Override
-  public void execute() {}
 
   /**
    * This method will be invoked when this command finishes or is interrupted. It stops the motion

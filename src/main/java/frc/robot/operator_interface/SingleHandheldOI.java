@@ -46,7 +46,7 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getElevatorUpButton() {
-    return new Trigger(controller::getBackButton); // Check the button
+  public Trigger getMoveArmButton() {
+    return new Trigger(controller::getAButton);
   }
 }

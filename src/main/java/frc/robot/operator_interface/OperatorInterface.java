@@ -37,7 +37,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getElevatorUpButton() { // Joystickbutton
+  public default Trigger getMoveArmButton() {
     return new Trigger(() -> false);
   }
 }

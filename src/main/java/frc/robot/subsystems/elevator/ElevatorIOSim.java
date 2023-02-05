@@ -7,6 +7,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import frc.lib.team6328.util.TunableNumber;
 
 public class ElevatorIOSim implements ElevatorIO {
@@ -58,6 +61,11 @@ public class ElevatorIOSim implements ElevatorIO {
   private PIDController rotationController =
       new PIDController(rotationKp.get(), rotationKi.get(), rotationKd.get());
 
+  private Mechanism2d arm = new Mechanism2d(0.8636, 2.0);
+  private MechanismRoot2d root = arm.getRoot("arm", 0.2, 0.1);
+  private MechanismLigament2d elevator =
+      root.append(new MechanismLigament2d("elevator", 0.6, 80.0));
+
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
     // update the models
@@ -82,6 +90,10 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.rotationAppliedVolts = this.rotationAppliedVolts;
     inputs.rotationCurrentAmps = new double[] {Math.abs(armSim.getCurrentDrawAmps())};
     inputs.rotationTempCelsius = new double[] {};
+
+    // update the Mechanism2d
+    elevator.setAngle(inputs.rotationPositionRadians * 180.0 / Math.PI);
+    elevator.setLength(inputs.extensionPositionMeters);
 
     // update the tunable PID constants
     if (extensionKp.hasChanged() || extensionKi.hasChanged() || extensionKd.hasChanged()) {

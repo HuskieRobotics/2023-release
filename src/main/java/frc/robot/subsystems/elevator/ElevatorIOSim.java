@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import static frc.robot.Constants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -9,24 +10,30 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.lib.team6328.util.TunableNumber;
 
 public class ElevatorIOSim implements ElevatorIO {
-  private final TunableNumber extendKp = new TunableNumber("Elevator/ExtendKp", SIM_EXTEND_KP);
-  private final TunableNumber extendKi = new TunableNumber("Elevator/ExtendKi", SIM_EXTEND_KI);
-  private final TunableNumber extendKd = new TunableNumber("Elevator/ExtendKd", SIM_EXTEND_KD);
-  private final TunableNumber rotateKp = new TunableNumber("Elevator/RotateKp", SIM_ROTATE_KP);
-  private final TunableNumber rotateKi = new TunableNumber("Elevator/RotateKi", SIM_ROTATE_KI);
-  private final TunableNumber rotateKd = new TunableNumber("Elevator/RotateKd", SIM_ROTATE_KD);
+  private final TunableNumber extensionKp =
+      new TunableNumber("Elevator/ExtensionKp", SIM_EXTENSION_KP);
+  private final TunableNumber extensionKi =
+      new TunableNumber("Elevator/ExtensionKi", SIM_EXTENSION_KI);
+  private final TunableNumber extensionKd =
+      new TunableNumber("Elevator/ExtensionKd", SIM_EXTENSION_KD);
+  private final TunableNumber rotationKp =
+      new TunableNumber("Elevator/RotationKp", SIM_ROTATION_KP);
+  private final TunableNumber rotationKi =
+      new TunableNumber("Elevator/RotationKi", SIM_ROTATION_KI);
+  private final TunableNumber rotationKd =
+      new TunableNumber("Elevator/RotationKd", SIM_ROTATION_KD);
 
   /* Simulated Angle Motor PID Values */
-  private static final double SIM_EXTEND_KP = 1.0;
-  private static final double SIM_EXTEND_KI = 0.0;
-  private static final double SIM_EXTEND_KD = 0.0;
+  private static final double SIM_EXTENSION_KP = 1.0;
+  private static final double SIM_EXTENSION_KI = 0.0;
+  private static final double SIM_EXTENSION_KD = 0.0;
 
   /* Simulated Drive Motor PID Values */
-  private static final double SIM_ROTATE_KP = 1.0;
-  private static final double SIM_ROTATE_KI = 0.0;
-  private static final double SIM_ROTATE_KD = 0.0;
+  private static final double SIM_ROTATION_KP = 1.0;
+  private static final double SIM_ROTATION_KI = 0.0;
+  private static final double SIM_ROTATION_KD = 0.0;
 
-  private double extensionSetpointTicks = 0.0;
+  private double extensionSetpointMeters = 0.0;
   private double extensionAppliedVolts = 0.0;
   private double rotationAppliedVolts = 0.0;
   private double rotationSetpointRadians = 0.0;
@@ -47,9 +54,9 @@ public class ElevatorIOSim implements ElevatorIO {
 
   // FIXME: add feedforward
   private PIDController extensionController =
-      new PIDController(extendKp.get(), extendKi.get(), extendKd.get());
+      new PIDController(extensionKp.get(), extensionKi.get(), extensionKd.get());
   private PIDController rotationController =
-      new PIDController(rotateKp.get(), rotateKi.get(), rotateKd.get());
+      new PIDController(rotationKp.get(), rotationKi.get(), rotationKd.get());
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
@@ -60,43 +67,66 @@ public class ElevatorIOSim implements ElevatorIO {
     // update the inputs that will be logged
     inputs.isControlEnabled = false;
 
-    inputs.extensionSetpoint = this.extensionSetpointTicks;
-    inputs.extensionPosition = elevatorSim.getPositionMeters();
-    inputs.extensionVelocity = elevatorSim.getVelocityMetersPerSecond();
+    inputs.extensionSetpointMeters = this.extensionSetpointMeters;
+    inputs.extensionPositionMeters = elevatorSim.getPositionMeters();
+    inputs.extensionVelocityMetersPerSec = elevatorSim.getVelocityMetersPerSecond();
     inputs.extensionClosedLoopError = extensionController.getPositionError();
     inputs.extensionAppliedVolts = this.extensionAppliedVolts;
     inputs.extensionCurrentAmps = new double[] {Math.abs(elevatorSim.getCurrentDrawAmps())};
     inputs.extensionTempCelsius = new double[] {};
 
-    inputs.rotationSetpoint = this.rotationSetpointRadians;
-    inputs.rotationPosition = armSim.getAngleRads();
-    inputs.rotationVelocity = armSim.getVelocityRadPerSec();
+    inputs.rotationSetpointRadians = this.rotationSetpointRadians;
+    inputs.rotationPositionRadians = armSim.getAngleRads();
+    inputs.rotationVelocityRadiansPerSec = armSim.getVelocityRadPerSec();
     inputs.rotationClosedLoopError = rotationController.getPositionError();
     inputs.rotationAppliedVolts = this.rotationAppliedVolts;
     inputs.rotationCurrentAmps = new double[] {Math.abs(armSim.getCurrentDrawAmps())};
     inputs.rotationTempCelsius = new double[] {};
 
     // update the tunable PID constants
-    if (driveKp.hasChanged() || driveKi.hasChanged() || driveKd.hasChanged()) {
-      driveController.setPID(driveKp.get(), driveKi.get(), driveKd.get());
+    if (extensionKp.hasChanged() || extensionKi.hasChanged() || extensionKd.hasChanged()) {
+      extensionController.setPID(extensionKp.get(), extensionKi.get(), extensionKd.get());
     }
-    if (turnKp.hasChanged() || turnKi.hasChanged() || turnKd.hasChanged()) {
-      turnController.setPID(turnKp.get(), turnKi.get(), turnKd.get());
+    if (rotationKp.hasChanged() || rotationKi.hasChanged() || rotationKd.hasChanged()) {
+      rotationController.setPID(rotationKp.get(), rotationKi.get(), rotationKd.get());
     }
 
     // calculate and apply the "on-board" controllers for the turn and drive motors
-    turnAppliedVolts =
-        turnController.calculate(turnRelativePositionRad, angleSetpointDeg * (Math.PI / 180.0));
-    turnAppliedVolts = MathUtil.clamp(turnAppliedVolts, -12.0, 12.0);
-    turnSim.setInputVoltage(turnAppliedVolts);
+    this.extensionAppliedVolts =
+        this.extensionController.calculate(
+            inputs.extensionPositionMeters, this.extensionSetpointMeters);
+    this.extensionAppliedVolts = MathUtil.clamp(this.extensionAppliedVolts, -12.0, 12.0);
+    this.elevatorSim.setInputVoltage(this.extensionAppliedVolts);
 
-    if (!isDriveOpenLoop) {
-      double velocityRadPerSec = driveSetpointMPS * (2.0 * Math.PI) / (MK4_L2_WHEEL_CIRCUMFERENCE);
-      driveAppliedVolts =
-          feedForward.calculate(velocityRadPerSec)
-              + driveController.calculate(inputs.driveVelocityMetersPerSec, velocityRadPerSec);
-      driveAppliedVolts = MathUtil.clamp(driveAppliedVolts, -12.0, 12.0);
-      driveSim.setInputVoltage(driveAppliedVolts);
-    }
+    rotationAppliedVolts =
+        rotationController.calculate(inputs.rotationPositionRadians, rotationSetpointRadians);
+    rotationAppliedVolts = MathUtil.clamp(rotationAppliedVolts, -12.0, 12.0);
+    armSim.setInputVoltage(rotationAppliedVolts);
+  }
+
+  @Override
+  public void setExtensionMotorPercentage(double percentage) {
+    extensionController.reset();
+    extensionAppliedVolts = MathUtil.clamp(percentage * 12.0, -12.0, 12.0);
+    elevatorSim.setInputVoltage(extensionAppliedVolts);
+  }
+
+  @Override
+  public void setExtensionPosition(double position, double arbitraryFeedForward) {
+    extensionController.reset();
+    extensionSetpointMeters = position;
+  }
+
+  @Override
+  public void setRotationMotorPercentage(double percentage) {
+    rotationController.reset();
+    rotationAppliedVolts = MathUtil.clamp(percentage * 12.0, -12.0, 12.0);
+    armSim.setInputVoltage(rotationAppliedVolts);
+  }
+
+  @Override
+  public void setRotationPosition(double position, double arbitraryFeedForward) {
+    rotationController.reset();
+    rotationSetpointRadians = position;
   }
 }

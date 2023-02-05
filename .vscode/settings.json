@@ -59,9 +59,11 @@
     "setpoint",
     "SIMBOT",
     "Teleop",
+    "teleoperated",
     "TRACKWIDTH",
     "tunables",
     "Vandermonde",
+    "WPILOG",
     "Xstance"
   ]  
 }

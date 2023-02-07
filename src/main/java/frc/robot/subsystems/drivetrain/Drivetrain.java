@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.gyro.GyroIO;
@@ -29,6 +30,8 @@ import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.TunableNumber;
+import frc.robot.commands.AutoBalance.AutoBalanceMultiDirectional;
+import frc.robot.commands.AutoBalance.SimpleAutoBalanceFrontBack;
 import frc.robot.commands.AutoBalance.SimpleAutoBalanceLeftRight;
 
 import org.littletonrobotics.junction.Logger;
@@ -91,7 +94,7 @@ public class Drivetrain extends SubsystemBase {
   private ChassisSpeeds chassisSpeeds;
 
   private static final String SUBSYSTEM_NAME = "Drivetrain";
-  private static final boolean TESTING = false;
+  private static final boolean TESTING = true;
   private static final boolean DEBUGGING = false;
 
   private final SwerveDrivePoseEstimator poseEstimator;
@@ -136,11 +139,6 @@ public class Drivetrain extends SubsystemBase {
     tabMain.addBoolean("X-Stance On?", this::isXstance);
     tabMain.addBoolean("Field-Relative Enabled?", () -> this.isFieldRelative);
 
-    // tab for gyro
-    // ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
-    // gyroTab.addNumber("Gyro Pitch", this::getPitch);
-    // gyroTab.addNumber("Gyro Roll", this::getRoll);
-    // gyroTab.add("Simple Balance", new SimpleAutoBalance(this));
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
@@ -159,6 +157,14 @@ public class Drivetrain extends SubsystemBase {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("Enable XStance", new InstantCommand(this::enableXstance));
       tab.add("Disable XStance", new InstantCommand(this::disableXstance));
+      tab.addNumber("Gyro Pitch", this::getPitch);
+      tab.addNumber("Gyro Roll", this::getRoll);
+      tab.addNumber("Gyro Yaw", this::getYaw);
+      tab.add("Simple BalanceLeftRight", new SimpleAutoBalanceLeftRight(this));
+      tab.add("Simple Balance Front Back", new SimpleAutoBalanceFrontBack(this));
+      tab.add("MultiDirectional Auto Balance", new AutoBalanceMultiDirectional(this));
+      tab.add("Straighten", new InstantCommand(this::straightenWheels)); 
+      tab.addBoolean("X-Stance On?", this::isXstance);
     }
   }
 
@@ -488,6 +494,18 @@ public class Drivetrain extends SubsystemBase {
     states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(TRACKWIDTH_METERS / WHEELBASE_METERS));
     states[3].angle =
         new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(TRACKWIDTH_METERS / WHEELBASE_METERS));
+    for (SwerveModule swerveModule : swerveModules) {
+      swerveModule.setDesiredState(states[swerveModule.getModuleNumber()], true, true);
+    }
+  }
+
+  public void straightenWheels() {
+    chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerGravity);
+    states[0].angle = new Rotation2d(0);
+    states[1].angle = new Rotation2d(0);
+    states[2].angle = new Rotation2d(0);
+    states[3].angle = new Rotation2d(0);
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setDesiredState(states[swerveModule.getModuleNumber()], true, true);
     }

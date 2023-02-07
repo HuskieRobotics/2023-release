@@ -173,14 +173,7 @@ public class RobotContainer {
     }
 
     // tab for gyro
-    ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyroscope");
-    gyroTab.addNumber("Gyro Pitch", drivetrain::getPitch);
-    gyroTab.addNumber("Gyro Roll", drivetrain::getRoll);
-    gyroTab.addNumber("Gyro Yaw", drivetrain::getYaw);
-    gyroTab.add("Simple BalanceLeftRight", new SimpleAutoBalanceLeftRight(drivetrain));
-    gyroTab.add("Simple Balance Front Back", new SimpleAutoBalanceFrontBack(drivetrain));
-    gyroTab.add("Directional Auto Balance", new AutoBalance(drivetrain));
-    gyroTab.add("Disable XStance", Commands.runOnce(drivetrain::enableXstance, drivetrain));
+    
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 

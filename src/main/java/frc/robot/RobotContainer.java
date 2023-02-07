@@ -265,10 +265,11 @@ public class RobotContainer {
   private void configureAutoCommands() {
     autoEventMap.put("event1", Commands.print("passed marker 1"));
     autoEventMap.put("event2", Commands.print("passed marker 2"));
-    autoEventMap.put("IntakeCone", Commands.print("passed marker: IntakeCone"));
-    autoEventMap.put("PrepareToScoreHigh", Commands.print("passed marker: PrepareToScoreHigh"));
-    autoEventMap.put("ScoreHigh", Commands.print("passed marker: ScoreHigh"));
-    autoEventMap.put("RetractArm", Commands.print("passed marker: RetractArm"));
+    autoEventMap.put("Prepare To Intake Cone", Commands.print("preparing to intake cone"));
+    autoEventMap.put("intake cone", Commands.print("cone intaked"));
+    autoEventMap.put("Raise Elevator", Commands.print("raising elevator"));
+    autoEventMap.put("Bring in Elevator", Commands.print("brining in collector"));
+    
 
     // creates 2 PathConstriats to be used in auto paths
     PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
@@ -394,10 +395,10 @@ public class RobotContainer {
     List<PathPlannerTrajectory> blueLoadingSide2ConeEngagePath =
         PathPlanner.loadPathGroup("Blue-LoadingSide 2 Cone + Engage", 2.0, 2.0);
     Command blueLoadingSide2ConeEngageCommand =
-        new FollowPathWithEvents(
-            new FollowPath(blueLoadingSide2ConeEngagePath.get(0), drivetrain, true),
-            blueLoadingSide2ConeEngagePath.get(0).getMarkers(),
-            autoEventMap);
+        Commands.sequence(
+            new FollowPathWithEvents(
+                new FollowPath(blueLoadingSide2ConeEngagePath.get(0), drivetrain, true),
+                blueLoadingSide2ConeEngagePath.get(0).getMarkers(),autoEventMap));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path ( with event markers)",
         blueLoadingSide2ConeEngageCommand);

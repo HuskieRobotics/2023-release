@@ -2,15 +2,15 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.9445645690158235,
-        "y": 4.77345864984459
+        "x": 1.901451622452118,
+        "y": 5.012671378726218
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.5373173277035885,
-        "y": 4.507935776966927
+        "x": 1.8914061888274167,
+        "y": 5.0428076796003225
       },
-      "holonomicAngle": -178.2936748050397,
+      "holonomicAngle": -180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -26,18 +26,18 @@
     },
     {
       "anchorPoint": {
-        "x": 6.58,
-        "y": 4.61
+        "x": 3.528811869653815,
+        "y": 4.711308369985162
       },
       "prevControl": {
-        "x": 6.321374309337026,
-        "y": 5.117672049905333
+        "x": 3.1702456605855907,
+        "y": 4.722513564018545
       },
       "nextControl": {
-        "x": 6.814023072077057,
-        "y": 4.150621921890486
+        "x": 3.8502657456442724,
+        "y": 4.70126293636046
       },
-      "holonomicAngle": 0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -51,18 +51,43 @@
     },
     {
       "anchorPoint": {
-        "x": 4.806179787798173,
-        "y": 4.579428632541476
+        "x": 5.728761833463516,
+        "y": 4.630944900987547
       },
       "prevControl": {
-        "x": 5.15077381031955,
-        "y": 4.679179533797664
+        "x": 5.387301783490961,
+        "y": 4.667859500984581
       },
       "nextControl": {
-        "x": 4.103634671388379,
-        "y": 4.37606030937022
+        "x": 5.387301783490961,
+        "y": 4.667859500984581
       },
-      "holonomicAngle": -178.63607246839706,
+      "holonomicAngle": -1.39718102729631,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 5.045672346983792,
+        "y": 4.6409903346122485
+      },
+      "prevControl": {
+        "x": 5.389053315041883,
+        "y": 4.647857953973411
+      },
+      "nextControl": {
+        "x": 4.543400665748699,
+        "y": 4.630944900987546
+      },
+      "holonomicAngle": 177.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -76,40 +101,15 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8898980951880697,
-        "y": 3.680129173289508
+        "x": 1.8971430359922339,
+        "y": 3.8371652098754443
       },
       "prevControl": {
-        "x": 1.5775182447437606,
-        "y": 5.2107904404666225
-      },
-      "nextControl": {
-        "x": 1.9539231607962768,
-        "y": 3.3664063518092937
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 3.8813196417705393,
-        "y": 3.4692727742395997
-      },
-      "prevControl": {
-        "x": 2.538086284860011,
-        "y": 3.422415796672953
+        "x": 1.9921223728703399,
+        "y": 4.5210164353978
       },
       "nextControl": null,
-      "holonomicAngle": 178.75463573323162,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -126,22 +126,15 @@
   ],
   "markers": [
     {
-      "position": 1.25,
+      "position": 2.400000000000162,
       "names": [
-        "PrepareToScoreHigh"
+        "Prepare to intake cone"
       ]
     },
     {
-      "position": 1.4181818181818118,
+      "position": 3.0545454545453636,
       "names": [
-        "IntakeCone"
-      ]
-    },
-    {
-      "position": 2.0,
-      "names": [
-        "ScoreHigh",
-        "RetractArm"
+        "intake cone"
       ]
     }
   ]

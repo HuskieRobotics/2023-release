@@ -74,16 +74,16 @@
     },
     {
       "anchorPoint": {
-        "x": 7.064018962161148,
-        "y": 0.9118016340298093
+        "x": 6.2607774158217495,
+        "y": 0.8551646252728605
       },
       "prevControl": {
-        "x": 6.590837182464255,
-        "y": 0.522122521338251
+        "x": 5.787595636124856,
+        "y": 0.4654855125813022
       },
       "nextControl": {
-        "x": 7.3611567364702015,
-        "y": 1.1565033305196177
+        "x": 6.557915190130803,
+        "y": 1.0998663217626685
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -149,37 +149,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.95,
-        "y": 1.63
+        "x": 1.8652566694231143,
+        "y": 1.5830033793526241
       },
       "prevControl": {
-        "x": 1.8571689828430513,
-        "y": 0.8878763432689241
-      },
-      "nextControl": {
-        "x": 2.003149333851327,
-        "y": 2.0548943855035113
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 3.9203671230760784,
-        "y": 2.1494679061123954
-      },
-      "prevControl": {
-        "x": 3.908652878684417,
-        "y": 2.004992225281902
+        "x": 1.8535424250314527,
+        "y": 1.438527698522131
       },
       "nextControl": null,
       "holonomicAngle": -180.0,
@@ -195,5 +170,36 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.4039772727272722,
+      "names": [
+        "event"
+      ]
+    },
+    {
+      "position": 1.99325284090909,
+      "names": [
+        "event"
+      ]
+    },
+    {
+      "position": 3.0049005681818253,
+      "names": [
+        "Collect Cone"
+      ]
+    },
+    {
+      "position": 3.698650568181825,
+      "names": [
+        "Raise Elevator"
+      ]
+    },
+    {
+      "position": 5.479474431818174,
+      "names": [
+        "Prepare to score Cone"
+      ]
+    }
+  ]
 }

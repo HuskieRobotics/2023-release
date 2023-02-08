@@ -391,17 +391,24 @@ public class RobotContainer {
     autoChooser.addOption("Blue Center Load 2 Cone Engage Path", blueCenterLoad2ConeEngageCommand);
 
     // "auto" path for Blue-LoadingSide 2 Cone + Engage
-    List<PathPlannerTrajectory> blueLoadingSide2ConeEngagePath =
-        PathPlanner.loadPathGroup("Blue-LoadingSide 2 Cone + Engage", 2.0, 2.0);
-    Command blueLoadingSide2ConeEngageCommand =
+    List<PathPlannerTrajectory> blueLoadingSide2ConePath =
+        PathPlanner.loadPathGroup("Blue-LoadingSide 2 Cone", 2.0, 2.0);
+    Command blueLoadingSide2ConeCommand =
         Commands.sequence(
             new FollowPathWithEvents(
-                new FollowPath(blueLoadingSide2ConeEngagePath.get(0), drivetrain, true, true),
-                blueLoadingSide2ConeEngagePath.get(0).getMarkers(),
+                new FollowPath(blueLoadingSide2ConePath.get(0), drivetrain, true, true),
+                blueLoadingSide2ConePath.get(0).getMarkers(),
                 autoEventMap));
     autoChooser.addOption(
-        "Blue Loading Side 2 Cone Engage Path ( with event markers)",
-        blueLoadingSide2ConeEngageCommand);
+        "Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeCommand);
+
+    // auto path for mobility bounus and preparing to engage
+    PathPlannerTrajectory blueMobilityPrepareToDockPath =
+        PathPlanner.loadPath("Blue-Mobility Prepare To Dock", 2.0, 2.0);
+    Command blueModilityPrepareToDockCommand =
+        new FollowPath(blueMobilityPrepareToDockPath, drivetrain, false, true);
+    autoChooser.addOption(
+        "Blue Mobility Bounus and Prepare to Engage", blueModilityPrepareToDockCommand);
 
     // "auto" for Blue-LoadingSide 3 Cone
     PathPlannerTrajectory blueLoadingSide3ConePath =

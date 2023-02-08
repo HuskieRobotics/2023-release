@@ -33,7 +33,11 @@ public class FollowPath extends PPSwerveControllerCommand {
    *     and odometry will not be re-initialized in order to ensure a smooth transition between
    *     trajectories
    */
-  public FollowPath(PathPlannerTrajectory trajectory, Drivetrain subsystem, boolean initialPath, boolean useAllianceColor ) {
+  public FollowPath(
+      PathPlannerTrajectory trajectory,
+      Drivetrain subsystem,
+      boolean initialPath,
+      boolean useAllianceColor) {
     super(
         trajectory,
         subsystem::getPose,

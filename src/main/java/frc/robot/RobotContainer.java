@@ -337,10 +337,7 @@ public class RobotContainer {
             Commands.waitSeconds(5),
             new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false, true),
             new FollowPath(blueCableSide2ConeEngagePath.get(4), drivetrain, false, true),
-            new FollowPath(blueCableSide2ConeEngagePath.get(5), drivetrain, false, true),
-            Commands.waitSeconds(5),
-            new FollowPath(blueCableSide2ConeEngagePath.get(6), drivetrain, false, true),
-            Commands.waitSeconds(5));
+            new FollowPath(blueCableSide2ConeEngagePath.get(5), drivetrain, false, true));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
     // "auto" path for Blue-CableSide 3 Cone

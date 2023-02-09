@@ -174,17 +174,17 @@
     {
       "position": 0.4039772727272722,
       "names": [
-        "event"
+        "Bring In Elevator"
       ]
     },
     {
-      "position": 1.99325284090909,
+      "position": 2.2474431818181797,
       "names": [
-        "event"
+        "Prepare to Intake Cone"
       ]
     },
     {
-      "position": 3.0049005681818253,
+      "position": 2.918821022727274,
       "names": [
         "Collect Cone"
       ]
@@ -199,6 +199,12 @@
       "position": 5.479474431818174,
       "names": [
         "Prepare to score Cone"
+      ]
+    },
+    {
+      "position": 3.0628551136363553,
+      "names": [
+        "event"
       ]
     }
   ]

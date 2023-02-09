@@ -269,6 +269,7 @@ public class RobotContainer {
     autoEventMap.put("intake cone", Commands.print("cone intaked"));
     autoEventMap.put("Raise Elevator", Commands.print("raising elevator"));
     autoEventMap.put("Bring in Elevator", Commands.print("brining in collector"));
+    // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
     // creates 2 PathConstriats to be used in auto paths
     PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);

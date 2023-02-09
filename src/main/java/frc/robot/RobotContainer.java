@@ -410,7 +410,7 @@ public class RobotContainer {
 
     // "auto" for Blue-LoadingSide 3 Cone
     PathPlannerTrajectory blueLoadingSide3ConePath =
-        PathPlanner.loadPath("Blue-LoadingSide 3 Cone", 2.0, 2.0);
+        PathPlanner.loadPath("Blue-Loading Side 3 Cone", 2.0, 2.0);
     Command blueLoadingSide3ConeCommand =
         new FollowPath(blueLoadingSide3ConePath, drivetrain, true, true);
     autoChooser.addOption("Blue Loading Side 3 Cone Path", blueLoadingSide3ConeCommand);
@@ -428,6 +428,13 @@ public class RobotContainer {
     Command autoTurnPidTuningCommand =
         new FollowPath(autoTurnPidTuningPath, drivetrain, true, true);
     autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
+
+    // "auto" for Blue-CenterLoad 1 Cone + Engage
+    PathPlannerTrajectory blueCenterLoad1ConeEngagePath =
+        PathPlanner.loadPath("Blue-CenterLoad 1 Cone + Engage", 1.0, 1.0);
+    Command blueCenterLoad1ConeEngageCommand =
+        new FollowPath(blueCenterLoad1ConeEngagePath, drivetrain, true, true);
+    autoChooser.addOption("Blue CenterLoad 1 Cone and Engage", blueCenterLoad1ConeEngageCommand);
 
     // "auto" path with no holnomic rotation
     PathPlannerTrajectory noHolonomicRotationPath =

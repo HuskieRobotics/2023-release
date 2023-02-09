@@ -404,7 +404,7 @@ public class RobotContainer {
     PathPlannerTrajectory blueMobilityPrepareToDockPath =
         PathPlanner.loadPath("Blue-Mobility Prepare To Dock", 2.0, 2.0);
     Command blueModilityPrepareToDockCommand =
-        new FollowPath(blueMobilityPrepareToDockPath, drivetrain, false, true);
+        new FollowPath(blueMobilityPrepareToDockPath, drivetrain, true, true);
     autoChooser.addOption(
         "Blue Mobility Bounus and Prepare to Engage", blueModilityPrepareToDockCommand);
 

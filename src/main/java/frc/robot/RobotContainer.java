@@ -343,18 +343,13 @@ public class RobotContainer {
 
     // "auto" path for Blue-CableSide 3 Cone
     List<PathPlannerTrajectory> blueCableSide3ConePath =
-        PathPlanner.loadPathGroup(
-            "Blue-CableSide 3 Cone",
-            regularSpeed,
-            overCableConnector,
-            regularSpeed,
-            overCableConnector,
-            regularSpeed,
-            overCableConnector,
-            regularSpeed,
-            overCableConnector,
-            regularSpeed,
-            overCableConnector);
+        PathPlanner.loadPathGroup("Blue-CableSide 3 Cone", 2.0, 2.0);
+    // regularSpeed,
+    // overCableConnector,
+    // regularSpeed,
+    // overCableConnector,
+    // regularSpeed,
+    // overCableConnector);
     Command blueCableSide3ConeCommand =
         Commands.sequence(
             new FollowPath(blueCableSide3ConePath.get(0), drivetrain, true, true),
@@ -363,10 +358,7 @@ public class RobotContainer {
             new FollowPath(blueCableSide3ConePath.get(3), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(4), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(5), drivetrain, false, true),
-            new FollowPath(blueCableSide3ConePath.get(6), drivetrain, false, true),
-            new FollowPath(blueCableSide3ConePath.get(7), drivetrain, false, true),
-            new FollowPath(blueCableSide3ConePath.get(8), drivetrain, false, true),
-            new FollowPath(blueCableSide3ConePath.get(9), drivetrain, false, true));
+            new FollowPath(blueCableSide3ConePath.get(6), drivetrain, false, true));
     autoChooser.addOption(
         "Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);
 
@@ -409,10 +401,12 @@ public class RobotContainer {
         "Blue Mobility Bounus and Prepare to Engage", blueModilityPrepareToDockCommand);
 
     // "auto" for Blue-LoadingSide 3 Cone
-    PathPlannerTrajectory blueLoadingSide3ConePath =
-        PathPlanner.loadPath("Blue-Loading Side 3 Cone", 2.0, 2.0);
+    List<PathPlannerTrajectory> blueLoadingSide3ConePath =
+        PathPlanner.loadPathGroup("Blue-Loading Side 3 Cone", 2.0, 2.0);
     Command blueLoadingSide3ConeCommand =
-        new FollowPath(blueLoadingSide3ConePath, drivetrain, true, true);
+        Commands.sequence(
+            new FollowPath(blueLoadingSide3ConePath.get(0), drivetrain, true, true),
+            new FollowPath(blueLoadingSide3ConePath.get(1), drivetrain, false, true));
     autoChooser.addOption("Blue Loading Side 3 Cone Path", blueLoadingSide3ConeCommand);
 
     // "auto" path for Blue-LoadingSide 4 Cone

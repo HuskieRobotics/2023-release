@@ -130,6 +130,13 @@ public class Elevator extends SubsystemBase {
         < ELEVATOR_ROTATION_POSITION_TOLERANCE;
   }
 
+  public boolean atSetpoint() {
+    return (Math.abs(this.inputs.rotationPositionRadians - rotationSetpoint)
+    < ELEVATOR_ROTATION_POSITION_TOLERANCE) && (Math.abs(this.inputs.extensionPositionMeters - extensionSetpoint)
+    < ELEVATOR_EXTENSION_POSITION_TOLERANCE);
+  }
+  
+
   public void stopExtension() {
     this.io.setExtensionMotorPercentage(0.0);
   }
@@ -152,13 +159,41 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setPosition(Double rotation, Double extension) {
-    this.setElevatorExtension(extension);
-    this.setElevatorRotation(rotation);
+    if((INTAKE_STORED) && (getRotationElevatorEncoderAngle() < .48)){ // radians
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    }
+    else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .381)){// meters
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    } 
+    else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) && (getRotationElevatorEncoderAngle() < .345)){ // 0 is in meters, .345 is radians
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    }
+    else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) && (getRotationElevatorEncoderAngle() < .4)){  // radians
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    }
+    else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) && (getRotationElevatorEncoderAngle() < .478)){ // .686meters, .478 radians
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    }
+    else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < .478) && (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    }
+    else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > .478)){ // FIXME if we are careful to position the intake such that its hood is collapsed by the elevator
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    }
+    else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < .44) && (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
+      this.setElevatorExtension(extension);
+      this.setElevatorRotation(rotation);
+    }
   }
 
-  public boolean atSetpoint() {
-    return this.atRotationSetpoint() && this.atExtensionSetpoint();
-  }
+  
 
   public void setControlEnabled() {
     this.isControlEnabled = true;

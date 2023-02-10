@@ -358,7 +358,8 @@ public class RobotContainer {
             new FollowPath(blueCableSide3ConePath.get(3), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(4), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(5), drivetrain, false, true),
-            new FollowPath(blueCableSide3ConePath.get(6), drivetrain, false, true));
+            new FollowPath(blueCableSide3ConePath.get(6), drivetrain, false, true),
+            new FollowPath(blueCableSide3ConePath.get(7), drivetrain, false, true));
     autoChooser.addOption(
         "Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);
 

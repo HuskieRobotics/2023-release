@@ -269,6 +269,8 @@ public class RobotContainer {
 
     // move to grid
     oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
+
+    oi.getTurboButton().onTrue()//fix later
   }
 
   /** Use this method to define your commands for autonomous mode. */

@@ -29,6 +29,7 @@ public class TeleopSwerve extends CommandBase {
   private final double maxVelocityMetersPerSecond = RobotConfig.getInstance().getRobotMaxVelocity();
   private final double maxAngularVelocityRadiansPerSecond =
       RobotConfig.getInstance().getRobotMaxAngularVelocity();
+  private boolean turboButtonON;
 
   /**
    * Create a new TeleopSwerve command object.
@@ -59,14 +60,20 @@ public class TeleopSwerve extends CommandBase {
 
     // invert the controller input and apply the deadband and squaring to make the robot more
     // responsive to small changes in the controller
+    
     double xPercentage = modifyAxis(translationXSupplier.getAsDouble());
     double yPercentage = modifyAxis(translationYSupplier.getAsDouble());
     double rotationPercentage = modifyAxis(rotationSupplier.getAsDouble());
-
+    if(!turboButtonON){
     double xVelocity = xPercentage * maxVelocityMetersPerSecond;
-    double yVelocity = yPercentage * maxVelocityMetersPerSecond;
+    double yVelocity = yPercentage * maxVelocityMetersPerSecond;}
+    else{
+    double xVelocity = xPercentage*1000000000000;
+    double yVelocity = yPercentage*1000000000000;
+    }
+    }
     double rotationalVelocity = rotationPercentage * maxAngularVelocityRadiansPerSecond;
-
+   
     Logger.getInstance().recordOutput("ActiveCommands/TeleopSwerve", true);
     Logger.getInstance().recordOutput("TeleopSwerve/xVelocity", xVelocity);
     Logger.getInstance().recordOutput("TeleopSwerve/yVelocity", yVelocity);

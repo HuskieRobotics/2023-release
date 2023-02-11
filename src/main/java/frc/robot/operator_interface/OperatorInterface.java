@@ -37,6 +37,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getVisionIsEnabledSwitch() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getMoveToGridButton() {
     return new Trigger(() -> false);
   }

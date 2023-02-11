@@ -74,6 +74,11 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    return operatorPanelButtons[10];
+  }
+
+  @Override
   public Trigger getMoveToGridButton() {
     return new Trigger(operatorController::getAButton);
   }

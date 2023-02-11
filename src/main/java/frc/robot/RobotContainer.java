@@ -207,6 +207,8 @@ public class RobotContainer {
       new Vision(new VisionIO() {});
     }
 
+    // tab for gyro
+
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 

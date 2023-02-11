@@ -28,6 +28,9 @@ import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.TunableNumber;
+import frc.robot.commands.AutoBalance.AutoBalanceMultiDirectional;
+import frc.robot.commands.AutoBalance.SimpleAutoBalanceFrontBack;
+import frc.robot.commands.AutoBalance.SimpleAutoBalanceLeftRight;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -93,7 +96,7 @@ public class Drivetrain extends SubsystemBase {
   private ChassisSpeeds chassisSpeeds;
 
   private static final String SUBSYSTEM_NAME = "Drivetrain";
-  private static final boolean TESTING = false;
+  private static final boolean TESTING = true;
   private static final boolean DEBUGGING = false;
 
   private final SwerveDrivePoseEstimator poseEstimator;
@@ -151,12 +154,20 @@ public class Drivetrain extends SubsystemBase {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("Enable XStance", new InstantCommand(this::enableXstance));
       tab.add("Disable XStance", new InstantCommand(this::disableXstance));
+      tab.addNumber("Gyro Pitch", this::getPitch);
+      tab.addNumber("Gyro Roll", this::getRoll);
+      tab.addNumber("Gyro Yaw", this::getYaw);
+      tab.add("Simple BalanceLeftRight", new SimpleAutoBalanceLeftRight(this));
+      tab.add("Simple Balance Front Back", new SimpleAutoBalanceFrontBack(this));
+      tab.add("MultiDirectional Auto Balance", new AutoBalanceMultiDirectional(this));
+      tab.add("Straighten", new InstantCommand(this::straightenWheels));
+      tab.addBoolean("X-Stance On?", this::isXstance);
     }
   }
 
   /**
    * Zeroes the gyroscope. This sets the current rotation of the robot to zero degrees. This method
-   * is intended to be invoked only when the alignment beteween the robot's rotation and the gyro is
+   * is intended to be invoked only when the alignment between the robot's rotation and the gyro is
    * sufficiently different to make field-relative driving difficult. The robot needs to be
    * positioned facing away from the driver, ideally aligned to a field wall before this method is
    * invoked.
@@ -173,13 +184,29 @@ public class Drivetrain extends SubsystemBase {
    *
    * @return the rotation of the robot
    */
-  private Rotation2d getRotation() {
+  public Rotation2d getRotation() {
     if (gyroInputs.connected) {
       return Rotation2d.fromDegrees(gyroInputs.positionDeg + this.gyroOffset);
     } else {
       return estimatedPoseWithoutGyro.getRotation();
     }
   }
+
+  public double getYaw() {
+    return gyroInputs.positionDeg;
+  }
+
+  public double getPitch() {
+    return gyroInputs.pitch;
+  }
+
+  public double getRoll() {
+    return gyroInputs.roll;
+  }
+
+  // public boolean isBalanced() {
+  //   return getPigeonAngle() < 0.1 && getPigeonAngle() > - 0.1;
+  // }
 
   /**
    * Sets the rotation of the robot to the specified value. This method should only be invoked when
@@ -255,7 +282,7 @@ public class Drivetrain extends SubsystemBase {
    *
    * @param translationXSupplier the desired velocity in the x direction (m/s)
    * @param translationYSupplier the desired velocity in the y direction (m/s)
-   * @param rotationSupplier the desired rotational velcoity (rad/s)
+   * @param rotationSupplier the desired rotational velocity (rad/s)
    */
   public void drive(
       double xVelocity, double yVelocity, double rotationalVelocity, boolean isOpenLoop) {
@@ -326,7 +353,7 @@ public class Drivetrain extends SubsystemBase {
     gyroIO.updateInputs(gyroInputs);
     Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
 
-    // update and log the swerve moudles inputs
+    // update and log the swerve modules inputs
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.updateAndProcessInputs();
     }
@@ -469,6 +496,18 @@ public class Drivetrain extends SubsystemBase {
     states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(trackwidthMeters / wheelbaseMeters));
     states[3].angle =
         new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(trackwidthMeters / wheelbaseMeters));
+    for (SwerveModule swerveModule : swerveModules) {
+      swerveModule.setDesiredState(states[swerveModule.getModuleNumber()], true, true);
+    }
+  }
+
+  public void straightenWheels() {
+    chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
+    states[0].angle = new Rotation2d(0);
+    states[1].angle = new Rotation2d(0);
+    states[2].angle = new Rotation2d(0);
+    states[3].angle = new Rotation2d(0);
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setDesiredState(states[swerveModule.getModuleNumber()], true, true);
     }

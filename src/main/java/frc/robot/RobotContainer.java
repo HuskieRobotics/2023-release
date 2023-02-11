@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.PathConstraints;
 import static frc.robot.Constants.*;
 
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
@@ -33,6 +33,7 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.AutoBalance.AutoBalanceMultiDirectional;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
@@ -449,7 +450,9 @@ public class RobotContainer {
     PathPlannerTrajectory blueCenterLoad1ConeEngagePath =
         PathPlanner.loadPath("Blue-CenterLoad 1 Cone + Engage", 1.0, 1.0);
     Command blueCenterLoad1ConeEngageCommand =
-        new FollowPath(blueCenterLoad1ConeEngagePath, drivetrain, true, true);
+        Commands.sequence(
+            new FollowPath(blueCenterLoad1ConeEngagePath, drivetrain, true, true),
+            new AutoBalanceMultiDirectional(drivetrain));
     autoChooser.addOption("Blue CenterLoad 1 Cone and Engage", blueCenterLoad1ConeEngageCommand);
 
     // "auto" path with no holnomic rotation

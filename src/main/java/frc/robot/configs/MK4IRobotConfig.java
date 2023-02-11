@@ -42,7 +42,7 @@ public class MK4IRobotConfig extends RobotConfig {
   // FIXME: tune PID values for the angle and drive motors for the swerve modules
 
   /* Angle Motor PID Values */
-  private static final double ANGLE_KP = 0.4; // 0.6;
+  private static final double ANGLE_KP = 0.4;
   private static final double ANGLE_KI = 0.0;
   private static final double ANGLE_KD = 12.0;
   private static final double ANGLE_KF = 0.0;
@@ -68,7 +68,7 @@ public class MK4IRobotConfig extends RobotConfig {
 
   // FIXME: update this with the actual transform from the robot to the camera
   private static final Transform3d ROBOT_TO_CAMERA =
-      new Transform3d(new Translation3d(.356, 0, 0.465), new Rotation3d(0, 0, 0));
+      new Transform3d(new Translation3d(0.356, 0.0, 0.465), new Rotation3d(0, 0, 0));
 
   private static final int PNEUMATICS_HUB_ID = 20;
   private static final int FLOW_SENSOR_CHANNEL = 0;

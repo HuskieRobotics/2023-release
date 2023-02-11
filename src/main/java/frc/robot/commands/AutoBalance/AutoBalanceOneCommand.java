@@ -46,11 +46,11 @@ public class AutoBalanceOneCommand extends CommandBase {
     switch (direction) {
       case FORWARD_BACK:
         speed = controller.calculate(drivetrain.getPitch(), 0);
-        drivetrain.drive(speed, 0, 0);
+        drivetrain.drive(speed, 0, 0, true);
 
       case LEFT_RIGHT:
         speed = controller.calculate(drivetrain.getPitch(), 0);
-        drivetrain.drive(speed, 0, 0);
+        drivetrain.drive(speed, 0, 0, true);
     }
   }
 

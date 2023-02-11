@@ -12,16 +12,16 @@ public class SimpleAutoBalanceLeftRight extends PIDCommand {
         new PIDController(.1, 0, 0),
         drivetrain::getPitch,
         0,
-        output -> drivetrain.drive(0, output, 0));
+        output -> drivetrain.drive(0, output, 0, true));
     addRequirements(drivetrain);
     this.drivetrain = drivetrain;
   }
 
   /*
-   *     __X_
-   *    |Frnt|
-   *    -Y   Y
-   *    |_-X_|
+   *     __X__
+   *    |Front|
+   *    -Y    Y
+   *    |_-X _|
    *
    */
 

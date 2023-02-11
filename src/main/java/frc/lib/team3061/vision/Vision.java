@@ -1,5 +1,7 @@
 package frc.lib.team3061.vision;
 
+import static frc.lib.team3061.vision.VisionConstants.*;
+
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -9,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.VisionIO.VisionIOInputs;
 import frc.lib.team6328.util.Alert;
@@ -83,12 +86,21 @@ public class Vision extends SubsystemBase {
           if (tagPoseOptional.isPresent()) {
             Pose3d tagPose = tagPoseOptional.get();
             Pose3d cameraPose = tagPose.transformBy(cameraToTarget.inverse());
-            Pose3d robotPose = cameraPose.transformBy(VisionConstants.ROBOT_TO_CAMERA.inverse());
-            poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());
+            Pose3d robotPose =
+                cameraPose.transformBy(
+                    RobotConfig.getInstance().getRobotToCameraTransform().inverse());
+            if (poseEstimator
+                    .getEstimatedPosition()
+                    .minus(robotPose.toPose2d())
+                    .getTranslation()
+                    .getNorm()
+                < MAX_POSE_DIFFERENCE_METERS) {
+              poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());
 
-            Logger.getInstance().recordOutput("Vision/TagPose", tagPose);
-            Logger.getInstance().recordOutput("Vision/CameraPose", cameraPose);
-            Logger.getInstance().recordOutput("Vision/RobotPose", robotPose.toPose2d());
+              Logger.getInstance().recordOutput("Vision/TagPose", tagPose);
+              Logger.getInstance().recordOutput("Vision/CameraPose", cameraPose);
+              Logger.getInstance().recordOutput("Vision/RobotPose", robotPose.toPose2d());
+            }
           }
         }
       }
@@ -115,7 +127,9 @@ public class Vision extends SubsystemBase {
     PhotonPipelineResult result = getLatestResult();
     for (PhotonTrackedTarget target : result.getTargets()) {
       if (target.getFiducialId() == id && isValidTarget(target)) {
-        return VisionConstants.ROBOT_TO_CAMERA.plus(target.getBestCameraToTarget());
+        return RobotConfig.getInstance()
+            .getRobotToCameraTransform()
+            .plus(target.getBestCameraToTarget());
       }
     }
     return null;
@@ -143,6 +157,8 @@ public class Vision extends SubsystemBase {
     return target.getFiducialId() != -1
         && target.getPoseAmbiguity() != -1
         && target.getPoseAmbiguity() < VisionConstants.MAXIMUM_AMBIGUITY
-        && layout.getTagPose(target.getFiducialId()).isPresent();
+        && layout.getTagPose(target.getFiducialId()).isPresent()
+        && target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm()
+            < VisionConstants.MAX_DISTANCE_TO_TARGET;
   }
 }

@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.drivetrain;
 
-import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
-
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -25,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
@@ -46,17 +45,17 @@ public class Drivetrain extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
   private final TunableNumber autoDriveKp =
-      new TunableNumber("AutoDrive/DriveKp", AUTO_DRIVE_P_CONTROLLER);
+      new TunableNumber("AutoDrive/DriveKp", RobotConfig.getInstance().getAutoDriveKP());
   private final TunableNumber autoDriveKi =
-      new TunableNumber("AutoDrive/DriveKi", AUTO_DRIVE_I_CONTROLLER);
+      new TunableNumber("AutoDrive/DriveKi", RobotConfig.getInstance().getAutoDriveKI());
   private final TunableNumber autoDriveKd =
-      new TunableNumber("AutoDrive/DriveKd", AUTO_DRIVE_D_CONTROLLER);
+      new TunableNumber("AutoDrive/DriveKd", RobotConfig.getInstance().getAutoDriveKD());
   private final TunableNumber autoTurnKp =
-      new TunableNumber("AutoDrive/TurnKp", AUTO_TURN_P_CONTROLLER);
+      new TunableNumber("AutoDrive/TurnKp", RobotConfig.getInstance().getAutoTurnKP());
   private final TunableNumber autoTurnKi =
-      new TunableNumber("AutoDrive/TurnKi", AUTO_TURN_I_CONTROLLER);
+      new TunableNumber("AutoDrive/TurnKi", RobotConfig.getInstance().getAutoTurnKI());
   private final TunableNumber autoTurnKd =
-      new TunableNumber("AutoDrive/TurnKd", AUTO_TURN_D_CONTROLLER);
+      new TunableNumber("AutoDrive/TurnKd", RobotConfig.getInstance().getAutoTurnKD());
 
   private final PIDController autoXController =
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
@@ -64,6 +63,11 @@ public class Drivetrain extends SubsystemBase {
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
   private final PIDController autoThetaController =
       new PIDController(autoTurnKp.get(), autoTurnKi.get(), autoTurnKd.get());
+
+  private final double trackwidthMeters = RobotConfig.getInstance().getTrackwidth();
+  private final double wheelbaseMeters = RobotConfig.getInstance().getWheelbase();
+  private final SwerveDriveKinematics kinematics =
+      RobotConfig.getInstance().getSwerveDriveKinematics();
 
   private final SwerveModule[] swerveModules = new SwerveModule[4]; // FL, FR, BL, BR
 
@@ -98,7 +102,6 @@ public class Drivetrain extends SubsystemBase {
   private static final boolean DEBUGGING = false;
 
   private final SwerveDrivePoseEstimator poseEstimator;
-  private Timer timer;
   private boolean brakeMode;
 
   private DriveMode driveMode = DriveMode.NORMAL;
@@ -128,9 +131,6 @@ public class Drivetrain extends SubsystemBase {
     this.gyroOffset = 0;
 
     this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-    this.timer = new Timer();
-    this.startTimer();
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
 
@@ -286,7 +286,8 @@ public class Drivetrain extends SubsystemBase {
    * @param translationYSupplier the desired velocity in the y direction (m/s)
    * @param rotationSupplier the desired rotational velcoity (rad/s)
    */
-  public void drive(double xVelocity, double yVelocity, double rotationalVelocity) {
+  public void drive(
+      double xVelocity, double yVelocity, double rotationalVelocity, boolean isOpenLoop) {
 
     switch (driveMode) {
       case NORMAL:
@@ -307,13 +308,13 @@ public class Drivetrain extends SubsystemBase {
             .recordOutput("Drivetrain/chassisSpeedVo", chassisSpeeds.omegaRadiansPerSecond);
 
         SwerveModuleState[] swerveModuleStates =
-            KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerGravity);
+            kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
         SwerveDriveKinematics.desaturateWheelSpeeds(
-            swerveModuleStates, MAX_VELOCITY_METERS_PER_SECOND);
+            swerveModuleStates, RobotConfig.getInstance().getRobotMaxVelocity());
 
         for (SwerveModule swerveModule : swerveModules) {
           swerveModule.setDesiredState(
-              swerveModuleStates[swerveModule.getModuleNumber()], true, false);
+              swerveModuleStates[swerveModule.getModuleNumber()], isOpenLoop, false);
         }
         break;
 
@@ -337,7 +338,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void stop() {
     chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerGravity);
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
     setSwerveModuleStates(states);
   }
 
@@ -380,12 +381,13 @@ public class Drivetrain extends SubsystemBase {
         previous.distanceMeters = current.distanceMeters;
       }
 
-      Twist2d twist = KINEMATICS.toTwist2d(moduleDeltas);
+      Twist2d twist = kinematics.toTwist2d(moduleDeltas);
 
       estimatedPoseWithoutGyro = estimatedPoseWithoutGyro.exp(twist);
     }
 
-    poseEstimator.updateWithTime(this.timer.get(), this.getRotation(), swerveModulePositions);
+    poseEstimator.updateWithTime(
+        Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
 
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();
@@ -420,7 +422,8 @@ public class Drivetrain extends SubsystemBase {
     } else {
       boolean stillMoving = false;
       for (SwerveModule mod : swerveModules) {
-        if (Math.abs(mod.getState().speedMetersPerSecond) > MAX_COAST_VELOCITY_METERS_PER_SECOND) {
+        if (Math.abs(mod.getState().speedMetersPerSecond)
+            > RobotConfig.getInstance().getRobotMaxCoastVelocity()) {
           stillMoving = true;
         }
       }
@@ -449,7 +452,8 @@ public class Drivetrain extends SubsystemBase {
    * @param states the specified swerve module state for each swerve module
    */
   public void setSwerveModuleStates(SwerveModuleState[] states) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        states, RobotConfig.getInstance().getRobotMaxVelocity());
 
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setDesiredState(states[swerveModule.getModuleNumber()], false, false);
@@ -488,12 +492,12 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setXStance() {
     chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-    SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerGravity);
-    states[0].angle = new Rotation2d(Math.PI / 2 - Math.atan(TRACKWIDTH_METERS / WHEELBASE_METERS));
-    states[1].angle = new Rotation2d(Math.PI / 2 + Math.atan(TRACKWIDTH_METERS / WHEELBASE_METERS));
-    states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(TRACKWIDTH_METERS / WHEELBASE_METERS));
+    SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds, centerGravity);
+    states[0].angle = new Rotation2d(Math.PI / 2 - Math.atan(trackwidthMeters / wheelbaseMeters));
+    states[1].angle = new Rotation2d(Math.PI / 2 + Math.atan(trackwidthMeters / wheelbaseMeters));
+    states[2].angle = new Rotation2d(Math.PI / 2 + Math.atan(trackwidthMeters / wheelbaseMeters));
     states[3].angle =
-        new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(TRACKWIDTH_METERS / WHEELBASE_METERS));
+        new Rotation2d(3.0 / 2.0 * Math.PI - Math.atan(trackwidthMeters / wheelbaseMeters));
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setDesiredState(states[swerveModule.getModuleNumber()], true, true);
     }
@@ -569,11 +573,6 @@ public class Drivetrain extends SubsystemBase {
     return this.driveMode == DriveMode.X;
   }
 
-  private void startTimer() {
-    this.timer.reset();
-    this.timer.start();
-  }
-
   /**
    * Returns the PID controller used to control the robot's x position during autonomous.
    *
@@ -607,7 +606,7 @@ public class Drivetrain extends SubsystemBase {
     characterizationVoltage = volts;
 
     // invoke drive which will set the characterization voltage to each module
-    drive(0, 0, 0);
+    drive(0, 0, 0, true);
   }
 
   /** Returns the average drive velocity in meters/sec. */

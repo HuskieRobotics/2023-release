@@ -68,4 +68,8 @@ public interface OperatorInterface {
   public default Trigger getHybridMiddleLowLevelButton() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger toggleManipulatorOpenCloseButton() {
+    return new Trigger(() -> false);
+  }
 }

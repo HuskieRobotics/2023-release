@@ -55,4 +55,9 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger getMoveToGridButton() {
     return new Trigger(controller::getAButton);
   }
+
+  @Override
+  public Trigger toggleManipulatorOpenCloseButton() {
+    return new Trigger(controller::getRightStickButton);
+  }
 }

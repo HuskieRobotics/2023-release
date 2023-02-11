@@ -35,7 +35,9 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
+import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.MoveToGrid;
+import frc.robot.commands.ReleaseGamePiece;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
@@ -43,6 +45,9 @@ import frc.robot.configs.TestBoardConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.manipulator.Manipulator;
+import frc.robot.subsystems.manipulator.ManipulatorIOSim;
+import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +65,7 @@ public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
   private RobotConfig config;
   private Drivetrain drivetrain;
+  private Manipulator manipulator;
   private Vision vision;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
@@ -143,6 +149,8 @@ public class RobotContainer {
 
             drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
 
+            manipulator = new Manipulator(new ManipulatorIOTalonFX());
+
             vision = new Vision(new VisionIOPhotonVision(config.getCameraName()));
 
             if (Constants.getRobot() == Constants.RobotType.ROBOT_2022_SIERRA) {
@@ -155,6 +163,19 @@ public class RobotContainer {
           {
             // create the specific RobotConfig subclass instance first
             config = new TestBoardConfig();
+            SwerveModule flModule =
+                new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
+
+            SwerveModule frModule =
+                new SwerveModule(new SwerveModuleIOSim(), 1, config.getRobotMaxVelocity());
+
+            SwerveModule blModule =
+                new SwerveModule(new SwerveModuleIOSim(), 2, config.getRobotMaxVelocity());
+
+            SwerveModule brModule =
+                new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
+            drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
+            manipulator = new Manipulator(new ManipulatorIOTalonFX());
             break;
           }
         case ROBOT_SIMBOT:
@@ -172,6 +193,7 @@ public class RobotContainer {
             SwerveModule brModule =
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
+            manipulator = new Manipulator(new ManipulatorIOSim());
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;
             try {
@@ -268,6 +290,14 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
+
+    //toggle manipulator open/close
+    oi.toggleManipulatorOpenCloseButton()
+        .toggleOnTrue(
+            Commands.either(
+                new GrabGamePiece(manipulator),
+                new ReleaseGamePiece(manipulator),
+                manipulator::isOpened));
 
     // move to grid
     oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));

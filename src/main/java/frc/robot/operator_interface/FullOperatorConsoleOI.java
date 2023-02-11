@@ -113,4 +113,9 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   public Trigger getHybridMiddleLowLevelButton() {
     return operatorPanelButtons[14];
   }
+
+  @Override
+  public Trigger toggleManipulatorOpenCloseButton() {
+    return new Trigger(operatorController::getRightStickButton);
+  }
 }

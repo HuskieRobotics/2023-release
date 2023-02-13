@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.team3061.RobotConfig;
 
 /**
@@ -159,4 +160,14 @@ public final class FieldConstants {
           16.18 - RobotConfig.getInstance().getRobotWidthWithBumpers() / 2 - 0.03,
           6.68,
           Rotation2d.fromDegrees(0));
+
+  public static Pose2d flipPoseForAlliance(Pose2d pose) {
+    if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+      Translation2d transformedTranslation =
+          new Translation2d(pose.getX(), FieldConstants.FIELD_WIDTH_METERS - pose.getY());
+      Rotation2d transformedRotation = pose.getRotation().times(-1);
+      return new Pose2d(transformedTranslation, transformedRotation);
+    }
+    return pose;
+  }
 }

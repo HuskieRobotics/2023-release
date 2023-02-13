@@ -13,10 +13,7 @@ import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.TunableNumber;
@@ -105,14 +102,7 @@ public class DriveToPose extends CommandBase {
     yController.reset(currentPose.getY());
     thetaController.reset(currentPose.getRotation().getRadians());
 
-    this.targetPose = poseSupplier.get();
-    if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
-      Translation2d transformedTranslation =
-          new Translation2d(
-              this.targetPose.getX(), FieldConstants.FIELD_WIDTH_METERS - this.targetPose.getY());
-      Rotation2d transformedRotation = this.targetPose.getRotation().times(-1);
-      this.targetPose = new Pose2d(transformedTranslation, transformedRotation);
-    }
+    this.targetPose = FieldConstants.flipPoseForAlliance(poseSupplier.get());
   }
 
   @Override

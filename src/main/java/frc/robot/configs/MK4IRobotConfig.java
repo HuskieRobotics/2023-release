@@ -86,6 +86,18 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_I_CONTROLLER = 1.6;
   private static final double AUTO_TURN_D_CONTROLLER = 1.0;
 
+  // FIXME: tune all drive to pose constants
+  // Drive to Pose constants
+  private static final double DRIVE_TO_POSE_DRIVE_KP = 2.5;
+  private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
+  private static final double DRIVE_TO_POSE_THETA_KP = 7.0;
+  private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
+  private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.01;
+  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.035;
+
+  private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
+  private static final double SQUARING_DURATION_SECONDS = 0.04;
+
   @Override
   public double getSwerveAngleKP() {
     return ANGLE_KP;
@@ -294,5 +306,67 @@ public class MK4IRobotConfig extends RobotConfig {
   @Override
   public int getRevLowPressureSensorChannel() {
     return REV_LOW_PRESSURE_SENSOR_CHANNEL;
+  }
+
+  @Override
+  public double getDriveToPoseDriveKP() {
+    return DRIVE_TO_POSE_DRIVE_KP;
+  }
+
+  @Override
+  public double getDriveToPoseDriveKD() {
+    return DRIVE_TO_POSE_DRIVE_KD;
+  }
+
+  @Override
+  public double getDriveToPoseThetaKP() {
+    return DRIVE_TO_POSE_THETA_KP;
+  }
+
+  @Override
+  public double getDriveToPoseThetaKD() {
+    return DRIVE_TO_POSE_THETA_KD;
+  }
+
+  @Override
+  public double getDriveToPoseDriveMaxVelocity() {
+    return getAutoMaxSpeed();
+  }
+
+  @Override
+  public double getDriveToPoseDriveMaxAcceleration() {
+    return getAutoMaxAcceleration();
+  }
+
+  @Override
+  public double getDriveToPoseTurnMaxVelocity() {
+    return getDriveToPoseDriveMaxVelocity()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  @Override
+  public double getDriveToPoseTurnMaxAcceleration() {
+    return getDriveToPoseDriveMaxAcceleration()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  @Override
+  public double getDriveToPoseDriveTolerance() {
+    return DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS;
+  }
+
+  @Override
+  public double getDriveToPoseThetaTolerance() {
+    return DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS;
+  }
+
+  @Override
+  public double getSquaringSpeed() {
+    return SQUARING_SPEED_METERS_PER_SECOND;
+  }
+
+  @Override
+  public double getSquaringDuration() {
+    return SQUARING_DURATION_SECONDS;
   }
 }

@@ -48,7 +48,7 @@ public class AutoBalance extends CommandBase {
           new PIDController(1, 0, 0),
           drivetrain::getRoll,
           0,
-          output -> drivetrain.drive(output, 0, 0, true));
+          output -> drivetrain.drive(output, 0, 0, true, false));
       this.drivetrain = drivetrain;
     }
 
@@ -82,7 +82,7 @@ public class AutoBalance extends CommandBase {
           new PIDController(1, 0, 0),
           drivetrain::getRoll,
           0,
-          output -> drivetrain.drive(0, output, 0, true));
+          output -> drivetrain.drive(0, output, 0, true, false));
       this.drivetrain = drivetrain;
     }
 

@@ -32,8 +32,10 @@ import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
+import frc.lib.team6328.util.TunableNumber;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance.AutoBalanceMultiDirectional;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
@@ -62,6 +64,9 @@ public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
   private RobotConfig config;
   private Drivetrain drivetrain;
+
+  private final TunableNumber squaringSpeed;
+  private final TunableNumber squaringDuration;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -208,6 +213,14 @@ public class RobotContainer {
       new Vision(new VisionIO() {});
     }
 
+    // FIXME: delete after testing
+    this.squaringSpeed =
+        new TunableNumber(
+            "RobotContainer/SquaringSpeed", RobotConfig.getInstance().getSquaringSpeed());
+    this.squaringDuration =
+        new TunableNumber(
+            "RobotContainer/SquaringDuration", RobotConfig.getInstance().getSquaringDuration());
+
     // tab for gyro
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -328,7 +341,7 @@ public class RobotContainer {
             Commands.runOnce(drivetrain::disableFieldRelative, drivetrain),
             Commands.deadline(
                 Commands.waitSeconds(5.0),
-                Commands.run(() -> drivetrain.drive(1.5, 0.0, 0.0, false), drivetrain))));
+                Commands.run(() -> drivetrain.drive(1.5, 0.0, 0.0, false, false), drivetrain))));
 
     // "auto" command for characterizing the drivetrain
     autoChooser.addOption(
@@ -411,7 +424,12 @@ public class RobotContainer {
             new FollowPathWithEvents(
                 new FollowPath(blueLoadingSide2ConePath.get(0), drivetrain, true, true),
                 blueLoadingSide2ConePath.get(0).getMarkers(),
-                autoEventMap));
+                autoEventMap),
+            new DriveToPose(drivetrain, FieldConstants.GRID_3_NODE_1),
+            Commands.runOnce(
+                () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
+            Commands.waitSeconds(squaringDuration.get()),
+            Commands.runOnce(drivetrain::enableXstance, drivetrain));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeCommand);
 

@@ -124,7 +124,7 @@ public class Drivetrain extends SubsystemBase {
 
     this.zeroGyroscope();
 
-    this.isFieldRelative = false;
+    this.isFieldRelative = true;
 
     this.gyroOffset = 0;
 
@@ -285,11 +285,15 @@ public class Drivetrain extends SubsystemBase {
    * @param rotationSupplier the desired rotational velocity (rad/s)
    */
   public void drive(
-      double xVelocity, double yVelocity, double rotationalVelocity, boolean isOpenLoop) {
+      double xVelocity,
+      double yVelocity,
+      double rotationalVelocity,
+      boolean isOpenLoop,
+      boolean overrideFieldRelative) {
 
     switch (driveMode) {
       case NORMAL:
-        if (isFieldRelative) {
+        if (isFieldRelative || overrideFieldRelative) {
           chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   xVelocity, yVelocity, rotationalVelocity, getRotation());
@@ -604,7 +608,7 @@ public class Drivetrain extends SubsystemBase {
     characterizationVoltage = volts;
 
     // invoke drive which will set the characterization voltage to each module
-    drive(0, 0, 0, true);
+    drive(0, 0, 0, true, false);
   }
 
   /** Returns the average drive velocity in meters/sec. */

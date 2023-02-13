@@ -416,4 +416,54 @@ public abstract class RobotConfig {
   public int getRevLowPressureSensorChannel() {
     return 1;
   }
+
+  public double getDriveToPoseDriveKP() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseDriveKD() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseThetaKP() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseThetaKD() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseDriveMaxVelocity() {
+    return getAutoMaxSpeed();
+  }
+
+  public double getDriveToPoseDriveMaxAcceleration() {
+    return getAutoMaxAcceleration();
+  }
+
+  public double getDriveToPoseTurnMaxVelocity() {
+    return getDriveToPoseDriveMaxVelocity()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  public double getDriveToPoseTurnMaxAcceleration() {
+    return getDriveToPoseDriveMaxAcceleration()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  public double getDriveToPoseDriveTolerance() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseThetaTolerance() {
+    return 0.0;
+  }
+
+  public double getSquaringSpeed() {
+    return 0.0;
+  }
+
+  public double getSquaringDuration() {
+    return 0.0;
+  }
 }

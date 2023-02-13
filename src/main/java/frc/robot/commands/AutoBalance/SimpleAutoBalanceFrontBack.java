@@ -12,7 +12,7 @@ public class SimpleAutoBalanceFrontBack extends PIDCommand {
         new PIDController(.05, 0, 0),
         drivetrain::getRoll,
         0,
-        output -> drivetrain.drive(output, 0, 0, true));
+        output -> drivetrain.drive(output, 0, 0, true, false));
     addRequirements(drivetrain);
     this.drivetrain = drivetrain;
     // this.drivetrain.disableXstance();

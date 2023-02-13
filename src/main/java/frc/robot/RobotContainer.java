@@ -280,12 +280,12 @@ public class RobotContainer {
     autoEventMap.put("event1", Commands.print("passed marker 1"));
     autoEventMap.put("event2", Commands.print("passed marker 2"));
     autoEventMap.put("Prepare To Intake Cone", Commands.print("preparing to intake cone"));
-    autoEventMap.put("intake cone", Commands.print("cone intaked"));
+    autoEventMap.put("intake cone", Commands.print("cone intake"));
     autoEventMap.put("Raise Elevator", Commands.print("raising elevator"));
     autoEventMap.put("Bring in Elevator", Commands.print("brining in collector"));
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
-    // creates 2 PathConstriats to be used in auto paths
+    // creates 2 Path Constraints to be used in auto paths
     PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
     PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
 
@@ -415,13 +415,13 @@ public class RobotContainer {
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeCommand);
 
-    // auto path for mobility bounus and preparing to engage
+    // auto path for mobility bonus and preparing to engage
     PathPlannerTrajectory blueMobilityPrepareToDockPath =
         PathPlanner.loadPath("Blue-Mobility Prepare To Dock", 2.0, 2.0);
-    Command blueModilityPrepareToDockCommand =
+    Command blueMobilityPrepareToDockCommand =
         new FollowPath(blueMobilityPrepareToDockPath, drivetrain, true, true);
     autoChooser.addOption(
-        "Blue Mobility Bounus and Prepare to Engage", blueModilityPrepareToDockCommand);
+        "Blue Mobility Bonus and Prepare to Engage", blueMobilityPrepareToDockCommand);
 
     // "auto" for Blue-LoadingSide 3 Cone
     List<PathPlannerTrajectory> blueLoadingSide3ConePath =
@@ -455,9 +455,9 @@ public class RobotContainer {
             new AutoBalanceMultiDirectional(drivetrain));
     autoChooser.addOption("Blue CenterLoad 1 Cone and Engage", blueCenterLoad1ConeEngageCommand);
 
-    // "auto" path with no holnomic rotation
+    // "auto" path with no holonomic rotation
     PathPlannerTrajectory noHolonomicRotationPath =
-        PathPlanner.loadPath("constantRolonomicRotationPath", 1.0, 1.0);
+        PathPlanner.loadPath("constantHolonomicRotationPath", 1.0, 1.0);
     Command noHolonomicRotationCommand =
         new FollowPath(noHolonomicRotationPath, drivetrain, true, true);
     autoChooser.addOption("No Holonomic Rotation", noHolonomicRotationCommand);

@@ -291,7 +291,7 @@ public class RobotContainer {
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
 
-    //toggle manipulator open/close
+    // toggle manipulator open/close
     oi.toggleManipulatorOpenCloseButton()
         .toggleOnTrue(
             Commands.either(

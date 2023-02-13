@@ -25,7 +25,6 @@ public class ManipulatorIOSim implements ManipulatorIO {
             0.25,
             0.0,
             0.52,
-            1.0,
             false);
   }
 

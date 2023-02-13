@@ -13,6 +13,8 @@ public final class FieldConstants {
   // Current FieldConstants are for the FRC 2023 Game "Charged Up"
   // NOTE TO SELF: All constants to be accessed globally should be initialized using (public static)
 
+  public static final double FIELD_WIDTH_METERS = 8.0137;
+
   // Points making up the Community Zone (not including Charging Station)
   public static final Translation2d COMMUNITY_POINT_1 = new Translation2d(0, 0);
   public static final Translation2d COMMUNITY_POINT_2 = new Translation2d(0, 5.49);

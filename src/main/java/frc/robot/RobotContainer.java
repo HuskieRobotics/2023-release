@@ -429,7 +429,9 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
             Commands.waitSeconds(squaringDuration.get()),
-            Commands.runOnce(drivetrain::enableXstance, drivetrain));
+            Commands.runOnce(drivetrain::enableXstance, drivetrain),
+            Commands.waitSeconds(2.0),
+            Commands.runOnce(drivetrain::disableXstance, drivetrain));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeCommand);
 

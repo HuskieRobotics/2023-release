@@ -13,16 +13,21 @@ import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.TunableNumber;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.Supplier;
 
 public class DriveToPose extends CommandBase {
   private final Drivetrain drivetrain;
   private final Supplier<Pose2d> poseSupplier;
+  private Pose2d targetPose;
 
   private boolean running = false;
 
@@ -99,6 +104,15 @@ public class DriveToPose extends CommandBase {
     xController.reset(currentPose.getX());
     yController.reset(currentPose.getY());
     thetaController.reset(currentPose.getRotation().getRadians());
+
+    this.targetPose = poseSupplier.get();
+    if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+      Translation2d transformedTranslation =
+          new Translation2d(
+              this.targetPose.getX(), FieldConstants.FIELD_WIDTH_METERS - this.targetPose.getY());
+      Rotation2d transformedRotation = this.targetPose.getRotation().times(-1);
+      this.targetPose = new Pose2d(transformedTranslation, transformedRotation);
+    }
   }
 
   @Override
@@ -133,19 +147,17 @@ public class DriveToPose extends CommandBase {
 
     // Get current and target pose
     Pose2d currentPose = drivetrain.getPose();
-    Pose2d targetPose = poseSupplier.get();
 
     // Command speeds
-    double xVelocity = xController.calculate(currentPose.getX(), targetPose.getX());
-    double yVelocity = yController.calculate(currentPose.getY(), targetPose.getY());
+    double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
+    double yVelocity = yController.calculate(currentPose.getY(), this.targetPose.getY());
     double thetaVelocity =
         thetaController.calculate(
-            currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+            currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
     if (xController.atGoal()) xVelocity = 0.0;
     if (yController.atGoal()) yVelocity = 0.0;
     if (thetaController.atGoal()) thetaVelocity = 0.0;
 
-    // FIXME: need to force field relative
     drivetrain.drive(xVelocity, yVelocity, thetaVelocity, true, true);
   }
 

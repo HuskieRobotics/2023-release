@@ -53,8 +53,8 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double DRIVE_KD = 5.5;
   private static final double DRIVE_KF = 0.0;
 
-  private static final double DRIVE_KS = 0.66883;
-  private static final double DRIVE_KV = 2.01970;
+  private static final double DRIVE_KS = 0.99096;
+  private static final double DRIVE_KV = 2.46330;  
   private static final double DRIVE_KA = 0.12872;
 
   private static final SwerveType SWERVE_TYPE = SwerveType.MK4I;

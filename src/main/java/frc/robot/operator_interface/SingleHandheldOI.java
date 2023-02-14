@@ -46,7 +46,18 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    // vision is always enabled with Xbox as there is no switch to disable
+    return new Trigger(() -> true);
+  }
+
+  @Override
   public Trigger getMoveToGridButton() {
     return new Trigger(controller::getAButton);
+  }
+
+  @Override
+  public Trigger toggleManipulatorOpenCloseButton() {
+    return new Trigger(controller::getRightStickButton);
   }
 }

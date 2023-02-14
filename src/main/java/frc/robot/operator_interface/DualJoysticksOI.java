@@ -59,6 +59,12 @@ public class DualJoysticksOI implements OperatorInterface {
     return translateJoystickButtons[1];
   }
 
+  @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    // vision is always enabled with dual joysticks as there is no switch to disable
+    return new Trigger(() -> true);
+  }
+
   // TODO: Remove when simulated testing is done!
   @Override
   public Trigger getMoveToGridButton() {

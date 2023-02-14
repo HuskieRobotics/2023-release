@@ -326,13 +326,18 @@ public class RobotContainer {
                 new FollowPath(auto1Paths.get(1), drivetrain, false),
                 auto1Paths.get(1).getMarkers(),
                 autoEventMap));
-
+    // 1.8465179792483901,1.0401321541158826,-9.588751578589954e-17
     PathPlannerTrajectory startPointPath =
         PathPlanner.loadPath(
             "StartPoint", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
+    PathPlannerTrajectory blueTestPath =
+        PathPlanner.loadPath("BlueTest", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
     Command startPoint =
         Commands.runOnce(
             () -> drivetrain.resetOdometry(startPointPath.getInitialState()), drivetrain);
+    Command blueTest =
+        Commands.runOnce(
+            () -> drivetrain.resetOdometry(blueTestPath.getInitialState()), drivetrain);
 
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
@@ -341,6 +346,9 @@ public class RobotContainer {
     autoChooser.addOption("Test Path", autoTest);
 
     autoChooser.addOption("Start Point", startPoint);
+
+    autoChooser.addOption("Blue Test", blueTest);
+
     // "auto" command for tuning the drive velocity PID
     autoChooser.addOption(
         "Drive Velocity Tuning",
@@ -376,7 +384,8 @@ public class RobotContainer {
         Commands.sequence(
             Commands.runOnce(
                 () -> elevator.setElevatorExtensionMotorPower(oi.getTranslateY()), elevator),
-            Commands.runOnce(() -> elevator.setElevatorRotationMotorPower(oi.getRotate()), elevator)));
+            Commands.runOnce(
+                () -> elevator.setElevatorRotationMotorPower(oi.getRotate()), elevator)));
   }
 
   /**

@@ -10,7 +10,7 @@ public interface ElevatorIO {
     boolean isControlEnabled = false;
 
     double extensionSetpointMeters = 0.0;
-    double extensionPositionMeters = 0.0;
+    double extensionPositionMeters = 0; // FIXME
     double extensionVelocityMetersPerSec = 0.0;
     double extensionClosedLoopError = 0.0;
     double extensionAppliedVolts = 0.0;

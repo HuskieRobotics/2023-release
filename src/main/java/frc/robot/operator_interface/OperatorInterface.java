@@ -25,11 +25,95 @@ public interface OperatorInterface {
     return 0.0;
   }
 
+  public default double getRotateArm() {
+    return 0.0;
+  }
+
+  public default double getMoveElevator() {
+    return 0.0;
+  }
+
+  public default Trigger getResetGyroButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getTranslateSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getInterruptButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getFieldRelativeButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getResetGyroButton() {
+  public default Trigger getGroundCubeIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRotateSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlignIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDeployIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRetractIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmChuteButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmShelfButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmSecureGamePieceButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmLowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmHighButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getArmMiddleButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getToggleRollerButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getToggleManipulatorButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getEnableManualArmButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDisableManualArmButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDisableArmPresetsButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getEnableArmPresetsButton() {
     return new Trigger(() -> false);
   }
 
@@ -37,7 +121,55 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getYPLEDToggleButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeShelfRightButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeShelfLEftButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeChuteButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeGroundConeButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getMoveToGridButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getToggleVisionButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getToggleAutoDriveButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAutoBalanceButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getToggleManipulatorSensorButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getScoringLevelSwitch() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getScoringColumnSwitch() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getScoringGridSwitch() {
     return new Trigger(() -> false);
   }
 

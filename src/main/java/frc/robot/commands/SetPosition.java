@@ -35,23 +35,23 @@ public class SetPosition extends CommandBase {
 
     Position position = armChooser.get();
 
-    switch (position) {
+    switch (position) {     // extension is in meters, rotation is in radians
       case CONE_STORAGE:
       case CUBE_STORAGE:
         this.extension = 0;
         this.rotation = 0;
         break;
       case CONE_INTAKE_FLOOR:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = 0.8636;
+        this.rotation = 1.43117;
         break;
       case CONE_INTAKE_SHELF:
         this.extension = 0;
         this.rotation = 0;
         break;
       case CONE_INTAKE_CHUTE:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = 0.7112;
+        this.rotation = 0.523599;
         break;
       case CONE_HYBRID_LEVEL:
         this.extension = 0;
@@ -67,16 +67,16 @@ public class SetPosition extends CommandBase {
         break;
 
       case CUBE_INTAKE_BUMPER:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = 0.2032;
+        this.rotation = 0.785398;
         break;
       case CUBE_INTAKE_SHELF:
         this.extension = 0;
         this.rotation = 0;
         break;
       case CUBE_INTAKE_CHUTE:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = 0.7112;
+        this.rotation = 0.523599;
         break;
       case CUBE_HYBRID_LEVEL:
         this.extension = 0;

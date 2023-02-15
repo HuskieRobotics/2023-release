@@ -191,41 +191,35 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setPosition(Double rotation, Double extension) {
-    // if((INTAKE_STORED) && (getRotationElevatorEncoderAngle() < .48)){ // radians
+    // if((INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098)){ // radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .381)){// meters
+    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .381) && (getRotationElevatorEncoderAngle() > 1.50098)){// meters, radians
+    //   this.setElevatorExtension(extension);
+    //   this.setElevatorRotation(rotation);
+    // } 
+    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) && (getRotationElevatorEncoderAngle() < 1.0821)){ // 0 is in meters, radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
-    // (getRotationElevatorEncoderAngle() < .345)){ // 0 is in meters, .345 is radians
+    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) && (getRotationElevatorEncoderAngle() < 1.25664)){  // radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
-    // (getRotationElevatorEncoderAngle() < .4)){  // radians
+    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) && (getRotationElevatorEncoderAngle() < 1.50098)){ // .686meters, .478 radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) &&
-    // (getRotationElevatorEncoderAngle() < .478)){ // .686meters, .478 radians
+    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098) && (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < .478) &&
-    // (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
+    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > 1.50098)){ // FIXME if we are careful to position the intake such that its hood is collapsed by the elevator
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > .478)){ // FIXME if we are
-    // careful to position the intake such that its hood is collapsed by the elevator
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < .44) &&
-    // (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
+    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.37881) && (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }

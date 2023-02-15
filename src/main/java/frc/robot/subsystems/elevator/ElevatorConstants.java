@@ -84,11 +84,9 @@ public class ElevatorConstants {
   public static final int ROTATION_SCURVE_STRENGTH = 0;
 
   public static final double ELEVATOR_EXTENSION_POSITION_TOLERANCE = .01;
-  public static final double ARBITRARY_FEED_FORWARD_EXTENSION = .02;
   public static final double DEFAULT_EXTENSION_MOTOR_POWER = 0.5;
 
   public static final double ELEVATOR_ROTATION_POSITION_TOLERANCE = .01;
-  public static final double ARBITRARY_FEED_FORWARD_ROTATION = .02;
   public static final double DEFAULT_ROTATION_MOTOR_POWER = 0.5;
 
   public static final int TIMEOUT_MS = 30;

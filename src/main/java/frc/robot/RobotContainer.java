@@ -376,7 +376,8 @@ public class RobotContainer {
         Commands.sequence(
             Commands.runOnce(
                 () -> elevator.setElevatorExtensionMotorPower(oi.getTranslateY()), elevator),
-            Commands.runOnce(() -> elevator.setElevatorRotationMotorPower(oi.getRotate()), elevator)));
+            Commands.runOnce(
+                () -> elevator.setElevatorRotationMotorPower(oi.getRotate()), elevator)));
   }
 
   /**

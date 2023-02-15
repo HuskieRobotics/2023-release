@@ -50,7 +50,7 @@ public class ElevatorIOSim implements ElevatorIO {
   private SingleJointedArmSim armSim =
       new SingleJointedArmSim(
           DCMotor.getFalcon500(1),
-          12.0,
+          20.0,
           SingleJointedArmSim.estimateMOI(.9, 1.0),
           0.9,
           0.0,

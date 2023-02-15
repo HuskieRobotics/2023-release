@@ -475,7 +475,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path ( with event markers)", blueLoadingSide2ConeCommand);
 
-
     List<PathPlannerTrajectory> driveToTag6Path =
         PathPlanner.loadPathGroup("Drive to Tag 6", 2.0, 2.0);
     Command driveToTag6Command =
@@ -488,9 +487,8 @@ public class RobotContainer {
             Commands.runOnce(drivetrain::enableXstance, drivetrain),
             Commands.waitSeconds(2.0),
             Commands.runOnce(drivetrain::disableXstance, drivetrain));
-    autoChooser.addOption(
-        "Drive to Pose Test Path(Tag 6)", driveToTag6Command);
-    
+    autoChooser.addOption("Drive to Pose Test Path(Tag 6)", driveToTag6Command);
+
     // auto path for mobility bonus and preparing to engage
     PathPlannerTrajectory blueMobilityPrepareToDockPath =
         PathPlanner.loadPath("Blue-Mobility Prepare To Dock", 2.0, 2.0);

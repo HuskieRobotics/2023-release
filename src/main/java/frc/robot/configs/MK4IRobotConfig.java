@@ -92,11 +92,11 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
   private static final double DRIVE_TO_POSE_THETA_KP = 7.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
-  private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.01;
+  private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.08;
   private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.035;
 
   private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
-  private static final double SQUARING_DURATION_SECONDS = 0.04;
+  private static final double SQUARING_DURATION_SECONDS = 1;
 
   @Override
   public double getSwerveAngleKP() {

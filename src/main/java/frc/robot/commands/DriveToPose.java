@@ -35,7 +35,7 @@ public class DriveToPose extends CommandBase {
   private static final TunableNumber thetaKp =
       new TunableNumber("DriveToPose/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
   private static final TunableNumber thetaKd =
-      new TunableNumber("DriveToPose/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKP());
+      new TunableNumber("DriveToPose/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKD());
   private static final TunableNumber driveMaxVelocity =
       new TunableNumber(
           "DriveToPose/DriveMaxVelocity",
@@ -80,7 +80,8 @@ public class DriveToPose extends CommandBase {
           thetaKd.get(),
           new TrapezoidProfile.Constraints(thetaMaxVelocity.get(), thetaMaxAcceleration.get()),
           LOOP_PERIOD_SECS);
-
+  // ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain").addDouble("X Error",
+  // xController::getPositionError);
   /** Drives to the specified pose under full software control. */
   public DriveToPose(Drivetrain drivetrain, Pose2d pose) {
     this(drivetrain, () -> pose);
@@ -101,6 +102,9 @@ public class DriveToPose extends CommandBase {
     xController.reset(currentPose.getX());
     yController.reset(currentPose.getY());
     thetaController.reset(currentPose.getRotation().getRadians());
+    xController.setTolerance(driveTolerance.get());
+    yController.setTolerance(driveTolerance.get());
+    thetaController.setTolerance(thetaTolerance.get());
 
     this.targetPose = FieldConstants.flipPoseForAlliance(poseSupplier.get());
   }

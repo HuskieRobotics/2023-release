@@ -31,7 +31,7 @@ public class Vision extends SubsystemBase {
 
   private double lastTimestamp;
   private SwerveDrivePoseEstimator poseEstimator;
-  private boolean isEnabled = true;
+  private boolean isEnabled = false;
 
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -73,8 +73,17 @@ public class Vision extends SubsystemBase {
       lastAlliance = DriverStation.getAlliance();
       if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
         layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kRedAllianceWallRightSide);
       } else {
         layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kBlueAllianceWallRightSide);
+      }
+
+      for (AprilTag tag : layout.getTags()) {
+        if (layout.getTagPose(tag.ID).isPresent()) {
+          Logger.getInstance()
+              .recordOutput("Vision/AprilTags/" + tag.ID, layout.getTagPose(tag.ID).get());
+        }
       }
     }
 
@@ -171,8 +180,8 @@ public class Vision extends SubsystemBase {
     return target.getFiducialId() != -1
         && target.getPoseAmbiguity() != -1
         && target.getPoseAmbiguity() < VisionConstants.MAXIMUM_AMBIGUITY
-        && layout.getTagPose(target.getFiducialId()).isPresent()
-        && target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm()
-            < VisionConstants.MAX_DISTANCE_TO_TARGET;
+        && layout.getTagPose(target.getFiducialId()).isPresent();
+    // && target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm()
+    //    < VisionConstants.MAX_DISTANCE_TO_TARGET;
   }
 }

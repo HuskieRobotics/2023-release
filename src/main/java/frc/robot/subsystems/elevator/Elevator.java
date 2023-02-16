@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.gyro.GyroIO;
+import frc.lib.team3061.gyro.GyroIO.GyroIOInputs;
+import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team6328.util.TunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -16,7 +18,8 @@ public class Elevator extends SubsystemBase {
   public double rotationSetpoint = 0.0;
   public double extensionSetpoint = 0.0;
   public double power = 0.0;
-  public GyroIOPigeon2 gyroIO;
+  public GyroIO gyroIO;
+  private final GyroIOInputs gyroInputs = new GyroIOInputsAutoLogged();
   public boolean isControlEnabled = false;
 
   public ElevatorIO io;
@@ -24,7 +27,7 @@ public class Elevator extends SubsystemBase {
 
   // private double extension = 0.0;
   // private double rotation = 0.0;
-  public Elevator(ElevatorIO io, GyroIOPigeon2 gyroIO) {
+  public Elevator(ElevatorIO io, GyroIO gyroIO) {
     this.io = io;
     this.gyroIO = gyroIO;
     ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
@@ -74,6 +77,7 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    gyroIO.updateInputs(gyroInputs);
     Logger.getInstance().processInputs("Elevator", inputs);
 
     /*
@@ -195,31 +199,38 @@ public class Elevator extends SubsystemBase {
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .381) && (getRotationElevatorEncoderAngle() > 1.50098)){// meters, radians
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // } 
-    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) && (getRotationElevatorEncoderAngle() < 1.0821)){ // 0 is in meters, radians
+    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .381) &&
+    // (getRotationElevatorEncoderAngle() > 1.50098)){// meters, radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) && (getRotationElevatorEncoderAngle() < 1.25664)){  // radians
+    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
+    // (getRotationElevatorEncoderAngle() < 1.0821)){ // 0 is in meters, radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) && (getRotationElevatorEncoderAngle() < 1.50098)){ // .686meters, .478 radians
+    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
+    // (getRotationElevatorEncoderAngle() < 1.25664)){  // radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098) && (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
+    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) &&
+    // (getRotationElevatorEncoderAngle() < 1.50098)){ // .686meters, .478 radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > 1.50098)){ // FIXME if we are careful to position the intake such that its hood is collapsed by the elevator
+    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098) &&
+    // (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.37881) && (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
+    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > 1.50098)){ // FIXME if we
+    // are careful to position the intake such that its hood is collapsed by the elevator
+    //   this.setElevatorExtension(extension);
+    //   this.setElevatorRotation(rotation);
+    // }
+    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.37881) &&
+    // (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
     // }
@@ -303,7 +314,7 @@ public class Elevator extends SubsystemBase {
     return meters * 39.3701;
   }
 
-  public double getElevatorGyro(){
-    return 
+  public double getElevatorGyro() {
+    return gyroInputs.positionDeg;
   }
 }

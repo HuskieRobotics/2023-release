@@ -15,22 +15,22 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 13;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 12;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 36.65;
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 37.35;
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 16;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 15;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 83.58;
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 83.49;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 260.68;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 259.62;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 10;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 9;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 7.91;
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 9.14;
 
   private static final int GYRO_ID = 18;
 
@@ -54,7 +54,7 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double DRIVE_KF = 0.0;
 
   private static final double DRIVE_KS = 0.99096;
-  private static final double DRIVE_KV = 2.46330;  
+  private static final double DRIVE_KV = 2.46330;
   private static final double DRIVE_KA = 0.12872;
 
   private static final SwerveType SWERVE_TYPE = SwerveType.MK4I;

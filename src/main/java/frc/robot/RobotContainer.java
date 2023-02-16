@@ -481,6 +481,7 @@ public class RobotContainer {
         Commands.sequence(
             new FollowPath(driveToTag6Path.get(0), drivetrain, true, true),
             new DriveToPose(drivetrain, FieldConstants.GRID_3_NODE_1),
+            Commands.print("DRIVE TO POSE FINISHED"),
             Commands.runOnce(
                 () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
             Commands.waitSeconds(squaringDuration.get()),

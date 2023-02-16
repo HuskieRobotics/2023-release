@@ -8,6 +8,8 @@ import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+
 public interface VisionIO {
   public static class VisionIOInputs implements LoggableInputs {
     PhotonPipelineResult lastResult = new PhotonPipelineResult(0, new ArrayList<>());
@@ -44,4 +46,6 @@ public interface VisionIO {
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(VisionIOInputs inputs) {}
+
+  public default void setLayoutOrigin(OriginPosition origin) {}
 }

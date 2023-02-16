@@ -73,8 +73,17 @@ public class Vision extends SubsystemBase {
       lastAlliance = DriverStation.getAlliance();
       if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
         layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kRedAllianceWallRightSide);
       } else {
         layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kBlueAllianceWallRightSide);
+      }
+
+      for (AprilTag tag : layout.getTags()) {
+        if (layout.getTagPose(tag.ID).isPresent()) {
+          Logger.getInstance()
+              .recordOutput("Vision/AprilTags/" + tag.ID, layout.getTagPose(tag.ID).get());
+        }
       }
     }
 

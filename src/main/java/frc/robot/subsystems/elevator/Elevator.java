@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
+import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team6328.util.TunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -15,7 +16,7 @@ public class Elevator extends SubsystemBase {
   public double rotationSetpoint = 0.0;
   public double extensionSetpoint = 0.0;
   public double power = 0.0;
-
+  public GyroIOPigeon2 gyroIO;
   public boolean isControlEnabled = false;
 
   public ElevatorIO io;
@@ -23,10 +24,9 @@ public class Elevator extends SubsystemBase {
 
   // private double extension = 0.0;
   // private double rotation = 0.0;
-
-  public Elevator(ElevatorIO io) {
+  public Elevator(ElevatorIO io, GyroIOPigeon2 gyroIO) {
     this.io = io;
-
+    this.gyroIO = gyroIO;
     ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
     // get the default instance of NetworkTables
 
@@ -301,5 +301,9 @@ public class Elevator extends SubsystemBase {
 
   private static double convertMetersToInches(double meters) {
     return meters * 39.3701;
+  }
+
+  public double getElevatorGyro(){
+    return 
   }
 }

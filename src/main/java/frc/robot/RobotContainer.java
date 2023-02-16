@@ -503,7 +503,19 @@ public class RobotContainer {
     Command blueLoadingSide3ConeCommand =
         Commands.sequence(
             new FollowPath(blueLoadingSide3ConePath.get(0), drivetrain, true, true),
-            new FollowPath(blueLoadingSide3ConePath.get(1), drivetrain, false, true));
+            Commands.runOnce(
+                () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
+            Commands.waitSeconds(squaringDuration.get()),
+            Commands.runOnce(drivetrain::enableXstance, drivetrain),
+            Commands.waitSeconds(1),
+            Commands.runOnce(drivetrain::disableXstance, drivetrain),
+            new FollowPath(blueLoadingSide3ConePath.get(1), drivetrain, false, true),
+            Commands.runOnce(
+                () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
+            Commands.waitSeconds(squaringDuration.get()),
+            Commands.runOnce(drivetrain::enableXstance, drivetrain),
+            Commands.waitSeconds(1),
+            Commands.runOnce(drivetrain::disableXstance, drivetrain));
     autoChooser.addOption("Blue Loading Side 3 Cone Path", blueLoadingSide3ConeCommand);
 
     // "auto" path for Blue-LoadingSide 4 Cone

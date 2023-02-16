@@ -31,7 +31,7 @@ public class Vision extends SubsystemBase {
 
   private double lastTimestamp;
   private SwerveDrivePoseEstimator poseEstimator;
-  private boolean isEnabled = false;
+  private boolean isEnabled = true;
 
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -180,8 +180,8 @@ public class Vision extends SubsystemBase {
     return target.getFiducialId() != -1
         && target.getPoseAmbiguity() != -1
         && target.getPoseAmbiguity() < VisionConstants.MAXIMUM_AMBIGUITY
-        && layout.getTagPose(target.getFiducialId()).isPresent();
-    // && target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm()
-    //    < VisionConstants.MAX_DISTANCE_TO_TARGET;
+        && layout.getTagPose(target.getFiducialId()).isPresent()
+        && target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm()
+            < VisionConstants.MAX_DISTANCE_TO_TARGET;
   }
 }

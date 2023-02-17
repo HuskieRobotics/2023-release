@@ -26,6 +26,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
 
+  
   private final TunableNumber rkP =
       new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
   private final TunableNumber rkI =
@@ -73,18 +74,27 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
     rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;
 
-    // FIXME: make these six tunable
     extensionConfig.MOTION_ACCELERATION =
         Conversions.mpsToFalcon(
             EXTENSION_ELEVATOR_ACCELERATION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+    final TunableNumber extensionConMotorAcceleration = new TunableNumber("extensionConMotorAcceleration", extensionConfig.MOTION_ACCELERATION);
+
     extensionConfig.MOTION_CRUISE_VELOCITY =
         Conversions.mpsToFalcon(
             EXTENSION_MAX_ELEVATOR_VELOCITY, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+    final TunableNumber extensionConMotorVelocity = new TunableNumber("extensionConMotorVelocity", extensionConfig.MOTION_CRUISE_VELOCITY);
+
     extensionConfig.MOTION_CURVE_STRENGTH = EXTENSION_SCURVE_STRENGTH;
+    final TunableNumber extensionMotionCurveStrength = new TunableNumber("extensionMotionCurveStrength", extensionConfig.MOTION_CURVE_STRENGTH);
 
     rotationConfig.MOTION_ACCELERATION = radiansToPigeon(ROTATION_ELEVATOR_ACCELERATION);
+    final TunableNumber rotationMotionAcceleration = new TunableNumber("rotationMotionAcceleration", rotationConfig.MOTION_ACCELERATION);
+
     rotationConfig.MOTION_CRUISE_VELOCITY = radiansToPigeon(ROTATION_MAX_ELEVATOR_VELOCITY);
+    final TunableNumber rotationMotionVelocity = new TunableNumber("rotationMotionVelocity", rotationConfig.MOTION_CRUISE_VELOCITY);
+
     rotationConfig.MOTION_CURVE_STRENGTH = ROTATION_SCURVE_STRENGTH;
+    final TunableNumber rotationMotionCurveStrength = new TunableNumber("rotationMotionCurveStrength", rotationConfig.MOTION_CURVE_STRENGTH);
 
     extensionMotor = TalonFXFactory.createTalon(ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
     rotationMotor =

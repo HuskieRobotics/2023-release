@@ -431,10 +431,22 @@ public class RobotContainer {
             new FollowPath(blueCableSide3ConePath.get(1), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(2), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(3), drivetrain, false, true),
+            Commands.runOnce(
+                () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
+            Commands.waitSeconds(squaringDuration.get()),
+            Commands.runOnce(drivetrain::enableXstance, drivetrain),
+            Commands.waitSeconds(2.0),
+            Commands.runOnce(drivetrain::disableXstance, drivetrain),
             new FollowPath(blueCableSide3ConePath.get(4), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(5), drivetrain, false, true),
             new FollowPath(blueCableSide3ConePath.get(6), drivetrain, false, true),
-            new FollowPath(blueCableSide3ConePath.get(7), drivetrain, false, true));
+            new FollowPath(blueCableSide3ConePath.get(7), drivetrain, false, true),
+            Commands.runOnce(
+                () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
+            Commands.waitSeconds(squaringDuration.get()),
+            Commands.runOnce(drivetrain::enableXstance, drivetrain),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(drivetrain::disableXstance, drivetrain));
     autoChooser.addOption(
         "Blue-CableSide 3 Cone (over cable connector)", blueCableSide3ConeCommand);
 

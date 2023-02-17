@@ -328,14 +328,19 @@ public class RobotContainer {
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
   }
 
+  // this will probably smash the game piece into a field element; we need to move the elevator
+  // sooner
   private Command scoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
     return Commands.sequence(
         Commands.parallel(
-            Commands.print("replace with elevator SetPosition command"),
+            Commands.sequence(
+                Commands.print("replace with elevator SetPosition command"),
+                Commands.waitSeconds(2.0)), // simulate delay of SetPosition
             Commands.sequence(
                 Commands.runOnce(
                     () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
-                Commands.waitSeconds(squaringDuration.get()))),
+                Commands.waitSeconds(squaringDuration.get()),
+                Commands.runOnce(drivetrain::stop))),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -348,18 +353,36 @@ public class RobotContainer {
         Commands.print("replace with command to set LED color for driver control"));
   }
 
-  // back away to clear arm from field elements? have to
-  // adjust direction based on substation; move the squaring step into the move to grid command (it
-  // knows which way to move)?
+  /*
+   * This is a conservative command builder that completely moves the arm before the move to grid command is executed.
+   *
+   * Other stuff to consider:
+   *
+   * Should we back away after grabbing the game piece to reduce the chance the driver smashes the elevator into a field element?
+   *
+   * Should we move the squaring step into the move to grid command (since it knows which way to move)?
+   */
   private Command moveAndGrabGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
+    // Other commands will need to query how long the move to grid command will take (e.g., we want
+    // to signal the human player x seconds before the robot reaching the game piece); so, we need
+    // to store a reference to the command in a variable that can be passed along to other commands.
     MoveToGrid moveToGridCommand = new MoveToGrid(drivetrain);
 
     return Commands.sequence(
+        // First step in the sequence is to move the elevator into position, while that is
+        // occurring, allow the robot to continue to be driven. Once the elevator is in position,
+        // this command group will finish.
         Commands.deadline(
             Commands.sequence(
                 Commands.print("replace with elevator SetPosition command"),
                 Commands.waitSeconds(2.0)), // simulate delay of SetPosition
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+
+        // Second step in the sequence is to automatically move the robot to the specified
+        // substation location. This command group will complete as soon as the manipulator grabs a
+        // game piece, which should occur while the move to grid (or the squaring command) is still
+        // executing. If a game piece is never required, the driver has to reset and interrupt this
+        // entire command group.
         Commands.deadline(
             new GrabGamePiece(manipulator),
             Commands.print("replace with command to set LED color for auto control"),
@@ -370,10 +393,14 @@ public class RobotContainer {
                     moveToGridCommand),
                 Commands.sequence(
                     Commands.runOnce(
+                        // this won't be the right direction....
                         () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true),
                         drivetrain),
                     Commands.waitSeconds(squaringDuration.get()),
                     Commands.runOnce(drivetrain::stop)))),
+
+        // Third step in the sequence is to move the elevator into the transit position. While the
+        // elevator is moving, allow the driver to start to drive the robot.
         Commands.deadline(
             Commands.sequence(
                 Commands.print("replace with elevator SetPosition command for transit position"),

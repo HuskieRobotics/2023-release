@@ -328,6 +328,60 @@ public class RobotContainer {
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
   }
 
+  private Command scoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
+    return Commands.sequence(
+        Commands.parallel(
+            Commands.print("replace with elevator SetPosition command"),
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
+                Commands.waitSeconds(squaringDuration.get()))),
+        new ReleaseGamePiece(manipulator));
+  }
+
+  private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
+    return Commands.sequence(
+        Commands.parallel(
+            Commands.print("replace with command to set LED color for auto control"),
+            new MoveToGrid(drivetrain)),
+        scoreGamePiece(replaceWithEnumeratedValueForElevatorPosition),
+        Commands.print("replace with command to set LED color for driver control"));
+  }
+
+  // back away to clear arm from field elements? have to
+  // adjust direction based on substation; move the squaring step into the move to grid command (it
+  // knows which way to move)?
+  private Command moveAndGrabGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
+    MoveToGrid moveToGridCommand = new MoveToGrid(drivetrain);
+
+    return Commands.sequence(
+        Commands.deadline(
+            Commands.sequence(
+                Commands.print("replace with elevator SetPosition command"),
+                Commands.waitSeconds(2.0)), // simulate delay of SetPosition
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+        Commands.deadline(
+            new GrabGamePiece(manipulator),
+            Commands.print("replace with command to set LED color for auto control"),
+            Commands.sequence(
+                Commands.parallel(
+                    Commands.print(
+                        "replace with command to set LED color after delay and pass reference to move to grid command from which the time can be queried"),
+                    moveToGridCommand),
+                Commands.sequence(
+                    Commands.runOnce(
+                        () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true),
+                        drivetrain),
+                    Commands.waitSeconds(squaringDuration.get()),
+                    Commands.runOnce(drivetrain::stop)))),
+        Commands.deadline(
+            Commands.sequence(
+                Commands.print("replace with elevator SetPosition command for transit position"),
+                Commands.waitSeconds(2.0)), // simulate delay of SetPosition
+            Commands.print("replace with command to set LED color for driver control"),
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
+  }
+
   /** Use this method to define your commands for autonomous mode. */
   private void configureAutoCommands() {
     autoEventMap.put("event1", Commands.print("passed marker 1"));

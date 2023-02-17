@@ -5,11 +5,6 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team3061.RobotConfig;
-import frc.lib.team3061.gyro.GyroIO;
-import frc.lib.team3061.gyro.GyroIO.GyroIOInputs;
-import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
-import frc.lib.team6328.util.TunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
@@ -18,18 +13,13 @@ public class Elevator extends SubsystemBase {
   public double rotationSetpoint = 0.0;
   public double extensionSetpoint = 0.0;
   public double power = 0.0;
-  public GyroIO gyroIO;
-  private final GyroIOInputs gyroInputs = new GyroIOInputsAutoLogged();
-  public boolean isControlEnabled = false;
 
   public ElevatorIO io;
-  public int valueListenerHandle;
 
   // private double extension = 0.0;
   // private double rotation = 0.0;
-  public Elevator(ElevatorIO io, GyroIO gyroIO) {
+  public Elevator(ElevatorIO io) {
     this.io = io;
-    this.gyroIO = gyroIO;
     ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
     // get the default instance of NetworkTables
 
@@ -41,43 +31,12 @@ public class Elevator extends SubsystemBase {
 
     if (TESTING) {}
 
-    if (TUNING) {
-      io.setControlEnabled(true);
-
-      tab.addNumber("Rotation Closed Loop Target", this::getExtensionSetpoint);
-      tab.addNumber("Rotation Closed Loop Error", () -> inputs.rotationClosedLoopError);
-      tab.addNumber("Rotation Velocity", () -> inputs.rotationVelocityRadiansPerSec);
-      tab.addNumber("Rotation Right Motor Volts", () -> inputs.rotationAppliedVolts);
-
-      tab.addNumber("Extension Closed Loop Target", this::getRotationSetpoint);
-      tab.addNumber("Extension Closed Loop Error", () -> inputs.extensionClosedLoopError);
-      tab.addNumber("Extension Velocity", () -> inputs.extensionVelocityMetersPerSec);
-      tab.addNumber("Extension Left Motor Volts", () -> inputs.extensionAppliedVolts); // FIXME
-
-      final TunableNumber extensionKf =
-          new TunableNumber("Drive/DriveKp", RobotConfig.getInstance().getElevatorExtensionKP());
-      final TunableNumber extensionKp =
-          new TunableNumber("Drive/DriveKi", RobotConfig.getInstance().getSwerveDriveKI());
-      final TunableNumber extensionKi =
-          new TunableNumber("Drive/DriveKd", RobotConfig.getInstance().getSwerveDriveKD());
-      final TunableNumber extensionKd =
-          new TunableNumber("Drive/TurnKp", RobotConfig.getInstance().getSwerveAngleKP());
-
-      final TunableNumber rotationKf =
-          new TunableNumber("Drive/TurnKi", RobotConfig.getInstance().getSwerveAngleKI());
-      final TunableNumber rotationKp =
-          new TunableNumber("Drive/TurnKd", RobotConfig.getInstance().getSwerveAngleKD());
-      final TunableNumber rotationKi =
-          new TunableNumber("Drive/DriveKd", RobotConfig.getInstance().getSwerveDriveKD());
-      final TunableNumber rotationKd =
-          new TunableNumber("Drive/TurnKp", RobotConfig.getInstance().getSwerveAngleKP());
-    }
+    if (TUNING) {}
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    gyroIO.updateInputs(gyroInputs);
     Logger.getInstance().processInputs("Elevator", inputs);
 
     /*
@@ -121,39 +80,19 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setElevatorExtension(double extension) {
-    if ((this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0)
-        || (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500
-            && power < 0)) {
-      stopExtension();
-    } else {
-      if (getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500) {
-        io.setRotationPosition(
-            MIN_ROTATION_POSITION + 2500,
-            calculateRotationFeedForward(
-                convertMetersToInches(inputs.extensionPositionMeters),
-                inputs.rotationPositionRadians));
-      }
-      this.extensionSetpoint = extension;
-      io.setExtensionPosition(
-          extensionSetpoint,
-          calculateExtensionFeedForward(
-              convertMetersToInches(inputs.extensionPositionMeters),
-              inputs.rotationPositionRadians));
-    }
+    this.extensionSetpoint = extension;
+    io.setExtensionPosition(
+        extension,
+        calculateExtensionFeedForward(
+            convertMetersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
   }
 
   public void setElevatorRotation(Double rotation) {
-    if ((this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0)
-        || (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0)) {
-      this.stopExtension();
-    } else {
-      io.setRotationPosition(
-          rotation,
-          calculateRotationFeedForward(
-              convertMetersToInches(inputs.extensionPositionMeters),
-              inputs.rotationPositionRadians));
-      this.rotationSetpoint = rotation;
-    }
+    this.rotationSetpoint = rotation;
+    io.setRotationPosition(
+        rotation,
+        calculateRotationFeedForward(
+            convertMetersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
   }
 
   public boolean atExtensionSetpoint() {
@@ -167,10 +106,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return (Math.abs(this.inputs.rotationPositionRadians - rotationSetpoint)
-            < ELEVATOR_ROTATION_POSITION_TOLERANCE)
-        && (Math.abs(this.inputs.extensionPositionMeters - extensionSetpoint)
-            < ELEVATOR_EXTENSION_POSITION_TOLERANCE);
+    return atExtensionSetpoint() && atRotationSetpoint();
   }
 
   public void stopExtension() {
@@ -194,7 +130,7 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPositionRadians;
   }
 
-  public void setPosition(Double rotation, Double extension) {
+  public void setPosition(double rotation, double extension, boolean intakeStored) {
     // if((INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098)){ // radians
     //   this.setElevatorExtension(extension);
     //   this.setElevatorRotation(rotation);
@@ -236,10 +172,6 @@ public class Elevator extends SubsystemBase {
     // }
     this.setElevatorExtension(extension);
     this.setElevatorRotation(rotation);
-  }
-
-  public void setControlEnabled() {
-    this.isControlEnabled = true;
   }
 
   public boolean nearExtensionMaximum() {

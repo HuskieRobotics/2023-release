@@ -4,19 +4,18 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.Pigeon2;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
+import frc.lib.team3061.swerve.Conversions;
 import frc.lib.team3061.util.CANDeviceFinder;
+import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
@@ -26,135 +25,77 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
 
+  private final TunableNumber rkP =
+      new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
+  private final TunableNumber rkI =
+      new TunableNumber("ElevatorRotation/kI", ROTATION_POSITION_PID_I);
+  private final TunableNumber rkD =
+      new TunableNumber("ElevatorRotation/kD", ROTATION_POSITION_PID_D);
+  private final TunableNumber rkPeakOutput =
+      new TunableNumber("ElevatorRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
+
+  private final TunableNumber ekP =
+      new TunableNumber("ElevatorExtension/kP", EXTENSION_POSITION_PID_P);
+  private final TunableNumber ekI =
+      new TunableNumber("ElevatorExtension/kI", EXTENSION_POSITION_PID_I);
+  private final TunableNumber ekD =
+      new TunableNumber("ElevatorExtension/kD", EXTENSION_POSITION_PID_D);
+  private final TunableNumber ekPeakOutput =
+      new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
+
   public ElevatorIOTalonFX() {
     CANDeviceFinder can = new CANDeviceFinder();
+    can.isDevicePresent(CANDeviceType.TALON, ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
+    can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator Rotation");
 
-    extensionMotor = TalonFXFactory.createDefaultTalon(0, canBusName);
-    rotationMotor = TalonFXFactory.createDefaultTalon(1, canBusName);
+    TalonFXFactory.Configuration extensionConfig = new TalonFXFactory.Configuration();
+    TalonFXFactory.Configuration rotationConfig = new TalonFXFactory.Configuration();
 
-    // the following configuration is based on the CTRE example code
+    extensionConfig.SLOT0_KP = ekP.get();
+    extensionConfig.SLOT0_KI = ekI.get();
+    extensionConfig.SLOT0_KD = ekD.get();
 
-    /* Factory Default all hardware to prevent unexpected behavior */
-    this.rotationMotor.configFactoryDefault();
-    this.extensionMotor.configFactoryDefault();
+    rotationConfig.SLOT0_KP = rkP.get();
+    rotationConfig.SLOT0_KI = rkI.get();
+    rotationConfig.SLOT0_KD = rkD.get();
 
-    /** Config Objects for motor controllers */
-    TalonFXConfiguration rotationMotorConfig = new TalonFXConfiguration();
-    TalonFXConfiguration extensionMotorConfig = new TalonFXConfiguration();
+    // FIXME: add remote filter to factory
+    TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
+    talonFXConfig.remoteFilter0.remoteSensorDeviceID = PIGEON_ID;
+    talonFXConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.Pigeon_Pitch;
 
-    /* Disable all motors */
-    this.rotationMotor.set(TalonFXControlMode.PercentOutput, 0);
-    this.extensionMotor.set(TalonFXControlMode.PercentOutput, 0);
+    // FIXME: elevator specific TalonFX configure done here; including peak output as well
 
-    /* Set neutral modes */
-    this.extensionMotor.setNeutralMode(NeutralMode.Brake);
-    this.rotationMotor.setNeutralMode(NeutralMode.Brake);
+    extensionMotor = TalonFXFactory.createTalon(ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
+    rotationMotor =
+        TalonFXFactory.createTalon(ROTATION_ELEVATOR_MOTOR_CAN_ID, canBusName, rotationConfig);
 
-    this.extensionMotor.follow(this.rotationMotor);
+    rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 
-    /* Configure output */
-    this.rotationMotor.setInverted(TalonFXInvertType.Clockwise);
-    this.extensionMotor.setInverted(TalonFXInvertType.FollowMaster);
+    // FIXME: make each of these TunableNumbers and use the TalonFXFactory configuration
 
-    /*
-     * Talon FX does not need sensor phase set for its integrated sensor
-     * This is because it will always be correct if the selected feedback device is
-     * integrated sensor (default value)
-     * and the user calls getSelectedSensor* to get the sensor's position/velocity.
-     *
-     * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#
-     * sensor-phase
-     *
-     * this.extensionMotor.setSensorPhase(true)
-     * this.rotationMotor.setSensorPhase(true)
-     */
-
-    /** Feedback Sensor Configuration */
-
-    /** Distance Configs */
-
-    /* Configure the left Talon's selected sensor as integrated sensor */
-    extensionMotorConfig.primaryPID.selectedFeedbackSensor =
-        TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
-    rotationMotorConfig.primaryPID.selectedFeedbackSensor =
-        TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice(); // Local
-    // Feedback
-    // Source
-
-    // /* PID for Distance */
-
-    final TunableNumber rkF = new TunableNumber("ElevatorRotation/kF", ROTATION_POSITION_PID_F);
-    final TunableNumber rkP = new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
-    final TunableNumber rkI = new TunableNumber("ElevatorRotation/kI", ROTATION_POSITION_PID_I);
-    final TunableNumber rkD = new TunableNumber("ElevatorRotation/kD", ROTATION_POSITION_PID_D);
-    final TunableNumber rkIz =
-        new TunableNumber("ElevatorRotation/kIz", ROTATION_POSITION_PID_I_ZONE);
-    final TunableNumber rkPeakOutput =
-        new TunableNumber("ElevatorRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
-
-    final TunableNumber ekF = new TunableNumber("ElevatorExtension/kF", EXTENSION_POSITION_PID_F);
-    final TunableNumber ekP = new TunableNumber("ElevatorExtension/kP", EXTENSION_POSITION_PID_P);
-    final TunableNumber ekI = new TunableNumber("ElevatorExtension/kI", EXTENSION_POSITION_PID_I);
-    final TunableNumber ekD = new TunableNumber("ElevatorExtension/kD", EXTENSION_POSITION_PID_D);
-    final TunableNumber ekIz =
-        new TunableNumber("ElevatorExtension/kIz", EXTENSION_POSITION_PID_I_ZONE);
-    final TunableNumber ekPeakOutput =
-        new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
-
-    final SimpleMotorFeedforward feedforward =
-        new SimpleMotorFeedforward(ekF.get(), ekP.get(), ekD.get());
-    final PIDController extensionController = new PIDController(ekP.get(), ekI.get(), ekD.get());
-    final PIDController rotationController = new PIDController(rkP.get(), rkI.get(), rkD.get());
-
-    /* Config the neutral deadband. */
-    rotationMotorConfig.neutralDeadband = 0.001;
-
-    /**
-     * 1ms per loop. PID loop can be slowed down if need be. For example, - if sensor updates are
-     * too slow - sensor deltas are very small per update, so derivative error never gets large
-     * enough to be useful. - sensor movement is very slow causing the derivative error to be near
-     * zero.
-     */
-    int closedLoopTimeMs = 1;
-    rotationMotorConfig.slot0.closedLoopPeriod = closedLoopTimeMs;
-    rotationMotorConfig.slot1.closedLoopPeriod = closedLoopTimeMs;
-    rotationMotorConfig.slot2.closedLoopPeriod = closedLoopTimeMs;
-    rotationMotorConfig.slot3.closedLoopPeriod = closedLoopTimeMs;
-
-    extensionMotorConfig.slot0.closedLoopPeriod = closedLoopTimeMs;
-    extensionMotorConfig.slot1.closedLoopPeriod = closedLoopTimeMs;
-    extensionMotorConfig.slot2.closedLoopPeriod = closedLoopTimeMs;
-    extensionMotorConfig.slot3.closedLoopPeriod = closedLoopTimeMs;
+    // FIXME: set current limits
 
     /* Motion Magic Configs */
-    rotationMotorConfig.motionAcceleration =
-        ROTATION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    rotationMotorConfig.motionCruiseVelocity =
-        ROTATION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    rotationMotorConfig.motionCurveStrength = ROTATION_SCURVE_STRENGTH;
+    // rotationMotorConfig.motionAcceleration =
+    //     ROTATION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
+    // rotationMotorConfig.motionCruiseVelocity =
+    //     ROTATION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
+    // rotationMotorConfig.motionCurveStrength = ROTATION_SCURVE_STRENGTH;
 
-    extensionMotorConfig.motionAcceleration =
-        EXTENSION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    extensionMotorConfig.motionCruiseVelocity =
-        EXTENSION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    extensionMotorConfig.motionCurveStrength = EXTENSION_SCURVE_STRENGTH;
-
-    /* APPLY the config settings */
-    this.rotationMotor.configAllSettings(rotationMotorConfig);
-    this.extensionMotor.configAllSettings(extensionMotorConfig);
+    // extensionMotorConfig.motionAcceleration =
+    //     EXTENSION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
+    // extensionMotorConfig.motionCruiseVelocity =
+    //     EXTENSION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
+    // extensionMotorConfig.motionCurveStrength = EXTENSION_SCURVE_STRENGTH;
 
     /* Initialize */
     this.rotationMotor.getSensorCollection().setIntegratedSensorPosition(0, TIMEOUT_MS);
 
-    // these status frames aren't read; so, set these CAN frame periods to the maximum value
-    // //  to reduce traffic on the bus
-    this.rotationMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
-    this.rotationMotor.setStatusFramePeriod(
-        StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
+    // FIXME: initialie the extension sensor to a constant which represents the starting position of
+    // the carriage when holding a cone
 
-    this.extensionMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, TIMEOUT_MS);
-    this.extensionMotor.setStatusFramePeriod(
-        StatusFrameEnhanced.Status_2_Feedback0, 255, TIMEOUT_MS);
+    // FIXME: configure the rotation Falcon to use the pigeon as an external sensor
 
     this.pigeon = new Pigeon2(PIGEON_ID);
   }
@@ -162,21 +103,64 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
 
-    inputs.extensionPositionMeters = extensionMotor.getSelectedSensorPosition(SLOT_INDEX);
-    inputs.extensionVelocityMetersPerSec = extensionMotor.getSelectedSensorVelocity(SLOT_INDEX);
-    inputs.extensionClosedLoopError = extensionMotor.getClosedLoopError(SLOT_INDEX);
+    inputs.extensionSetpointMeters =
+        Conversions.falconToMeters(
+            extensionMotor.getClosedLoopTarget(),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO);
+    inputs.extensionPositionMeters =
+        Conversions.falconToMeters(
+            extensionMotor.getSelectedSensorPosition(SLOT_INDEX),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO);
+    inputs.extensionVelocityMetersPerSec =
+        Conversions.falconToMPS(
+            extensionMotor.getSelectedSensorVelocity(SLOT_INDEX),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO);
+    inputs.extensionClosedLoopErrorMeters =
+        Conversions.falconToMeters(
+            extensionMotor.getClosedLoopError(SLOT_INDEX),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO);
     inputs.extensionAppliedVolts = extensionMotor.getMotorOutputVoltage();
     inputs.extensionCurrentAmps = new double[] {extensionMotor.getStatorCurrent()};
     inputs.extensionTempCelsius = new double[] {extensionMotor.getTemperature()};
 
-    inputs.rotationPositionRadians = rotationMotor.getSelectedSensorPosition(SLOT_INDEX);
-    inputs.rotationVelocityRadiansPerSec = rotationMotor.getSelectedSensorVelocity(SLOT_INDEX);
-    inputs.rotationClosedLoopError = rotationMotor.getClosedLoopError(SLOT_INDEX);
+    inputs.rotationSetpointRadians = pigeonToRadians(rotationMotor.getClosedLoopTarget(SLOT_INDEX));
+    inputs.rotationPositionRadians =
+        pigeonToRadians(rotationMotor.getSelectedSensorPosition(SLOT_INDEX));
+    inputs.rotationVelocityRadiansPerSec =
+        pigeonToRadians(rotationMotor.getSelectedSensorVelocity(SLOT_INDEX));
+    inputs.rotationClosedLoopErrorRadians =
+        pigeonToRadians(rotationMotor.getClosedLoopError(SLOT_INDEX));
     inputs.rotationAppliedVolts = rotationMotor.getMotorOutputVoltage();
     inputs.rotationCurrentAmps = new double[] {rotationMotor.getStatorCurrent()};
     inputs.rotationTempCelsius = new double[] {rotationMotor.getTemperature()};
 
-    inputs.pitch = pigeon.getPitch();
+    inputs.pitchRadians =
+        Units.degreesToRadians(pigeon.getPitch()); // FIXME: verify Pigeon returns degrees
+
+    // update tunables
+    if (rkP.hasChanged() || rkI.hasChanged() || rkD.hasChanged() || rkPeakOutput.hasChanged()) {
+      this.rotationMotor.config_kP(SLOT_INDEX, rkP.get());
+      this.rotationMotor.config_kI(SLOT_INDEX, rkI.get());
+      this.rotationMotor.config_kD(SLOT_INDEX, rkD.get());
+      this.rotationMotor.configPeakOutputForward(rkPeakOutput.get());
+      this.rotationMotor.configPeakOutputReverse(rkPeakOutput.get());
+    }
+
+    if (ekP.hasChanged() || ekI.hasChanged() || ekD.hasChanged() || ekPeakOutput.hasChanged()) {
+      this.extensionMotor.config_kP(SLOT_INDEX, rkP.get());
+      this.extensionMotor.config_kI(SLOT_INDEX, rkI.get());
+      this.extensionMotor.config_kD(SLOT_INDEX, rkD.get());
+      this.extensionMotor.configPeakOutputForward(rkPeakOutput.get());
+      this.extensionMotor.configPeakOutputReverse(rkPeakOutput.get());
+    }
+  }
+
+  private double pigeonToRadians(double counts) {
+    return counts / PIGEON_UNITS_PER_ROTATION * (2 * Math.PI);
   }
 
   @Override
@@ -192,7 +176,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
     extensionMotor.set(
-        TalonFXControlMode.Position,
+        TalonFXControlMode.MotionMagic,
         position,
         DemandType.ArbitraryFeedForward,
         arbitraryFeedForward);
@@ -201,59 +185,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void setRotationPosition(double position, double arbitraryFeedForward) {
     rotationMotor.set(
-        TalonFXControlMode.Position,
+        TalonFXControlMode.MotionMagic,
         position,
         DemandType.ArbitraryFeedForward,
         arbitraryFeedForward);
-  }
-
-  @Override
-  public void configureExtensionKF(double kF) {
-    rotationMotor.config_kF(SLOT_INDEX, kF, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configureExtensionKP(double kP) {
-    rotationMotor.config_kP(SLOT_INDEX, kP, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configureExtensionKI(double kI) {
-    rotationMotor.config_kI(SLOT_INDEX, kI, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configureExtensionKD(double kD) {
-    rotationMotor.config_kD(SLOT_INDEX, kD, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configExtensionClosedLoopPeakOutput(double peakOutput) {
-    rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, peakOutput);
-  }
-
-  @Override
-  public void configureRotationKF(double kF) {
-    rotationMotor.config_kF(SLOT_INDEX, kF, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configureRotationKP(double kP) {
-    rotationMotor.config_kP(SLOT_INDEX, kP, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configureRotationKI(double kI) {
-    rotationMotor.config_kI(SLOT_INDEX, kI, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configureRotationKD(double kD) {
-    rotationMotor.config_kD(SLOT_INDEX, kD, TIMEOUT_MS);
-  }
-
-  @Override
-  public void configRotationClosedLoopPeakOutput(double peakOutput) {
-    rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, peakOutput);
   }
 }

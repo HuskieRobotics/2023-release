@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,14 +11,10 @@ import org.littletonrobotics.junction.Logger;
 public class Elevator extends SubsystemBase {
 
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
-  public double rotationSetpoint = 0.0;
-  public double extensionSetpoint = 0.0;
-  public double power = 0.0;
+  private double rotationSetpoint = 0.0;
+  private double extensionSetpoint = 0.0;
+  private ElevatorIO io;
 
-  public ElevatorIO io;
-
-  // private double extension = 0.0;
-  // private double rotation = 0.0;
   public Elevator(ElevatorIO io) {
     this.io = io;
     ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
@@ -84,7 +81,7 @@ public class Elevator extends SubsystemBase {
     io.setExtensionPosition(
         extension,
         calculateExtensionFeedForward(
-            convertMetersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
+            Units.metersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
   }
 
   public void setElevatorRotation(Double rotation) {
@@ -92,7 +89,7 @@ public class Elevator extends SubsystemBase {
     io.setRotationPosition(
         rotation,
         calculateRotationFeedForward(
-            convertMetersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
+            Units.metersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
   }
 
   public boolean atExtensionSetpoint() {
@@ -240,13 +237,5 @@ public class Elevator extends SubsystemBase {
     double f = mass * Math.cos(rotation);
 
     return (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE / CARRIAGE_MASS) * f;
-  }
-
-  private static double convertMetersToInches(double meters) {
-    return meters * 39.3701;
-  }
-
-  public double getElevatorGyro() {
-    return gyroInputs.positionDeg;
   }
 }

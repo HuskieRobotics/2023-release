@@ -35,7 +35,7 @@ public class SetPosition extends CommandBase {
 
     Position position = armChooser.get();
 
-    switch (position) {     // extension is in meters, rotation is in radians
+    switch (position) { // extension is in meters, rotation is in radians
       case CONE_STORAGE:
       case CUBE_STORAGE:
         this.extension = 0;
@@ -96,8 +96,12 @@ public class SetPosition extends CommandBase {
       this.extension = 0;
       this.rotation = 0;
     }
+  }
 
-    elevator.setPosition(this.rotation, this.extension);
+  @Override
+  public void execute() {
+    // FIXME: need to query the intake subsystem to determine the position of the intake
+    elevator.setPosition(this.rotation, this.extension, true);
   }
 
   /**

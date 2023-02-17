@@ -58,7 +58,6 @@ public class ElevatorIOSim implements ElevatorIO {
           10.0,
           true);
 
-  // FIXME: add feedforward
   private PIDController extensionController =
       new PIDController(extensionKp.get(), extensionKi.get(), extensionKd.get());
   private PIDController rotationController =
@@ -79,12 +78,10 @@ public class ElevatorIOSim implements ElevatorIO {
     // FIXME: the force of gravity on the elevator changes; worth modeling?
 
     // update the inputs that will be logged
-    inputs.isControlEnabled = false;
-
     inputs.extensionSetpointMeters = this.extensionSetpointMeters;
     inputs.extensionPositionMeters = elevatorSim.getPositionMeters();
     inputs.extensionVelocityMetersPerSec = elevatorSim.getVelocityMetersPerSecond();
-    inputs.extensionClosedLoopError = extensionController.getPositionError();
+    inputs.extensionClosedLoopErrorMeters = extensionController.getPositionError();
     inputs.extensionAppliedVolts = this.extensionAppliedVolts;
     inputs.extensionCurrentAmps = new double[] {Math.abs(elevatorSim.getCurrentDrawAmps())};
     inputs.extensionTempCelsius = new double[] {};
@@ -92,7 +89,7 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.rotationSetpointRadians = this.rotationSetpointRadians;
     inputs.rotationPositionRadians = armSim.getAngleRads();
     inputs.rotationVelocityRadiansPerSec = armSim.getVelocityRadPerSec();
-    inputs.rotationClosedLoopError = rotationController.getPositionError();
+    inputs.rotationClosedLoopErrorRadians = rotationController.getPositionError();
     inputs.rotationAppliedVolts = this.rotationAppliedVolts;
     inputs.rotationCurrentAmps = new double[] {Math.abs(armSim.getCurrentDrawAmps())};
     inputs.rotationTempCelsius = new double[] {};

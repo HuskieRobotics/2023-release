@@ -51,6 +51,7 @@
     "Nivore",
     "odometry",
     "photonvision",
+    "PIDF",
     "rapidreact",
     "REVPHJNI",
     "rezero",
@@ -63,6 +64,7 @@
     "TRACKWIDTH",
     "tunables",
     "Vandermonde",
+    "VBAT",
     "WPILOG",
     "Xstance"
   ]  

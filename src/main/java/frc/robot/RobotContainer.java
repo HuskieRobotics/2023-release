@@ -47,7 +47,6 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,8 +98,7 @@ public class RobotContainer {
             } else { // default to ROBOT_2023_MK4I
               config = new MK4IRobotConfig();
             }
-            GyroIO gyroIO = new GyroIOPigeon2(config.getGyroCANID());
-            elevator = new Elevator(new ElevatorIOTalonFX(), gyroIO);
+            elevator = new Elevator(new ElevatorIOTalonFX());
             GyroIO gyro = new GyroIOPigeon2(config.getGyroCANID());
 
             int[] driveMotorCANIDs = config.getSwerveDriveMotorCANIDs();
@@ -171,7 +169,7 @@ public class RobotContainer {
           {
             config = new MK4IRobotConfig();
 
-            elevator = new Elevator(new ElevatorIOSim(), null);
+            elevator = new Elevator(new ElevatorIOSim());
 
             SwerveModule flModule =
                 new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());

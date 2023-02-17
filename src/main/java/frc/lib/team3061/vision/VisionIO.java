@@ -1,5 +1,6 @@
 package frc.lib.team3061.vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.LogTable;
@@ -7,8 +8,6 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 
 public interface VisionIO {
   public static class VisionIOInputs implements LoggableInputs {

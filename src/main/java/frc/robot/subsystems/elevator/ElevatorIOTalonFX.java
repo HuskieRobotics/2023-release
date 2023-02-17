@@ -5,6 +5,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -51,10 +52,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     TalonFXFactory.Configuration extensionConfig = new TalonFXFactory.Configuration();
     TalonFXFactory.Configuration rotationConfig = new TalonFXFactory.Configuration();
 
+    extensionConfig.INVERTED = EXTENSION_INVERTED;
+    extensionConfig.NEUTRAL_MODE = NeutralMode.Brake;
     extensionConfig.SLOT0_KP = ekP.get();
     extensionConfig.SLOT0_KI = ekI.get();
     extensionConfig.SLOT0_KD = ekD.get();
 
+    rotationConfig.INVERTED = ROTATION_INVERTED;
+    rotationConfig.NEUTRAL_MODE = NeutralMode.Brake;
     rotationConfig.SLOT0_KP = rkP.get();
     rotationConfig.SLOT0_KI = rkI.get();
     rotationConfig.SLOT0_KD = rkD.get();

@@ -7,9 +7,9 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.util.Units;
 import frc.lib.team254.drivers.TalonFXFactory;
@@ -64,12 +64,27 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.SLOT0_KI = rkI.get();
     rotationConfig.SLOT0_KD = rkD.get();
 
-    // FIXME: add remote filter to factory
-    TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
-    talonFXConfig.remoteFilter0.remoteSensorDeviceID = PIGEON_ID;
-    talonFXConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.Pigeon_Pitch;
+    extensionConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
+    rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
 
-    // FIXME: elevator specific TalonFX configure done here; including peak output as well
+    extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 10;
+    rotationConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 10;
+
+    rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
+    rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;
+
+    // FIXME: make these six tunable
+    extensionConfig.MOTION_ACCELERATION =
+        Conversions.mpsToFalcon(
+            EXTENSION_ELEVATOR_ACCELERATION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+    extensionConfig.MOTION_CRUISE_VELOCITY =
+        Conversions.mpsToFalcon(
+            EXTENSION_MAX_ELEVATOR_VELOCITY, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+    extensionConfig.MOTION_CURVE_STRENGTH = EXTENSION_SCURVE_STRENGTH;
+
+    rotationConfig.MOTION_ACCELERATION = radiansToPigeon(ROTATION_ELEVATOR_ACCELERATION);
+    rotationConfig.MOTION_CRUISE_VELOCITY = radiansToPigeon(ROTATION_MAX_ELEVATOR_VELOCITY);
+    rotationConfig.MOTION_CURVE_STRENGTH = ROTATION_SCURVE_STRENGTH;
 
     extensionMotor = TalonFXFactory.createTalon(ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
     rotationMotor =
@@ -77,30 +92,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 
-    // FIXME: make each of these TunableNumbers and use the TalonFXFactory configuration
-
-    // FIXME: set current limits
-
-    /* Motion Magic Configs */
-    // rotationMotorConfig.motionAcceleration =
-    //     ROTATION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    // rotationMotorConfig.motionCruiseVelocity =
-    //     ROTATION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    // rotationMotorConfig.motionCurveStrength = ROTATION_SCURVE_STRENGTH;
-
-    // extensionMotorConfig.motionAcceleration =
-    //     EXTENSION_ELEVATOR_ACCELERATION; // (distance units per 100 ms) per second
-    // extensionMotorConfig.motionCruiseVelocity =
-    //     EXTENSION_MAX_ELEVATOR_VELOCITY; // distance units per 100 ms
-    // extensionMotorConfig.motionCurveStrength = EXTENSION_SCURVE_STRENGTH;
+    extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());
+    rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
 
     /* Initialize */
     this.rotationMotor.getSensorCollection().setIntegratedSensorPosition(0, TIMEOUT_MS);
 
     // FIXME: initialie the extension sensor to a constant which represents the starting position of
     // the carriage when holding a cone
-
-    // FIXME: configure the rotation Falcon to use the pigeon as an external sensor
 
     this.pigeon = new Pigeon2(PIGEON_ID);
   }
@@ -153,6 +152,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       this.rotationMotor.config_kD(SLOT_INDEX, rkD.get());
       this.rotationMotor.configPeakOutputForward(rkPeakOutput.get());
       this.rotationMotor.configPeakOutputReverse(rkPeakOutput.get());
+      this.rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
     }
 
     if (ekP.hasChanged() || ekI.hasChanged() || ekD.hasChanged() || ekPeakOutput.hasChanged()) {
@@ -161,11 +161,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       this.extensionMotor.config_kD(SLOT_INDEX, rkD.get());
       this.extensionMotor.configPeakOutputForward(rkPeakOutput.get());
       this.extensionMotor.configPeakOutputReverse(rkPeakOutput.get());
+      this.extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());
     }
   }
 
   private double pigeonToRadians(double counts) {
     return counts / PIGEON_UNITS_PER_ROTATION * (2 * Math.PI);
+  }
+
+  private double radiansToPigeon(double radians) {
+    return radians / (2 * Math.PI) * PIGEON_UNITS_PER_ROTATION;
   }
 
   @Override

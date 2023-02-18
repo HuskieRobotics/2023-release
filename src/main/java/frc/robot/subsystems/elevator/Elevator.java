@@ -258,7 +258,7 @@ public class Elevator extends SubsystemBase {
     if (extension <= MAX_EXTENSION_BEFORE_MOVING_STAGE_ENGAGEMENT) {
       mass = CARRIAGE_MASS;
     } else {
-      mass = CARRIAGE_MASS + MOVING_STAGE_MASS;
+      mass = (CARRIAGE_MASS + MOVING_STAGE_MASS) / 2.0; // two belts are now in tension
     }
 
     double f = mass * Math.cos(rotation);

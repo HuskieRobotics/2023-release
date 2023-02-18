@@ -170,7 +170,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.rotationTempCelsius = new double[] {rotationMotor.getTemperature()};
 
     inputs.pitchRadians =
-        Units.degreesToRadians(pigeon.getPitch()); // FIXME: verify Pigeon returns degrees
+        Units.degreesToRadians(pigeon.getPitch()); 
     inputs.rollRadians = Units.degreesToRadians(pigeon.getRoll());
 
     // update tunables

@@ -478,7 +478,7 @@ public class RobotContainer {
     List<PathPlannerTrajectory> blueCableSide2ConeEngagePath =
         PathPlanner.loadPathGroup(
             "Blue-CableSide 2 Cone + Engage",
-            regularSpeed,
+            overCableConnector,
             overCableConnector,
             regularSpeed,
             regularSpeed,
@@ -486,15 +486,23 @@ public class RobotContainer {
             regularSpeed);
     Command blueCableSide2ConeEngageCommand =
         Commands.sequence(
+            // hold for cone place code
+            Commands.waitSeconds(0),
             new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true, true),
             Commands.waitSeconds(0),
             new FollowPath(blueCableSide2ConeEngagePath.get(1), drivetrain, false, true),
             Commands.waitSeconds(0),
             new FollowPath(blueCableSide2ConeEngagePath.get(2), drivetrain, false, true),
-            Commands.waitSeconds(5),
+            Commands.waitSeconds(0),
             new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false, true),
             new FollowPath(blueCableSide2ConeEngagePath.get(4), drivetrain, false, true),
-            new FollowPath(blueCableSide2ConeEngagePath.get(5), drivetrain, false, true));
+            new FollowPath(blueCableSide2ConeEngagePath.get(5), drivetrain, false, true),
+            Commands.runOnce(
+                () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
+            Commands.waitSeconds(squaringDuration.get()),
+            Commands.runOnce(drivetrain::enableXstance, drivetrain),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(drivetrain::disableXstance, drivetrain));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
     // "auto" path for Blue-CableSide 3 Cone

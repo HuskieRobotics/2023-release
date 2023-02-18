@@ -91,7 +91,7 @@ public class ElevatorConstants {
   public static final double ELEVATOR_ROTATION_POSITION_TOLERANCE = .01;
   public static final double DEFAULT_ROTATION_MOTOR_POWER = 0.5;
 
-  public static final double EXTENSION_PULLEY_CIRCUMFERENCE = 1.0; // FIXME: check CAD
+  public static final double EXTENSION_PULLEY_CIRCUMFERENCE = 2.5; // 2.5 PI
   public static final double EXTENSION_GEAR_RATIO = 3.0;
 
   public static final int PIGEON_UNITS_PER_ROTATION = 8192;

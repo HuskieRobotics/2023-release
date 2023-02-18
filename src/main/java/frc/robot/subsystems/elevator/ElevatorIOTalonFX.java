@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import edu.wpi.first.math.util.Units;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
@@ -26,7 +27,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
 
-  
   private final TunableNumber rkP =
       new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
   private final TunableNumber rkI =
@@ -77,24 +77,30 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.MOTION_ACCELERATION =
         Conversions.mpsToFalcon(
             EXTENSION_ELEVATOR_ACCELERATION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    final TunableNumber extensionConMotorAcceleration = new TunableNumber("extensionConMotorAcceleration", extensionConfig.MOTION_ACCELERATION);
+    final TunableNumber extensionConMotorAcceleration =
+        new TunableNumber("extensionConMotorAcceleration", extensionConfig.MOTION_ACCELERATION);
 
     extensionConfig.MOTION_CRUISE_VELOCITY =
         Conversions.mpsToFalcon(
             EXTENSION_MAX_ELEVATOR_VELOCITY, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    final TunableNumber extensionConMotorVelocity = new TunableNumber("extensionConMotorVelocity", extensionConfig.MOTION_CRUISE_VELOCITY);
+    final TunableNumber extensionConMotorVelocity =
+        new TunableNumber("extensionConMotorVelocity", extensionConfig.MOTION_CRUISE_VELOCITY);
 
     extensionConfig.MOTION_CURVE_STRENGTH = EXTENSION_SCURVE_STRENGTH;
-    final TunableNumber extensionMotionCurveStrength = new TunableNumber("extensionMotionCurveStrength", extensionConfig.MOTION_CURVE_STRENGTH);
+    final TunableNumber extensionMotionCurveStrength =
+        new TunableNumber("extensionMotionCurveStrength", extensionConfig.MOTION_CURVE_STRENGTH);
 
     rotationConfig.MOTION_ACCELERATION = radiansToPigeon(ROTATION_ELEVATOR_ACCELERATION);
-    final TunableNumber rotationMotionAcceleration = new TunableNumber("rotationMotionAcceleration", rotationConfig.MOTION_ACCELERATION);
+    final TunableNumber rotationMotionAcceleration =
+        new TunableNumber("rotationMotionAcceleration", rotationConfig.MOTION_ACCELERATION);
 
     rotationConfig.MOTION_CRUISE_VELOCITY = radiansToPigeon(ROTATION_MAX_ELEVATOR_VELOCITY);
-    final TunableNumber rotationMotionVelocity = new TunableNumber("rotationMotionVelocity", rotationConfig.MOTION_CRUISE_VELOCITY);
+    final TunableNumber rotationMotionVelocity =
+        new TunableNumber("rotationMotionVelocity", rotationConfig.MOTION_CRUISE_VELOCITY);
 
     rotationConfig.MOTION_CURVE_STRENGTH = ROTATION_SCURVE_STRENGTH;
-    final TunableNumber rotationMotionCurveStrength = new TunableNumber("rotationMotionCurveStrength", rotationConfig.MOTION_CURVE_STRENGTH);
+    final TunableNumber rotationMotionCurveStrength =
+        new TunableNumber("rotationMotionCurveStrength", rotationConfig.MOTION_CURVE_STRENGTH);
 
     extensionMotor = TalonFXFactory.createTalon(ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
     rotationMotor =
@@ -112,6 +118,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // the carriage when holding a cone
 
     this.pigeon = new Pigeon2(PIGEON_ID);
+    Pigeon2Configuration config = new Pigeon2Configuration();
+    // set mount pose as rolled 90 degrees counter-clockwise and pitched 90 degrees clockwise
+    config.MountPoseYaw = 0;
+    config.MountPosePitch = -90.0;
+    config.MountPoseRoll = 90.0;
+    this.pigeon.configAllSettings(config);
   }
 
   @Override

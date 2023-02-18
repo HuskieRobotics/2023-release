@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
@@ -37,6 +38,9 @@ public class SetPosition extends CommandBase {
 
     switch (position) { // extension is in meters, rotation is in radians
       case CONE_STORAGE:
+        this.extension = 0;
+        this.rotation = 0;
+        break;
       case CUBE_STORAGE:
         this.extension = 0;
         this.rotation = 0;
@@ -46,8 +50,8 @@ public class SetPosition extends CommandBase {
         this.rotation = 1.43117;
         break;
       case CONE_INTAKE_SHELF:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = Units.inchesToMeters(45);
+        this.rotation = Units.degreesToRadians(42);
         break;
       case CONE_INTAKE_CHUTE:
         this.extension = 0.7112;

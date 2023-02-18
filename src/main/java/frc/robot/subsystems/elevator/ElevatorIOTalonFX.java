@@ -223,8 +223,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void setRotationPosition(double position, double arbitraryFeedForward) {
     rotationMotor.set(
-        TalonFXControlMode.MotionMagic,
-        position,
+        TalonFXControlMode.Position, // try MotionMagic later
+        radiansToPigeon(position),
         DemandType.ArbitraryFeedForward,
         arbitraryFeedForward);
   }

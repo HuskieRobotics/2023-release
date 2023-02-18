@@ -1,6 +1,8 @@
 package frc.robot.subsystems.elevator;
+
 import edu.wpi.first.math.util.*;
 // FIXME ALL CONSTANTS
+
 public class ElevatorConstants {
 
   /** Make constants for each positions */
@@ -90,7 +92,7 @@ public class ElevatorConstants {
   public static final double ELEVATOR_ROTATION_POSITION_TOLERANCE = .01;
   public static final double DEFAULT_ROTATION_MOTOR_POWER = 0.5;
 
-  public static final double EXTENSION_PULLEY_CIRCUMFERENCE = Units.inchesToMeters(1.128) * Math.PI; 
+  public static final double EXTENSION_PULLEY_CIRCUMFERENCE = Units.inchesToMeters(1.128) * Math.PI;
   public static final double EXTENSION_GEAR_RATIO = 3.0;
 
   public static final int PIGEON_UNITS_PER_ROTATION = 8192;

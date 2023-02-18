@@ -45,6 +45,30 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final TunableNumber ekPeakOutput =
       new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
 
+  private final TunableNumber extensionConMotorAcceleration =
+      new TunableNumber(
+          "extensionConMotorAcceleration",
+          Conversions.mpsToFalcon(
+              EXTENSION_ELEVATOR_ACCELERATION,
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
+  private final TunableNumber extensionConMotorVelocity =
+      new TunableNumber(
+          "extensionConMotorVelocity",
+          Conversions.mpsToFalcon(
+              EXTENSION_MAX_ELEVATOR_VELOCITY,
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
+  private final TunableNumber extensionMotionCurveStrength =
+      new TunableNumber("extensionMotionCurveStrength", EXTENSION_SCURVE_STRENGTH);
+  private final TunableNumber rotationMotionAcceleration =
+      new TunableNumber(
+          "rotationMotionAcceleration", radiansToPigeon(ROTATION_ELEVATOR_ACCELERATION));
+  private final TunableNumber rotationMotionVelocity =
+      new TunableNumber("rotationMotionVelocity", radiansToPigeon(ROTATION_MAX_ELEVATOR_VELOCITY));
+  private final TunableNumber rotationMotionCurveStrength =
+      new TunableNumber("rotationMotionCurveStrength", ROTATION_SCURVE_STRENGTH);
+
   public ElevatorIOTalonFX() {
     CANDeviceFinder can = new CANDeviceFinder();
     can.isDevicePresent(CANDeviceType.TALON, ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
@@ -79,33 +103,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.0);
     rotationConfig.ENABLE_SOFT_LIMIT = true;
 
-    extensionConfig.MOTION_ACCELERATION =
-        Conversions.mpsToFalcon(
-            EXTENSION_ELEVATOR_ACCELERATION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    final TunableNumber extensionConMotorAcceleration =
-        new TunableNumber("extensionConMotorAcceleration", extensionConfig.MOTION_ACCELERATION);
+    extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
+    extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();
+    extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMotionCurveStrength.get();
 
-    extensionConfig.MOTION_CRUISE_VELOCITY =
-        Conversions.mpsToFalcon(
-            EXTENSION_MAX_ELEVATOR_VELOCITY, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    final TunableNumber extensionConMotorVelocity =
-        new TunableNumber("extensionConMotorVelocity", extensionConfig.MOTION_CRUISE_VELOCITY);
-
-    extensionConfig.MOTION_CURVE_STRENGTH = EXTENSION_SCURVE_STRENGTH;
-    final TunableNumber extensionMotionCurveStrength =
-        new TunableNumber("extensionMotionCurveStrength", extensionConfig.MOTION_CURVE_STRENGTH);
-
-    rotationConfig.MOTION_ACCELERATION = radiansToPigeon(ROTATION_ELEVATOR_ACCELERATION);
-    final TunableNumber rotationMotionAcceleration =
-        new TunableNumber("rotationMotionAcceleration", rotationConfig.MOTION_ACCELERATION);
-
-    rotationConfig.MOTION_CRUISE_VELOCITY = radiansToPigeon(ROTATION_MAX_ELEVATOR_VELOCITY);
-    final TunableNumber rotationMotionVelocity =
-        new TunableNumber("rotationMotionVelocity", rotationConfig.MOTION_CRUISE_VELOCITY);
-
-    rotationConfig.MOTION_CURVE_STRENGTH = ROTATION_SCURVE_STRENGTH;
-    final TunableNumber rotationMotionCurveStrength =
-        new TunableNumber("rotationMotionCurveStrength", rotationConfig.MOTION_CURVE_STRENGTH);
+    rotationConfig.MOTION_ACCELERATION = rotationMotionAcceleration.get();
+    rotationConfig.MOTION_CRUISE_VELOCITY = rotationMotionVelocity.get();
+    rotationConfig.MOTION_CURVE_STRENGTH = (int) rotationMotionCurveStrength.get();
 
     extensionMotor = TalonFXFactory.createTalon(ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
     rotationMotor =
@@ -191,6 +195,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       this.extensionMotor.configPeakOutputReverse(rkPeakOutput.get());
       this.extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());
     }
+
+    // FIXME: if we pursue Motion Magic check the TunableNubmers to see if they have changed and
+    // update the configuration
   }
 
   private double pigeonToRadians(double counts) {
@@ -214,8 +221,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
     extensionMotor.set(
-        TalonFXControlMode.MotionMagic,
-        position,
+        TalonFXControlMode.Position,
+        Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
         DemandType.ArbitraryFeedForward,
         arbitraryFeedForward);
   }

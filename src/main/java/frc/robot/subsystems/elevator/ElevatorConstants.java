@@ -7,7 +7,6 @@ public class ElevatorConstants {
   public static final boolean DEBUGGING = true;
 
   public static final boolean TESTING = true;
-  public static final boolean TUNING = true;
   public static final String SUBSYSTEM_NAME = "Elevator";
 
   public enum Position {

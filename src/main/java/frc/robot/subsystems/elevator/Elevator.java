@@ -1,14 +1,24 @@
 package frc.robot.subsystems.elevator;
 
+import static frc.robot.Constants.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team6328.util.TunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
+
+  // FIXME: delete after tuning
+  private final TunableNumber rotationPower = new TunableNumber("ElevatorRotation/power", 0.0);
+  private final TunableNumber rotationPositionRadians =
+      new TunableNumber("ElevatorRotation/power", 0.0);
+  private final TunableNumber extensionPower = new TunableNumber("ElevatorRotation/power", 0.0);
+  private final TunableNumber extensionPositionMeters =
+      new TunableNumber("ElevatorRotation/power", 0.0);
 
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
   private double rotationSetpoint = 0.0;
@@ -27,14 +37,31 @@ public class Elevator extends SubsystemBase {
     }
 
     if (TESTING) {}
-
-    if (TUNING) {}
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.getInstance().processInputs("Elevator", inputs);
+
+    // FIXME: update feedforward to call methods once elevator is assembled
+    if (TESTING) {
+      if (rotationPositionRadians.get() != 0) {
+        io.setRotationPosition(rotationPositionRadians.get(), 0.0);
+      }
+
+      if (rotationPower.get() != 0) {
+        io.setRotationMotorPercentage(rotationPower.get());
+      }
+
+      if (extensionPositionMeters.get() != 0) {
+        io.setExtensionPosition(extensionPositionMeters.get(), 0.0);
+      }
+
+      if (extensionPower.get() != 0) {
+        io.setExtensionMotorPercentage(extensionPower.get());
+      }
+    }
 
     /*
     if (extension < 69) {

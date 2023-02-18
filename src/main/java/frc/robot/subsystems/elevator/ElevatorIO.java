@@ -24,6 +24,7 @@ public interface ElevatorIO {
     double[] rotationTempCelsius = new double[] {};
 
     double pitchRadians = 0.0;
+    double rollRadians = 0.0;
   }
 
   /** Updates the set of loggable inputs. */

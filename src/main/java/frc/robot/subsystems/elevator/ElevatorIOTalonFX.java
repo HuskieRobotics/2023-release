@@ -166,6 +166,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.pitchRadians =
         Units.degreesToRadians(pigeon.getPitch()); // FIXME: verify Pigeon returns degrees
+    inputs.rollRadians = Units.degreesToRadians(pigeon.getRoll());
 
     // update tunables
     if (rkP.hasChanged() || rkI.hasChanged() || rkD.hasChanged() || rkPeakOutput.hasChanged()) {

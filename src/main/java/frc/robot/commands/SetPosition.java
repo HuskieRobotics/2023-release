@@ -58,12 +58,12 @@ public class SetPosition extends CommandBase {
         this.rotation = 0.523599;
         break;
       case CONE_HYBRID_LEVEL:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = Units.inchesToMeters(19); 
+        this.rotation = Units.degreesToRadians(60);
         break;
       case CONE_MID_LEVEL:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = Units.inchesToMeters(44);
+        this.rotation = Units.degreesToRadians(44);;
         break;
       case CONE_HIGH_LEVEL:
         this.extension = .85;
@@ -75,24 +75,24 @@ public class SetPosition extends CommandBase {
         this.rotation = 0.785398;
         break;
       case CUBE_INTAKE_SHELF:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = Units.inchesToMeters(45);
+        this.rotation = Units.degreesToRadians(42);
         break;
       case CUBE_INTAKE_CHUTE:
         this.extension = 0.7112;
         this.rotation = 0.523599;
         break;
       case CUBE_HYBRID_LEVEL:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = Units.inchesToMeters(17);
+        this.rotation = Units.degreesToRadians(65);
         break;
       case CUBE_MID_LEVEL:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = Units.inchesToMeters(36);
+        this.rotation = Units.degreesToRadians(53);
         break;
       case CUBE_HIGH_LEVEL:
-        this.extension = 0;
-        this.rotation = 0;
+        this.extension = Units.inchesToMeters(58);
+        this.rotation = Units.degreesToRadians(53);
         break;
     }
 

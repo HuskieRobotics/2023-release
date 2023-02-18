@@ -74,6 +74,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
     rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;
 
+    // limit rotation between 0 and 90 degrees
+    rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(Math.PI / 2.0);
+    rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.0);
+    rotationConfig.ENABLE_SOFT_LIMIT = true;
+
     extensionConfig.MOTION_ACCELERATION =
         Conversions.mpsToFalcon(
             EXTENSION_ELEVATOR_ACCELERATION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);

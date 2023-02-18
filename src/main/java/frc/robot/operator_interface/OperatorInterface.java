@@ -161,16 +161,16 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getScoringLevelSwitch() {
-    return new Trigger(() -> false);
+  public default double getScoringLevelSwitchValue() {
+    return 0.0;
   }
 
-  public default Trigger getScoringColumnSwitch() {
-    return new Trigger(() -> false);
+  public default double getScoringColumnSwitchValue() {
+    return 0.0;
   }
 
-  public default Trigger getScoringGridSwitch() {
-    return new Trigger(() -> false);
+  public default double getScoringGridSwitchValue() {
+    return 0.0;
   }
 
   public default Trigger getHybridLeftMiddleGridButton() {

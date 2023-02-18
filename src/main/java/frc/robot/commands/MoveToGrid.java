@@ -37,37 +37,68 @@ public class MoveToGrid extends CommandBase {
 
   public Pose2d endPose() {
     // When both OI boolean values of the switches are false, the switch is in the middle position
-    boolean gridSwitchValue1 = this.oi.getHybridLeftMiddleGridButton().getAsBoolean();
-    boolean gridSwitchValue2 = this.oi.getHybridMiddleRightGridButton().getAsBoolean();
-    boolean colSwitchValue1 = this.oi.getHybridLeftMiddleColumnButton().getAsBoolean();
-    boolean colSwitchValue2 = this.oi.getHybridMiddleRightColumnButton().getAsBoolean();
+    // boolean gridSwitchValue1 = this.oi.getHybridLeftMiddleGridButton().getAsBoolean();
+    // boolean gridSwitchValue2 = this.oi.getHybridMiddleRightGridButton().getAsBoolean();
+    // boolean colSwitchValue1 = this.oi.getHybridLeftMiddleColumnButton().getAsBoolean();
+    // boolean colSwitchValue2 = this.oi.getHybridMiddleRightColumnButton().getAsBoolean();
 
-    if (gridSwitchValue1) {
-      if (colSwitchValue1) {
+    double gridSwitchValue = this.oi.getScoringGridSwitchValue();
+    double colSwitchValue = this.oi.getScoringColumnSwitchValue();
+
+    if (gridSwitchValue==-1) {
+      if (colSwitchValue==-1) {
         return FieldConstants.GRID_1_NODE_1;
-      } else if (colSwitchValue2) {
+      } else if (colSwitchValue==0) {
         return FieldConstants.GRID_1_NODE_2;
       } else {
         return FieldConstants.GRID_1_NODE_3;
       }
-    } else if (gridSwitchValue2) {
-      if (colSwitchValue1) {
+    } else if (gridSwitchValue==0) {
+      if (colSwitchValue==-1) {
         return FieldConstants.GRID_2_NODE_1;
-      } else if (colSwitchValue2) {
+      } else if (colSwitchValue==0) {
         return FieldConstants.GRID_2_NODE_2;
       } else {
         return FieldConstants.GRID_2_NODE_3;
       }
     } else {
-      if (colSwitchValue1) {
+      if (colSwitchValue==-1) {
         return FieldConstants.GRID_3_NODE_1;
-      } else if (colSwitchValue2) {
+      } else if (colSwitchValue==0) {
         return FieldConstants.GRID_3_NODE_2;
       } else {
         return FieldConstants.GRID_3_NODE_3;
       }
     }
   }
+    
+  //   if (gridSwitchValue1) {
+  //     if (colSwitchValue1) {
+  //       return FieldConstants.GRID_1_NODE_1;
+  //     } else if (colSwitchValue2) {
+  //       return FieldConstants.GRID_1_NODE_2;
+  //     } else {
+  //       return FieldConstants.GRID_1_NODE_3;
+  //     }
+  //   } else if (gridSwitchValue2) {
+  //     if (colSwitchValue1) {
+  //       return FieldConstants.GRID_2_NODE_1;
+  //     } else if (colSwitchValue2) {
+  //       return FieldConstants.GRID_2_NODE_2;
+  //     } else {
+  //       return FieldConstants.GRID_2_NODE_3;
+  //     }
+  //   } else {
+  //     if (colSwitchValue1) {
+  //       return FieldConstants.GRID_3_NODE_1;
+  //     } else if (colSwitchValue2) {
+  //       return FieldConstants.GRID_3_NODE_2;
+  //     } else {
+  //       return FieldConstants.GRID_3_NODE_3;
+  //     }
+  //   }
+  // }
+
 
   public void initialize() {
     this.oi = OISelector.getOperatorInterface();

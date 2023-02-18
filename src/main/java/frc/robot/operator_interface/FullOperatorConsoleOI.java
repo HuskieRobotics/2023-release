@@ -254,7 +254,27 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   public Trigger getToggleManipulatorSensorButton() {
     return operatorPanelButtons[13];
   }
-  // TODO: 3 way switches still need to be implemented
+
+  @Override
+  public double getScoringLevelSwitchValue() {
+    if(operatorPanelButtons[3].getAsBoolean()) {
+      return 1;
+    } else if(operatorPanelButtons[4].getAsBoolean()) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
+  public double getScoringColumnSwitchValue() {
+    return operatorPanel.getX();
+  }
+
+  @Override
+  public double getScoringGridSwitchValue() {
+    return operatorPanel.getY();
+  }
 
   // TODO: Check if values correspond to the correct values on the switches (based on method names)
   // @Override

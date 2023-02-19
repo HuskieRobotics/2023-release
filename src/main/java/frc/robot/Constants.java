@@ -24,7 +24,7 @@ public final class Constants {
 
   public static final boolean TUNING_MODE = false;
 
-  private static final RobotType ROBOT = RobotType.ROBOT_2023_MK4I;
+  private static final RobotType ROBOT = RobotType.ROBOT_2022_SIERRA;
 
   private static final Alert invalidRobotAlert =
       new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR);

@@ -89,6 +89,9 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean isFieldRelative;
 
+  private boolean isTranslationSlowMode = false;
+  private boolean isRotationSlowMode = false;
+
   private double gyroOffset;
 
   private ChassisSpeeds chassisSpeeds;
@@ -290,6 +293,18 @@ public class Drivetrain extends SubsystemBase {
 
     switch (driveMode) {
       case NORMAL:
+        // get the slowmode multiplier from the config
+        double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
+        // if translation or rotation is in slow mode, multiply the x and y velocities by the
+        // slowmode multiplier
+        if (isTranslationSlowMode) {
+          xVelocity *= slowModeMultiplier;
+          yVelocity *= slowModeMultiplier;
+        }
+        // if rotation is in slow mode, multiply the rotational velocity by the slowmode multiplier
+        if (isRotationSlowMode) {
+          rotationalVelocity *= slowModeMultiplier;
+        }
         if (isFieldRelative || overrideFieldRelative) {
           chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -482,6 +497,34 @@ public class Drivetrain extends SubsystemBase {
    */
   public void disableFieldRelative() {
     this.isFieldRelative = false;
+  }
+
+  /*
+   * Enables slow mode for translation. When enabled, the robot will move at a slower speed.
+   */
+  public void enableTranslationSlowMode() {
+    this.isTranslationSlowMode = true;
+  }
+
+  /*
+   * Disables slow mode for translation. When disabled, the robot will move at a normal speed.
+   */
+  public void disableTranslationSlowMode() {
+    this.isTranslationSlowMode = false;
+  }
+
+  /*
+   * enables slow mode for rotation. When enabled, the robot will rotate at a slower speed.
+   */
+  public void enableRotationSlowMode() {
+    this.isRotationSlowMode = true;
+  }
+
+  /*
+   * Disables slow mode for rotation. When disabled, the robot will rotate at a normal speed.
+   */
+  public void disableRotationSlowMode() {
+    this.isRotationSlowMode = false;
   }
 
   /**

@@ -37,6 +37,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getTranslationSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRotationSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getVisionIsEnabledSwitch() {
     return new Trigger(() -> false);
   }

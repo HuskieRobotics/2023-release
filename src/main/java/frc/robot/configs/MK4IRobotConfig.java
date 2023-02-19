@@ -61,6 +61,7 @@ public class MK4IRobotConfig extends RobotConfig {
 
   private static final double MAX_VELOCITY_METERS_PER_SECOND = 4.78;
   private static final double MAX_COAST_VELOCITY_METERS_PER_SECOND = 0.05;
+  private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
   private static final String CAN_BUS_NAME = "canbus1";
 
@@ -231,6 +232,11 @@ public class MK4IRobotConfig extends RobotConfig {
   @Override
   public double getRobotMaxVelocity() {
     return MAX_VELOCITY_METERS_PER_SECOND;
+  }
+
+  @Override
+  public double getRobotSlowModeMultiplier() {
+    return SLOW_MODE_MULTIPLIER;
   }
 
   @Override

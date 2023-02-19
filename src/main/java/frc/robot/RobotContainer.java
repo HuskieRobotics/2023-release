@@ -301,6 +301,16 @@ public class RobotContainer {
                 Commands.runOnce(drivetrain::enableFieldRelative, drivetrain),
                 drivetrain::getFieldRelative));
 
+    // slow mode toggle
+    oi.getTranslationSlowModeButton()
+        .onTrue(Commands.runOnce(drivetrain::enableTranslationSlowMode, drivetrain));
+    oi.getTranslationSlowModeButton()
+        .onFalse(Commands.runOnce(drivetrain::disableTranslationSlowMode, drivetrain));
+
+    oi.getRotationSlowModeButton()
+        .onTrue(Commands.runOnce(drivetrain::enableRotationSlowMode, drivetrain));
+    oi.getRotationSlowModeButton()
+        .onFalse(Commands.runOnce(drivetrain::disableRotationSlowMode, drivetrain));
     // reset gyro to 0 degrees
     oi.getResetGyroButton().onTrue(Commands.runOnce(drivetrain::zeroGyroscope, drivetrain));
 

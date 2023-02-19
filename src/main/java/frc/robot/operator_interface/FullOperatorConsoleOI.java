@@ -74,6 +74,16 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getTranslationSlowModeButton() {
+    return translateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getRotationSlowModeButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
   public Trigger getVisionIsEnabledSwitch() {
     return operatorPanelButtons[10];
   }

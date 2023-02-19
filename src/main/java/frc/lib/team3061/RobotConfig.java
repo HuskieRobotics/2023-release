@@ -255,6 +255,14 @@ public abstract class RobotConfig {
    */
   public abstract double getRobotMaxVelocity();
 
+  /*
+   * Returns the multiplier for when the robot is in slow mode. Defaults to 0.
+   * @return the multiplier for when the robot is in slow mode
+   */
+  public double getRobotSlowModeMultiplier() {
+    return 0.0;
+  }
+
   /**
    * The maximum angular velocity of the robot in radians per second. This is a measure of how fast
    * the robot can rotate in place. By default it is calculated based on the maximum velocity and

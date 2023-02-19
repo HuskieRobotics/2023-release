@@ -19,11 +19,13 @@ public class MoveToGrid extends CommandBase {
   private OperatorInterface oi;
   private PathPlannerTrajectory trajectory;
   private PPSwerveControllerCommand ppSwerveControllerCommand;
+  private double minPathTraversalTime;
   private Alert noPathAlert = new Alert("No path between start and end pose", AlertType.WARNING);
 
-  public MoveToGrid(Drivetrain subsystem) {
+  public MoveToGrid(Drivetrain subsystem, double minPathTraversalTime) {
     // no requirements for movetogrid, drivetrain for ppswerve
     this.drivetrain = subsystem;
+    this.minPathTraversalTime = minPathTraversalTime;
     addRequirements(this.drivetrain);
 
     FieldConstants.COMMUNITY_REGION_1.addNeighbor(
@@ -34,6 +36,10 @@ public class MoveToGrid extends CommandBase {
         FieldConstants.COMMUNITY_REGION_3, FieldConstants.REGION_1_3_TRANSITION_POINT);
     FieldConstants.COMMUNITY_REGION_3.addNeighbor(
         FieldConstants.COMMUNITY_REGION_1, FieldConstants.REGION_3_1_TRANSITION_POINT);
+  }
+
+  public MoveToGrid(Drivetrain subsystem) {
+    this(subsystem, 0.0);
   }
 
   public Pose2d endPose() {
@@ -79,13 +85,19 @@ public class MoveToGrid extends CommandBase {
     this.drivetrain.getAutoYController().reset();
     this.drivetrain.getAutoThetaController().reset();
 
+    Pose2d endPose = endPose();
+    double distance = endPose.minus(this.drivetrain.getPose()).getTranslation().getNorm();
+    double maxVelocity = RobotConfig.getInstance().getAutoMaxSpeed();
+    if (this.minPathTraversalTime != 0) {
+      maxVelocity = distance / this.minPathTraversalTime;
+    }
+    maxVelocity = Math.min(maxVelocity, RobotConfig.getInstance().getAutoMaxSpeed());
+
     this.trajectory =
         FieldConstants.COMMUNITY_ZONE.makePath(
             this.drivetrain.getPose(),
             endPose(),
-            new PathConstraints(
-                RobotConfig.getInstance().getAutoMaxSpeed(),
-                RobotConfig.getInstance().getAutoMaxAcceleration()));
+            new PathConstraints(maxVelocity, RobotConfig.getInstance().getAutoMaxAcceleration()));
 
     noPathAlert.set(this.trajectory == null);
 

@@ -24,6 +24,7 @@ public class MoveToGrid extends CommandBase {
   public MoveToGrid(Drivetrain subsystem) {
     // no requirements for movetogrid, drivetrain for ppswerve
     this.drivetrain = subsystem;
+    addRequirements(this.drivetrain);
 
     FieldConstants.COMMUNITY_REGION_1.addNeighbor(
         FieldConstants.COMMUNITY_REGION_2, FieldConstants.REGION_1_2_TRANSITION_POINT);
@@ -97,13 +98,18 @@ public class MoveToGrid extends CommandBase {
               this.drivetrain.getAutoXController(),
               this.drivetrain.getAutoYController(),
               this.drivetrain.getAutoThetaController(),
-              this.drivetrain::setSwerveModuleStates,
-              this.drivetrain);
-      this.ppSwerveControllerCommand.schedule();
+              this.drivetrain::setSwerveModuleStates);
+      this.ppSwerveControllerCommand.initialize();
 
       Logger.getInstance().recordOutput("Odometry/trajectory", trajectory);
     }
     // FIXME: add alert that no path was found
+  }
+
+  public void execute() {
+    if (this.ppSwerveControllerCommand != null) {
+      this.ppSwerveControllerCommand.execute();
+    }
   }
 
   public boolean isFinished() {
@@ -111,9 +117,18 @@ public class MoveToGrid extends CommandBase {
   }
 
   public void end(boolean interrupted) {
+    if (this.ppSwerveControllerCommand != null) {
+      this.ppSwerveControllerCommand.end(interrupted);
+    }
+
     if (this.trajectory != null) {
       this.drivetrain.stop();
     }
     this.trajectory = null;
+    this.ppSwerveControllerCommand = null;
+  }
+
+  public double getTotalTimeSeconds() {
+    return this.trajectory.getTotalTimeSeconds();
   }
 }

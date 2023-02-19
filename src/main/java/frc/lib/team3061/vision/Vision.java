@@ -73,8 +73,17 @@ public class Vision extends SubsystemBase {
       lastAlliance = DriverStation.getAlliance();
       if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
         layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kRedAllianceWallRightSide);
       } else {
         layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kBlueAllianceWallRightSide);
+      }
+
+      for (AprilTag tag : layout.getTags()) {
+        if (layout.getTagPose(tag.ID).isPresent()) {
+          Logger.getInstance()
+              .recordOutput("Vision/AprilTags/" + tag.ID, layout.getTagPose(tag.ID).get());
+        }
       }
     }
 
@@ -90,6 +99,7 @@ public class Vision extends SubsystemBase {
             Pose3d robotPose =
                 cameraPose.transformBy(
                     RobotConfig.getInstance().getRobotToCameraTransform().inverse());
+            Logger.getInstance().recordOutput("Vision/NVRobotPose", robotPose.toPose2d());
 
             if (poseEstimator
                     .getEstimatedPosition()

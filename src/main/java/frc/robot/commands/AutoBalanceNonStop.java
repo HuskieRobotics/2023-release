@@ -45,7 +45,8 @@ public class AutoBalanceNonStop extends CommandBase {
       double feedforwardY = Math.cos(yaw.getRadians()) * feedforward;
       double frontBackOutput = frontBack.calculate(roll, 0);
       double leftRightOutput = leftRight.calculate(pitch, 0);
-      drivetrain.drive(frontBackOutput + feedforwardX, leftRightOutput + feedforwardY, 0, true);
+      drivetrain.drive(
+          frontBackOutput + feedforwardX, leftRightOutput + feedforwardY, 0, true, false);
     }
   }
 

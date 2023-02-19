@@ -1,4 +1,16 @@
 {
+  "HALProvider": {
+    "DIO": {
+      "window": {
+        "visible": true
+      }
+    },
+    "Timing": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -14,6 +26,12 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/Shuffleboard/Drivetrain/Disable XStance": "Command",
+      "/Shuffleboard/Drivetrain/Enable XStance": "Command",
+      "/Shuffleboard/Drivetrain/MultiDirectional Auto Balance": "Command",
+      "/Shuffleboard/Drivetrain/Simple Balance Front Back": "Command",
+      "/Shuffleboard/Drivetrain/Simple BalanceLeftRight": "Command",
+      "/Shuffleboard/Drivetrain/Straighten": "Command",
       "/Shuffleboard/MAIN/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Auto Routine": "String Chooser",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",

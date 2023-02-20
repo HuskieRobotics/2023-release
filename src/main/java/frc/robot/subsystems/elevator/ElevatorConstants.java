@@ -99,4 +99,6 @@ public class ElevatorConstants {
 
   public static final int TIMEOUT_MS = 30;
   public static final int SLOT_INDEX = 0;
+
+  public static final double ROTATION_SENSOR_CONE = 0;
 }

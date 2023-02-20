@@ -121,10 +121,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
 
     /* Initialize */
-    this.rotationMotor.getSensorCollection().setIntegratedSensorPosition(0, TIMEOUT_MS);
-
-    // FIXME: initialie the extension sensor to a constant which represents the starting position of
-    // the carriage when holding a cone
+    this.rotationMotor.getSensorCollection().setIntegratedSensorPosition(ElevatorConstants.ROTATION_SENSOR_CONE, TIMEOUT_MS);
 
     this.pigeon = new Pigeon2(PIGEON_ID);
     Pigeon2Configuration config = new Pigeon2Configuration();

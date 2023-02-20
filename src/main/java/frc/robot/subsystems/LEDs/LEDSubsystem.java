@@ -1,4 +1,4 @@
-package frc.lib.team3061;
+package frc.robot.subsystems.LEDs;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -277,26 +277,10 @@ public class LEDSubsystem extends SubsystemBase {
         break;
     }
   }
-
-//public setM_toAnimate(){}
   
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    /*
-      if (m_toAnimate == null) {
-        m_candle.setLEDs(
-            (int) (m_Controller.getLeftTriggerAxis() * 255),
-            (int) (m_Controller.getRightTriggerAxis() * 255),
-            (int) (m_Controller.getLeftX() * 255));
-      } else {
-        m_candle.animate(m_toAnimate);
-      }
-      m_candle.modulateVBatOutput(m_Controller.getRightY());
-    */
-
-    //System.out.println("The animation is "+m_toAnimate); 
 
     if (m_toAnimate == null){
      switch (m_currentAnimation) {

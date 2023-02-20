@@ -47,7 +47,8 @@ public class LEDSubsystem extends SubsystemBase {
     Purple,
     Green,
     Blue,
-    Orange
+    Orange,
+    Red,
   }
 
   private AnimationTypes m_currentAnimation;
@@ -229,6 +230,10 @@ public class LEDSubsystem extends SubsystemBase {
         m_toAnimate = null; 
         break;
 
+      case Red:
+        m_toAnimate = null; 
+        break;
+      
       case ColorFlow:
         Direction direction = Direction.Forward;
         m_toAnimate = new ColorFlowAnimation(255, 0, 255, 125, 0.6, LED_COUNT, direction);
@@ -313,6 +318,10 @@ public class LEDSubsystem extends SubsystemBase {
       
       case Orange:
         m_candle.setLEDs(255, 165, 0);
+        break;
+
+      case Red:
+        m_candle.setLEDs(255, 0, 0);
         break;
      }
     } else {

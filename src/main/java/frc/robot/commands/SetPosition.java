@@ -100,7 +100,7 @@ public class SetPosition extends CommandBase {
 
   @Override
   public void execute() {
-    // FIXME: need to query the intake subsystem to determine the position of the intake
+    // FIXME: need to query the intake subsystem to determine the position of the intake, replace true with isIntakeEnabled()
     elevator.setPosition(this.rotation, this.extension, true);
   }
 

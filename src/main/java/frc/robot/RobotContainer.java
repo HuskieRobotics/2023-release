@@ -359,7 +359,12 @@ public class RobotContainer {
                 Commands.waitSeconds(squaringDuration.get()),
                 Commands.runOnce(drivetrain::stop))),
         new ReleaseGamePiece(manipulator),
-        Commands.print("replace with command to set LED color for driver control"));
+        Commands.deadline(
+            Commands.sequence(
+                Commands.print("replace with elevator SetPosition command for transit position"),
+                Commands.waitSeconds(2.0)), // simulate delay of SetPosition
+            Commands.print("replace with command to set LED color for driver control"),
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
   /*
@@ -416,6 +421,57 @@ public class RobotContainer {
                 Commands.waitSeconds(2.0)), // simulate delay of SetPosition
             Commands.print("replace with command to set LED color for driver control"),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
+  }
+
+  /*
+   * This is an optimized command builder that moves the arm while move to grid command is executed.
+   *
+   * Other stuff to consider:
+   *
+   * Should we back away after grabbing the game piece to reduce the chance the driver smashes the elevator into a field element?
+   *
+   * Should we move the squaring step into the move to grid command (since it knows which way to move)?
+   */
+  private Command moveWhileGrabGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
+    // The move to grid command needs to know how long it will take to position the elevator to
+    // optimize when it starts moving the robot and to ensure that the held game piece is not
+    // smashed into a field element because the elevator isn't in the final position.
+    Command setElevatorPosition =
+        Commands.sequence(
+            Commands.print("replace with elevator SetPosition command"), Commands.waitSeconds(2.0));
+
+    // Other commands will need to query how long the move to grid command will take (e.g., we want
+    // to signal the human player x seconds before the robot reaching the game piece); so, we need
+    // to store a reference to the command in a variable that can be passed along to other commands.
+    MoveToGrid moveToGridCommand =
+        new MoveToGrid(drivetrain); // , 2.0), // replace 2.0 with the time to position the elevator
+    // (e.g., setElevatorPosition.getTimeToPosition())
+
+    return Commands.sequence(
+        Commands.parallel(
+            Commands.print("replace with command to set LED color for auto control"),
+            setElevatorPosition,
+            Commands.deadline(
+                new GrabGamePiece(manipulator),
+                Commands.sequence(
+                    Commands.parallel(
+                        Commands.print(
+                            "replace with command to set LED color after delay and pass reference to move to grid command from which the time can be queried"),
+                        moveToGridCommand),
+                    Commands.runOnce(
+                        // this won't be the right direction....
+                        () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true),
+                        drivetrain),
+                    Commands.waitSeconds(squaringDuration.get()),
+                    Commands.runOnce(drivetrain::stop))),
+            Commands.deadline(
+                Commands.sequence(
+                    Commands.print(
+                        "replace with elevator SetPosition command for transit position"),
+                    Commands.waitSeconds(2.0)), // simulate delay of SetPosition
+                Commands.print("replace with command to set LED color for driver control"),
+                new TeleopSwerve(
+                    drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))));
   }
 
   /** Use this method to define your commands for autonomous mode. */

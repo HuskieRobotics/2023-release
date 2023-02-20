@@ -39,23 +39,23 @@ public class SetPosition extends CommandBase {
     switch (position) { // extension is in meters, rotation is in radians
       case CONE_STORAGE:
         this.extension = 0;
-        this.rotation = 0;
+        this.rotation = Units.degreesToRadians(20);
         break;
       case CUBE_STORAGE:
         this.extension = 0;
-        this.rotation = 0;
+        this.rotation = Units.degreesToRadians(20);
         break;
       case CONE_INTAKE_FLOOR:
-        this.extension = 0.8636;
-        this.rotation = 1.43117;
+        this.extension = Units.inchesToMeters(34);
+        this.rotation =  Units.degreesToRadians(82);
         break;
       case CONE_INTAKE_SHELF:
         this.extension = Units.inchesToMeters(45);
         this.rotation = Units.degreesToRadians(42);
         break;
       case CONE_INTAKE_CHUTE:
-        this.extension = 0.7112;
-        this.rotation = 0.523599;
+        this.extension = Units.inchesToMeters(24);
+        this.rotation = Units.degreesToRadians(27);
         break;
       case CONE_HYBRID_LEVEL:
         this.extension = Units.inchesToMeters(19); 
@@ -66,21 +66,21 @@ public class SetPosition extends CommandBase {
         this.rotation = Units.degreesToRadians(44);;
         break;
       case CONE_HIGH_LEVEL:
-        this.extension = .85;
-        this.rotation = 0.7853982;
+        this.extension = Units.inchesToMeters(65);
+        this.rotation = Units.degreesToRadians(48); 
         break;
 
       case CUBE_INTAKE_BUMPER:
-        this.extension = 0.2032;
-        this.rotation = 0.785398;
+        this.extension = Units.inchesToMeters(8);
+        this.rotation = Units.degreesToRadians(43);
         break;
       case CUBE_INTAKE_SHELF:
         this.extension = Units.inchesToMeters(45);
         this.rotation = Units.degreesToRadians(42);
         break;
       case CUBE_INTAKE_CHUTE:
-        this.extension = 0.7112;
-        this.rotation = 0.523599;
+        this.extension = Units.inchesToMeters(24);
+        this.rotation = Units.degreesToRadians(27);
         break;
       case CUBE_HYBRID_LEVEL:
         this.extension = Units.inchesToMeters(17);

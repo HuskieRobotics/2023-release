@@ -214,6 +214,10 @@ public class Elevator extends SubsystemBase {
     return rotationSetpoint;
   }
 
+  private double timeToSetpoint(){
+    return 0;
+  }
+  
   private static final double D1 = 39.8;
   private static final double D2 = 40.3;
   private static final double D3 = 3.9;

@@ -15,10 +15,10 @@ public class Elevator extends SubsystemBase {
   // FIXME: delete after tuning
   private final TunableNumber rotationPower = new TunableNumber("ElevatorRotation/power", 0.0);
   private final TunableNumber rotationPositionRadians =
-      new TunableNumber("ElevatorRotation/power", 0.0);
-  private final TunableNumber extensionPower = new TunableNumber("ElevatorRotation/power", 0.0);
+      new TunableNumber("ElevatorRotation/radians", 0.0);
+  private final TunableNumber extensionPower = new TunableNumber("ElevatorExtension/power", 0.0);
   private final TunableNumber extensionPositionMeters =
-      new TunableNumber("ElevatorRotation/power", 0.0);
+      new TunableNumber("ElevatorExtension/meters", 0.0);
 
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
   private double rotationSetpoint = 0.0;

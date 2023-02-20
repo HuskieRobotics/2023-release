@@ -97,11 +97,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
     rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;
+    rotationConfig.SENSOR_PHASE = true;
 
     // limit rotation between 0 and 90 degrees
-    rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(Math.PI / 2.0);
+    rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(1.3);
     rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.0);
-    rotationConfig.ENABLE_SOFT_LIMIT = true;
+    rotationConfig.ENABLE_SOFT_LIMIT = false;
 
     extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
     extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();
@@ -121,14 +122,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
 
     /* Initialize */
-    this.rotationMotor.getSensorCollection().setIntegratedSensorPosition(ElevatorConstants.ROTATION_SENSOR_CONE, TIMEOUT_MS);
-
-    this.pigeon = new Pigeon2(PIGEON_ID);
+    this.pigeon = new Pigeon2(PIGEON_ID, RobotConfig.getInstance().getCANBusName());
     Pigeon2Configuration config = new Pigeon2Configuration();
     // set mount pose as rolled 90 degrees counter-clockwise and pitched 90 degrees clockwise
     config.MountPoseYaw = 0;
-    config.MountPosePitch = -90.0;
-    config.MountPoseRoll = 90.0;
+    config.MountPoseRoll = -90.0;
     this.pigeon.configAllSettings(config);
   }
 
@@ -170,8 +168,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.rotationCurrentAmps = new double[] {rotationMotor.getStatorCurrent()};
     inputs.rotationTempCelsius = new double[] {rotationMotor.getTemperature()};
 
-    inputs.pitchRadians =
-        Units.degreesToRadians(pigeon.getPitch()); 
+    inputs.pitchRadians = Units.degreesToRadians(pigeon.getPitch());
     inputs.rollRadians = Units.degreesToRadians(pigeon.getRoll());
 
     // update tunables
@@ -180,16 +177,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       this.rotationMotor.config_kI(SLOT_INDEX, rkI.get());
       this.rotationMotor.config_kD(SLOT_INDEX, rkD.get());
       this.rotationMotor.configPeakOutputForward(rkPeakOutput.get());
-      this.rotationMotor.configPeakOutputReverse(rkPeakOutput.get());
+      this.rotationMotor.configPeakOutputReverse(-rkPeakOutput.get());
       this.rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
     }
 
     if (ekP.hasChanged() || ekI.hasChanged() || ekD.hasChanged() || ekPeakOutput.hasChanged()) {
-      this.extensionMotor.config_kP(SLOT_INDEX, rkP.get());
-      this.extensionMotor.config_kI(SLOT_INDEX, rkI.get());
-      this.extensionMotor.config_kD(SLOT_INDEX, rkD.get());
-      this.extensionMotor.configPeakOutputForward(rkPeakOutput.get());
-      this.extensionMotor.configPeakOutputReverse(rkPeakOutput.get());
+      this.extensionMotor.config_kP(SLOT_INDEX, ekP.get());
+      this.extensionMotor.config_kI(SLOT_INDEX, ekI.get());
+      this.extensionMotor.config_kD(SLOT_INDEX, ekD.get());
+      this.extensionMotor.configPeakOutputForward(ekPeakOutput.get());
+      this.extensionMotor.configPeakOutputReverse(-ekPeakOutput.get());
       this.extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());
     }
 

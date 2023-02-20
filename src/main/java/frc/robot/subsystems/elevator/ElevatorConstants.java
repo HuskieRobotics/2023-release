@@ -50,6 +50,22 @@ public class ElevatorConstants {
   // public static final int SHELF_EXTENSION_POSITION = 0;
   // public static final int CHUTE_EXTENSION_POSITION = 0;
 
+  public static final double TOP_ROTATION_POSITION_TIME = 0;
+  public static final double MID_ROTATION_POSITION_TIME = 0;
+  public static final double LOW_ROTATION_POSITION_TIME = 0;
+  public static final double CONE_INTAKE_ROTATION_POSITION_TIME = 0;
+  public static final double CUBE_INTAKE_ROTATION_POSITION_TIME = 0;
+  public static final double SHELF_ROTATION_POSITION_TIME = 0;
+  public static final double CHUTE_ROTATION_POSITION_TIME = 0;
+
+  public static final double TOP_EXTENSION_POSITION_TIME = 0;
+  public static final double MID_EXTENSION_POSITION_TIME = 0;
+  public static final double LOW_EXTENSION_POSITION_TIME = 0;
+  public static final double CONE_INTAKE_EXTENSION_POSITION_TIME = 0;
+  public static final double CUBE_INTAKE_EXTENSION_POSITION_TIME = 0;
+  public static final double SHELF_EXTENSION_POSITION_TIME = 0;
+  public static final double CHUTE_EXTENSION_POSITION_TIME = 0;
+
   public static final int MIN_EXTENSION_POSITION = 0;
   public static final int MAX_EXTENSION_POSITION = 0;
 

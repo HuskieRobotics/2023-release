@@ -96,10 +96,6 @@ public class SetPosition extends CommandBase {
         break;
     }
 
-    if (position == Position.CONE_INTAKE_FLOOR) {
-      this.extension = 0;
-      this.rotation = 0;
-    }
   }
 
   @Override

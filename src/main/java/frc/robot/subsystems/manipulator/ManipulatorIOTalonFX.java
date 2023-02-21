@@ -11,10 +11,15 @@ import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
 
 public class ManipulatorIOTalonFX implements ManipulatorIO {
+  // stall for 20 * 0.02 seconds (0.4 seconds) while opening before zeroing the position and
+  // stopping the motor
+  private static final int MIN_STALL_COUNT_FOR_ZERO = 20;
+
   private TalonFX manipulatorMotor;
   private final DigitalInput manipulatorSensor;
   private boolean wasZeroed = false;
   private boolean isSensorEnabled = true;
+  private int stallCount = 0;
 
   private final TunableNumber manipulatorKP =
       new TunableNumber("manipulator/Kp", ManipulatorConstants.MANIPULATOR_KP);
@@ -56,9 +61,14 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         && inputs.appliedPercentage < 0
         && inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1]
             > ManipulatorConstants.OPEN_THRESHOLD) {
-      setPower(0.0);
-      manipulatorMotor.setSelectedSensorPosition(0);
-      wasZeroed = true;
+      stallCount++;
+
+      if (stallCount > MIN_STALL_COUNT_FOR_ZERO) {
+        setPower(0.0);
+        manipulatorMotor.setSelectedSensorPosition(0);
+        wasZeroed = true;
+        stallCount = 0;
+      }
     }
   }
 

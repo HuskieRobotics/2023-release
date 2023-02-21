@@ -181,8 +181,8 @@ public class TalonFXFactory {
 
     talon.overrideSoftLimitsEnable(config.ENABLE_SOFT_LIMIT);
 
-    talon.setInverted(config.INVERTED);
     talon.setSensorPhase(config.SENSOR_PHASE);
+    talon.setInverted(config.INVERTED);
 
     talon.selectProfileSlot(0, 0);
 

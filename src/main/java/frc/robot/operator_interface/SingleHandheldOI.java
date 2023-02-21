@@ -27,7 +27,7 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public double getRotate() {
-    return -controller.getLeftTriggerAxis();
+    return -controller.getRightX();
   }
 
   @Override
@@ -43,5 +43,31 @@ public class SingleHandheldOI implements OperatorInterface {
   @Override
   public Trigger getXStanceButton() {
     return new Trigger(controller::getYButton);
+  }
+
+  @Override
+  public Trigger getTranslationSlowModeButton() {
+    return new Trigger(controller::getLeftBumper);
+  }
+
+  @Override
+  public Trigger getRotationSlowModeButton() {
+    return new Trigger(controller::getRightBumper);
+  }
+
+  @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    // vision is always enabled with Xbox as there is no switch to disable
+    return new Trigger(() -> true);
+  }
+
+  @Override
+  public Trigger getMoveToGridButton() {
+    return new Trigger(controller::getAButton);
+  }
+
+  @Override
+  public Trigger toggleManipulatorOpenCloseButton() {
+    return new Trigger(controller::getRightStickButton);
   }
 }

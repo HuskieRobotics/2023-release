@@ -36,4 +36,52 @@ public interface OperatorInterface {
   public default Trigger getXStanceButton() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getTranslationSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRotationSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getVisionIsEnabledSwitch() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveToGridButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHybridLeftMiddleGridButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHybridMiddleRightGridButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHybridLeftMiddleColumnButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHybridMiddleRightColumnButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHybridHighMiddleLevelButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getHybridMiddleLowLevelButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getTurboButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger toggleManipulatorOpenCloseButton() {
+    return new Trigger(() -> false);
+  }
 }

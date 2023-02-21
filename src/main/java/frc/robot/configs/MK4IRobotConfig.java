@@ -53,7 +53,7 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double DRIVE_KD = 5.5;
   private static final double DRIVE_KF = 0.0;
 
-  private static final double DRIVE_KS = 0.99096;
+  private static final double DRIVE_KS = 0.25988;
   private static final double DRIVE_KV = 2.46330;
   private static final double DRIVE_KA = 0.12872;
 
@@ -62,6 +62,10 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double MAX_VELOCITY_METERS_PER_SECOND = 4.78;
   private static final double MAX_COAST_VELOCITY_METERS_PER_SECOND = 0.05;
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
+
+  // FIXME: tune these
+  private static final double MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED = 4.0;
+  private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 2.0 * Math.PI;
 
   private static final String CAN_BUS_NAME = "canbus1";
 
@@ -235,6 +239,15 @@ public class MK4IRobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getRobotMaxDriveAcceleration() {
+    return MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED;
+  }
+
+  @Override
+  public double getRobotMaxTurnAcceleration() {
+    return MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
+  }
+
   public double getRobotSlowModeMultiplier() {
     return SLOW_MODE_MULTIPLIER;
   }

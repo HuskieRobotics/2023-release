@@ -125,6 +125,11 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getTurboButton() {
+    return translateJoystickButtons[4];
+  }
+
+  @Override
   public Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(operatorController::getRightStickButton);
   }

@@ -329,6 +329,8 @@ public class RobotContainer {
     // move to grid
     oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
 
+    oi.getTurboButton().onTrue(Commands.runOnce(drivetrain::enableTurbo, drivetrain));
+    oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
     // enable/disable vision
     oi.getVisionIsEnabledSwitch().onTrue(Commands.runOnce(() -> vision.enable(true), vision));
     oi.getVisionIsEnabledSwitch()

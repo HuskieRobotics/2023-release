@@ -77,6 +77,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getTurboButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(() -> false);
   }

@@ -37,6 +37,7 @@ import org.littletonrobotics.junction.Logger;
  * robot's rotation.
  */
 public class Drivetrain extends SubsystemBase {
+
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
@@ -52,6 +53,10 @@ public class Drivetrain extends SubsystemBase {
       new TunableNumber("AutoDrive/TurnKi", RobotConfig.getInstance().getAutoTurnKI());
   private final TunableNumber autoTurnKd =
       new TunableNumber("AutoDrive/TurnKd", RobotConfig.getInstance().getAutoTurnKD());
+  private final TunableNumber tunableMaxDriveAcceleration =
+      new TunableNumber(
+          "TeleopSwerve/maxDriveAcceleration",
+          RobotConfig.getInstance().getRobotMaxDriveAcceleration());
 
   private final PIDController autoXController =
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
@@ -106,6 +111,8 @@ public class Drivetrain extends SubsystemBase {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
+  private double maxDriveAcceleration;
+
   /** Constructs a new DrivetrainSubsystem object. */
   public Drivetrain(
       GyroIO gyroIO,
@@ -133,6 +140,8 @@ public class Drivetrain extends SubsystemBase {
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
 
+    this.maxDriveAcceleration = RobotConfig.getInstance().getRobotMaxDriveAcceleration();
+
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
     tabMain.addBoolean("X-Stance On?", this::isXstance);
@@ -157,6 +166,18 @@ public class Drivetrain extends SubsystemBase {
       tab.add("Disable XStance", new InstantCommand(this::disableXstance));
       tab.add("NonStop", new AutoBalanceNonStop(this));
     }
+  }
+
+  public void enableTurbo() {
+    maxDriveAcceleration = 999;
+  }
+
+  public void disableTurbo() {
+    maxDriveAcceleration = tunableMaxDriveAcceleration.get();
+  }
+
+  public double getMaxDriveAcceleration() {
+    return maxDriveAcceleration;
   }
 
   /**

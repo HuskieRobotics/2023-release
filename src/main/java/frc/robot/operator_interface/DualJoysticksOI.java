@@ -56,7 +56,7 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public Trigger getXStanceButton() {
-    return translateJoystickButtons[1];
+    return rotateJoystickButtons[4];
   }
 
   @Override
@@ -72,12 +72,7 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getHybridLeftMiddleGridButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getHybridLeftMiddleColumnButton() {
-    return translateJoystickButtons[4];
+  public Trigger getTurboButton() {
+    return translateJoystickButtons[1];
   }
 }

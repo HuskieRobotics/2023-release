@@ -274,6 +274,14 @@ public abstract class RobotConfig {
     return getRobotMaxVelocity() / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
   }
 
+  public double getRobotMaxDriveAcceleration() {
+    return 1000.0;
+  }
+
+  public double getRobotMaxTurnAcceleration() {
+    return 1000.0;
+  }
+
   /**
    * Returns the maximum velocity, in meters per second, at which the robot can be moving while
    * disabled before the drive motors are changed from brake to coast mode. Defaults to 0.

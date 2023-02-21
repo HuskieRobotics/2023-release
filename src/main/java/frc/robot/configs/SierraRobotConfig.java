@@ -30,7 +30,7 @@ public class SierraRobotConfig extends RobotConfig {
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 16;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 15;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 40.86;
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 40.78;
 
   private static final int GYRO_ID = 18;
 
@@ -59,6 +59,8 @@ public class SierraRobotConfig extends RobotConfig {
 
   private static final double MAX_VELOCITY_METERS_PER_SECOND = 4.25;
   private static final double MAX_COAST_VELOCITY_METERS_PER_SECOND = 0.05;
+  private static final double MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED = 4.0;
+  private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 4.0;
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
   private static final String CAN_BUS_NAME = "";
@@ -230,6 +232,15 @@ public class SierraRobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getRobotMaxDriveAcceleration() {
+    return MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED;
+  }
+
+  @Override
+  public double getRobotMaxTurnAcceleration() {
+    return MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
+  }
+
   public double getRobotSlowModeMultiplier() {
     return SLOW_MODE_MULTIPLIER;
   }

@@ -68,4 +68,9 @@ public class TestBoardConfig extends RobotConfig {
   public int getPneumaticsHubCANID() {
     return 0;
   }
+
+  @Override
+  public int getDriverCameraPort() {
+    return 0;
+  }
 }

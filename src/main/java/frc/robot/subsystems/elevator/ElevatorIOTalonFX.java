@@ -101,8 +101,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     // limit rotation between 0 and 90 degrees
     rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(1.3);
-    rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.0);
-    rotationConfig.ENABLE_SOFT_LIMIT = false;
+    rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.3);
+    rotationConfig.ENABLE_SOFT_LIMIT = true;
 
     extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
     extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();

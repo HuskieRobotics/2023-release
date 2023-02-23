@@ -155,47 +155,92 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setPosition(double rotation, double extension, boolean intakeStored) {
-    // if((INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098)){ // radians
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .381) &&
-    // (getRotationElevatorEncoderAngle() > 1.50098)){// meters, radians
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
-    // (getRotationElevatorEncoderAngle() < 1.0821)){ // 0 is in meters, radians
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
-    // (getRotationElevatorEncoderAngle() < 1.25664)){  // radians
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) &&
-    // (getRotationElevatorEncoderAngle() < 1.50098)){ // .686meters, .478 radians
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098) &&
-    // (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > 1.50098)){ // FIXME if we
-    // are careful to position the intake such that its hood is collapsed by the elevator
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
-    // else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.37881) &&
-    // (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
-    //   this.setElevatorExtension(extension);
-    //   this.setElevatorRotation(rotation);
-    // }
+    // if intake is in:
+    // if extension < 22; only extend
+    // if extension > 52; only rotate until around 48
+    // if rotation > 80; only rotate if extension > 45
+
+    // if intake is out:
+    // if extension < 28; only extend 
+    // if extension > 52; only rotate until around 48
+if(intakeStored) {
+  if (extension < Units.inchesToMeters(22)) {
     this.setElevatorExtension(extension);
+  } else if (extension > Units.inchesToMeters(52)) {
     this.setElevatorRotation(rotation);
+    if (rotation < Units.degreesToRadians(49) && rotation > Units.degreesToRadians(47)) {
+      this.setElevatorExtension(extension);
+  }}
+  else if (rotation > Units.degreesToRadians(80))
+  {
+    this.setElevatorExtension(extension);
+    if(extension > Units.inchesToMeters(45))
+    {
+      this.setElevatorRotation(rotation);
+    }
+  }
+   else {
+    this.setElevatorRotation(rotation);
+    this.setElevatorExtension(extension);
+  }
+}
+else if(!intakeStored) {
+  if(extension < Units.inchesToMeters(28)) {
+    this.setElevatorExtension(extension);
+  }
+  else if(extension > Units.inchesToMeters(52)) {
+    this.setElevatorRotation(rotation);
+    if(rotation < Units.degreesToRadians(49) && rotation > Units.degreesToRadians(47)) {
+      this.setElevatorExtension(extension);
+    }
+  }
+  else {
+    this.setElevatorRotation(rotation);
+    this.setElevatorExtension(extension);
+    }
+  }
+  
+  //   if((INTAKE_STORED) && (getRotationElevatorEncoderAngle() < Units.degreesToRadians(7) && (rotation > Units.degreesToRadians(7)))){ // radians
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() < Units.inchesToMeters(66)) &&
+  //   (getRotationElevatorEncoderAngle() > Units.degreesToRadians(32)) && (Units.degreesToRadians(46) < rotation)){// meters, radians
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() ) &&
+  //   (getRotationElevatorEncoderAngle() < 1.0821)){ // 0 is in meters, radians
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
+  //   (getRotationElevatorEncoderAngle() < 1.25664)){  // radians
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) &&
+  //   (getRotationElevatorEncoderAngle() < 1.50098)){ // .686meters, .478 radians
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098) &&
+  //   (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > 1.50098)){ // FIXME if we
+  //   are careful to position the intake such that its hood is collapsed by the elevator
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.37881) &&
+  //   (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
+  //     this.setElevatorExtension(extension);
+  //     this.setElevatorRotation(rotation);
+  //   }
+  //   this.setElevatorExtension(extension);
+  //   this.setElevatorRotation(rotation);
   }
 
   public boolean nearExtensionMaximum() {
@@ -217,7 +262,7 @@ public class Elevator extends SubsystemBase {
   private double timeToSetpoint(){
     return 0;
   }
-  
+
   private static final double D1 = 39.8;
   private static final double D2 = 40.3;
   private static final double D3 = 3.9;

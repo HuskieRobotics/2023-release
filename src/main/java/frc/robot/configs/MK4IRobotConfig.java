@@ -103,6 +103,8 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
   private static final double SQUARING_DURATION_SECONDS = 1;
 
+  private static final int LED_COUNT = 120;
+
   @Override
   public double getSwerveAngleKP() {
     return ANGLE_KP;
@@ -387,5 +389,10 @@ public class MK4IRobotConfig extends RobotConfig {
   @Override
   public double getSquaringDuration() {
     return SQUARING_DURATION_SECONDS;
+  }
+
+  @Override
+  public int getLedCount() {
+    return LED_COUNT;
   }
 }

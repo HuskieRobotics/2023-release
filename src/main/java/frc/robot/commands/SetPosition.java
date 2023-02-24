@@ -38,69 +38,59 @@ public class SetPosition extends CommandBase {
 
     switch (position) { // extension is in meters, rotation is in radians
       case CONE_STORAGE:
-        this.extension = 0;
-        this.rotation = Units.degreesToRadians(20);
-        break;
       case CUBE_STORAGE:
         this.extension = 0;
-        this.rotation = Units.degreesToRadians(20);
+        this.rotation = Units.degreesToRadians(90.0 - 20.0);
         break;
       case CONE_INTAKE_FLOOR:
         this.extension = Units.inchesToMeters(34);
-        this.rotation =  Units.degreesToRadians(82);
+        this.rotation = Units.degreesToRadians(90.0 - 82.0);
         break;
       case CONE_INTAKE_SHELF:
+      case CUBE_INTAKE_SHELF:
         this.extension = Units.inchesToMeters(45);
-        this.rotation = Units.degreesToRadians(42);
+        this.rotation = Units.degreesToRadians(90.0 - 42.0);
         break;
       case CONE_INTAKE_CHUTE:
+      case CUBE_INTAKE_CHUTE:
         this.extension = Units.inchesToMeters(24);
-        this.rotation = Units.degreesToRadians(27);
+        this.rotation = Units.degreesToRadians(90.0 - 27.0);
         break;
       case CONE_HYBRID_LEVEL:
-        this.extension = Units.inchesToMeters(19); 
-        this.rotation = Units.degreesToRadians(60);
+        this.extension = Units.inchesToMeters(19);
+        this.rotation = Units.degreesToRadians(90.0 - 60.0);
         break;
       case CONE_MID_LEVEL:
         this.extension = Units.inchesToMeters(44);
-        this.rotation = Units.degreesToRadians(44);;
+        this.rotation = Units.degreesToRadians(90.0 - 44.0);
         break;
       case CONE_HIGH_LEVEL:
         this.extension = Units.inchesToMeters(65);
-        this.rotation = Units.degreesToRadians(48); 
+        this.rotation = Units.degreesToRadians(90.0 - 48.0);
         break;
-
       case CUBE_INTAKE_BUMPER:
         this.extension = Units.inchesToMeters(8);
-        this.rotation = Units.degreesToRadians(43);
-        break;
-      case CUBE_INTAKE_SHELF:
-        this.extension = Units.inchesToMeters(45);
-        this.rotation = Units.degreesToRadians(42);
-        break;
-      case CUBE_INTAKE_CHUTE:
-        this.extension = Units.inchesToMeters(24);
-        this.rotation = Units.degreesToRadians(27);
+        this.rotation = Units.degreesToRadians(90.0 - 43.0);
         break;
       case CUBE_HYBRID_LEVEL:
         this.extension = Units.inchesToMeters(17);
-        this.rotation = Units.degreesToRadians(65);
+        this.rotation = Units.degreesToRadians(90.0 - 65.0);
         break;
       case CUBE_MID_LEVEL:
         this.extension = Units.inchesToMeters(36);
-        this.rotation = Units.degreesToRadians(53);
+        this.rotation = Units.degreesToRadians(90.0 - 53.0);
         break;
       case CUBE_HIGH_LEVEL:
         this.extension = Units.inchesToMeters(58);
-        this.rotation = Units.degreesToRadians(53);
+        this.rotation = Units.degreesToRadians(90.0 - 53.0);
         break;
     }
-
   }
 
   @Override
   public void execute() {
-    // FIXME: need to query the intake subsystem to determine the position of the intake, replace true with isIntakeEnabled()
+    // FIXME: need to query the intake subsystem to determine the position of the intake, replace
+    // true with isIntakeEnabled()
     elevator.setPosition(this.rotation, this.extension, true);
   }
 

@@ -70,4 +70,10 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(controller::getRightStickButton);
   }
+
+  @Override
+  public Trigger setLEDAnimation() {
+    return new Trigger(controller::getXButton);
+  }
+
 }

@@ -52,6 +52,9 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
+import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.leds.LEDs.AnimationTypes;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +74,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Manipulator manipulator;
   private Vision vision;
+  private LEDs led;
 
   private final TunableNumber squaringSpeed;
   private final TunableNumber squaringDuration;
@@ -159,6 +163,8 @@ public class RobotContainer {
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
             vision = new Vision(new VisionIOPhotonVision(config.getCameraName()));
+
+            led = new LEDs();
 
             if (Constants.getRobot() == Constants.RobotType.ROBOT_2022_SIERRA) {
               new Pneumatics(new PneumaticsIORev());
@@ -338,6 +344,7 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
+    oi.setLEDAnimation().onTrue(Commands.runOnce(() -> led.changeAnimationTo(AnimationTypes.FIRE), led));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {

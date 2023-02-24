@@ -84,4 +84,8 @@ public interface OperatorInterface {
   public default Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger setLEDAnimation(){
+    return new Trigger(() -> false);
+  }
 }

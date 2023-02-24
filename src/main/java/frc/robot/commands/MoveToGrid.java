@@ -71,6 +71,8 @@ public class MoveToGrid extends CommandBase {
   }
 
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/MoveToGrid", true);
+
     this.oi = OISelector.getOperatorInterface();
 
     // reset the theta controller such that old accumulated ID values aren't used with the new path
@@ -126,6 +128,8 @@ public class MoveToGrid extends CommandBase {
     }
     this.trajectory = null;
     this.ppSwerveControllerCommand = null;
+
+    Logger.getInstance().recordOutput("ActiveCommands/MoveToGrid", false);
   }
 
   public double getTotalTimeSeconds() {

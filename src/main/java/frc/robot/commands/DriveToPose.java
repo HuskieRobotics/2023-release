@@ -20,6 +20,7 @@ import frc.lib.team6328.util.TunableNumber;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveToPose extends CommandBase {
   private final Drivetrain drivetrain;
@@ -97,6 +98,8 @@ public class DriveToPose extends CommandBase {
 
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/DriveToPose", true);
+
     // Reset all controllers
     Pose2d currentPose = drivetrain.getPose();
     xController.reset(currentPose.getX());
@@ -159,6 +162,7 @@ public class DriveToPose extends CommandBase {
   public void end(boolean interrupted) {
     drivetrain.stop();
     running = false;
+    Logger.getInstance().recordOutput("ActiveCommands/DriveToPose", false);
   }
 
   @Override

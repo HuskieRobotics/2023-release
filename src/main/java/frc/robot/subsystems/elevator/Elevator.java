@@ -129,6 +129,16 @@ public class Elevator extends SubsystemBase {
         < ELEVATOR_ROTATION_POSITION_TOLERANCE;
   }
 
+  public boolean atExtension(double targetExtension) {
+    return Math.abs(this.inputs.extensionPositionMeters - targetExtension)
+        < ELEVATOR_EXTENSION_POSITION_TOLERANCE;
+  }
+
+  public boolean atRotation(double targetRotation) {
+    return Math.abs(this.inputs.rotationPositionRadians - targetRotation)
+        < ELEVATOR_ROTATION_POSITION_TOLERANCE;
+  }
+
   public boolean atSetpoint() {
     return atExtensionSetpoint() && atRotationSetpoint();
   }
@@ -154,135 +164,83 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPositionRadians;
   }
 
-  public boolean storageElevatorPosition(){ // is the elevator in the storage position
-    if(getExtensionElevatorEncoderHeight() == 0 && getRotationElevatorEncoderAngle() == Units.degreesToRadians(20)){
+  public boolean storageElevatorPosition() { // is the elevator in the storage position
+    if (getExtensionElevatorEncoderHeight() == 0
+        && getRotationElevatorEncoderAngle() == Units.degreesToRadians(20)) {
       return true;
     }
     return false;
   }
 
-  public boolean coneFloorPosition(){
-    if(getExtensionElevatorEncoderHeight() == Units.inchesToMeters(34) && getRotationElevatorEncoderAngle() == Units.degreesToRadians(82)){
+  public boolean coneFloorPosition() {
+    if (getExtensionElevatorEncoderHeight() == Units.inchesToMeters(34)
+        && getRotationElevatorEncoderAngle() == Units.degreesToRadians(82)) {
       return true;
     }
     return false;
   }
-  
-  public boolean cubeFloorPosition(){
-    if(getExtensionElevatorEncoderHeight() == Units.inchesToMeters(8) && getRotationElevatorEncoderAngle() == Units.degreesToRadians(43)){
+
+  public boolean cubeFloorPosition() {
+    if (getExtensionElevatorEncoderHeight() == Units.inchesToMeters(8)
+        && getRotationElevatorEncoderAngle() == Units.degreesToRadians(43)) {
       return true;
     }
     return false;
   }
 
   public void setPosition(double rotation, double extension, boolean intakeStored) {
-    // if intake is in:
-    // if extension < 22; only extend
-    // if extension > 52; only rotate until around 48
-    // if rotation > 80; only rotate if extension > 45
+    boolean extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
+    boolean rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();
 
-    // if intake is out:
-    // if extension < 28; only extend 
-    // if extension > 52; only rotate until around 48
+    /*
+     * We can't call atRotationSetpoint or atExtensionSetpoint because we haven't set
+     * the new setpoint values yet. Instead, we will compare the current position to the eventual position.
+     */
 
-if(intakeStored) {
-  if(storageElevatorPosition()){ // storage position, stage 1
-    if((extension > Units.inchesToMeters(23)) && (this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(22))){
-      this.setElevatorExtension(Units.inchesToMeters(22));
-    }
-    
-    else if((extension == Units.inchesToMeters(19)) && (this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(19))) {
-      this.setElevatorExtension(extension);
-      if(this.getExtensionElevatorEncoderHeight() == 19){
+    if (extensionIsIncreasing && !rotationIsIncreasing) {
+      if ((extension < Units.inchesToMeters(52.0))
+          || (this.getRotationElevatorEncoderAngle() <= Units.degreesToRadians(90.0 - 48.0))
+          || (this.atRotation(rotation))) {
+        this.setElevatorExtension(extension);
+      } else {
+        this.setElevatorExtension(Units.inchesToMeters(52.0));
+      }
+
+      if ((this.getExtensionElevatorEncoderHeight() >= Units.inchesToMeters(22.0))
+          || (this.atExtension(extension))) {
         this.setElevatorRotation(rotation);
       }
-    }
+    } else if (!extensionIsIncreasing && rotationIsIncreasing) {
+      if ((extension >= Units.inchesToMeters(22.0))
+          || (this.getRotationElevatorEncoderAngle() >= Units.degreesToRadians(90.0 - 20.0))
+          || (this.atRotation(rotation))) {
+        this.setElevatorExtension(extension);
+      } else {
+        this.setElevatorExtension(Units.inchesToMeters(22.0));
+      }
 
-  }
-  else if(coneFloorPosition()){ // cone floor position
+      if ((this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(52.0))
+          || (this.atExtension(extension))) {
+        this.setElevatorRotation(rotation);
+      }
+    } else if (extensionIsIncreasing && rotationIsIncreasing) {
+      if ((extension < Units.inchesToMeters(52.0))
+          || (this.getRotationElevatorEncoderAngle() >= Units.degreesToRadians(90.0 - 48.0))
+          || (this.atRotation(rotation))) {
+        this.setElevatorExtension(extension);
+      } else {
+        this.setElevatorExtension(Units.inchesToMeters(52.0));
+      }
 
-  }
-  else if(cubeFloorPosition()){ // cube floor position
-
-  }
-  
-  if (extension < Units.inchesToMeters(22)) {
-    this.setElevatorExtension(extension);
-  } else if (extension > Units.inchesToMeters(52)) {
-    this.setElevatorRotation(rotation);
-    if (rotation < Units.degreesToRadians(49) && rotation > Units.degreesToRadians(47)) {
-      this.setElevatorExtension(extension);
-  }}
-  else if (rotation > Units.degreesToRadians(80))
-  {
-    this.setElevatorExtension(extension);
-    if(extension > Units.inchesToMeters(45))
-    {
       this.setElevatorRotation(rotation);
-    }
-  }
-   else {
-    this.setElevatorRotation(rotation);
-    this.setElevatorExtension(extension);
-  }
-}
-else if(!intakeStored) {
-  if(extension < Units.inchesToMeters(28)) {
-    this.setElevatorExtension(extension);
-  }
-  else if(extension > Units.inchesToMeters(52)) {
-    this.setElevatorRotation(rotation);
-    if(rotation < Units.degreesToRadians(49) && rotation > Units.degreesToRadians(47)) {
+    } else if (!extensionIsIncreasing && !rotationIsIncreasing) {
+      if ((this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(52.0))
+          || (this.atExtension(extension))) {
+        this.setElevatorRotation(rotation);
+      }
+
       this.setElevatorExtension(extension);
     }
-  }
-  else {
-    this.setElevatorRotation(rotation);
-    this.setElevatorExtension(extension);
-    }
-  }
-  
-  //   if((INTAKE_STORED) && (getRotationElevatorEncoderAngle() < Units.degreesToRadians(7) && (rotation > Units.degreesToRadians(7)))){ // radians
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() < Units.inchesToMeters(66)) &&
-  //   (getRotationElevatorEncoderAngle() > Units.degreesToRadians(32)) && (Units.degreesToRadians(46) < rotation)){// meters, radians
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   else if((INTAKE_STORED) && (getExtensionElevatorEncoderHeight() ) &&
-  //   (getRotationElevatorEncoderAngle() < 1.0821)){ // 0 is in meters, radians
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() == 0) &&
-  //   (getRotationElevatorEncoderAngle() < 1.25664)){  // radians
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   else if((!INTAKE_STORED) && (getExtensionElevatorEncoderHeight() > .686) &&
-  //   (getRotationElevatorEncoderAngle() < 1.50098)){ // .686meters, .478 radians
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.50098) &&
-  //   (getExtensionElevatorEncoderHeight() > .686)){// .478meter, .686radians
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() > 1.50098)){ // FIXME if we
-  //   are careful to position the intake such that its hood is collapsed by the elevator
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   else if((!INTAKE_STORED) && (getRotationElevatorEncoderAngle() < 1.37881) &&
-  //   (getExtensionElevatorEncoderHeight() > .305)){ // .44radians, .305meters
-  //     this.setElevatorExtension(extension);
-  //     this.setElevatorRotation(rotation);
-  //   }
-  //   this.setElevatorExtension(extension);
-  //   this.setElevatorRotation(rotation);
   }
 
   public boolean nearExtensionMaximum() {
@@ -301,7 +259,7 @@ else if(!intakeStored) {
     return rotationSetpoint;
   }
 
-  private double timeToSetpoint(){
+  private double timeToSetpoint() {
     return 0;
   }
 

@@ -28,12 +28,12 @@ public class ElevatorIOSim implements ElevatorIO {
       new TunableNumber("Elevator/RotationKd", SIM_ROTATION_KD);
 
   /* Simulated Angle Motor PID Values */
-  private static final double SIM_EXTENSION_KP = 10.0;
+  private static final double SIM_EXTENSION_KP = 2.0;
   private static final double SIM_EXTENSION_KI = 0.0;
   private static final double SIM_EXTENSION_KD = 0.0;
 
   /* Simulated Drive Motor PID Values */
-  private static final double SIM_ROTATION_KP = 10.0;
+  private static final double SIM_ROTATION_KP = 2.0;
   private static final double SIM_ROTATION_KI = 0.0;
   private static final double SIM_ROTATION_KD = 0.0;
 
@@ -46,7 +46,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   // FIXME: check all values based on CAD
   private ElevatorSim elevatorSim =
-      new ElevatorSim(DCMotor.getFalcon500(1), 3.0, 4.5, .05, 0.0, 0.9, true);
+      new ElevatorSim(DCMotor.getFalcon500(1), 3.0, 4.5, .05, 0.0, 1.651, false);
   private SingleJointedArmSim armSim =
       new SingleJointedArmSim(
           DCMotor.getFalcon500(1),
@@ -56,7 +56,7 @@ public class ElevatorIOSim implements ElevatorIO {
           0.0,
           1.57,
           10.0,
-          true);
+          false);
 
   private PIDController extensionController =
       new PIDController(extensionKp.get(), extensionKi.get(), extensionKd.get());
@@ -135,7 +135,6 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
     isExtensionOpenLoop = false;
-    extensionController.reset();
     extensionSetpointMeters = position;
   }
 
@@ -150,7 +149,6 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void setRotationPosition(double position, double arbitraryFeedForward) {
     isRotationOpenLoop = false;
-    rotationController.reset();
     rotationSetpointRadians = position;
   }
 }

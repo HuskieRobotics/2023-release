@@ -154,6 +154,27 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPositionRadians;
   }
 
+  public boolean storageElevatorPosition(){ // is the elevator in the storage position
+    if(getExtensionElevatorEncoderHeight() == 0 && getRotationElevatorEncoderAngle() == Units.degreesToRadians(20)){
+      return true;
+    }
+    return false;
+  }
+
+  public boolean coneFloorPosition(){
+    if(getExtensionElevatorEncoderHeight() == Units.inchesToMeters(34) && getRotationElevatorEncoderAngle() == Units.degreesToRadians(82)){
+      return true;
+    }
+    return false;
+  }
+  
+  public boolean cubeFloorPosition(){
+    if(getExtensionElevatorEncoderHeight() == Units.inchesToMeters(8) && getRotationElevatorEncoderAngle() == Units.degreesToRadians(43)){
+      return true;
+    }
+    return false;
+  }
+
   public void setPosition(double rotation, double extension, boolean intakeStored) {
     // if intake is in:
     // if extension < 22; only extend
@@ -163,7 +184,28 @@ public class Elevator extends SubsystemBase {
     // if intake is out:
     // if extension < 28; only extend 
     // if extension > 52; only rotate until around 48
+
 if(intakeStored) {
+  if(storageElevatorPosition()){ // storage position, stage 1
+    if((extension > Units.inchesToMeters(23)) && (this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(22))){
+      this.setElevatorExtension(Units.inchesToMeters(22));
+    }
+    
+    else if((extension == Units.inchesToMeters(19)) && (this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(19))) {
+      this.setElevatorExtension(extension);
+      if(this.getExtensionElevatorEncoderHeight() == 19){
+        this.setElevatorRotation(rotation);
+      }
+    }
+
+  }
+  else if(coneFloorPosition()){ // cone floor position
+
+  }
+  else if(cubeFloorPosition()){ // cube floor position
+
+  }
+  
   if (extension < Units.inchesToMeters(22)) {
     this.setElevatorExtension(extension);
   } else if (extension > Units.inchesToMeters(52)) {

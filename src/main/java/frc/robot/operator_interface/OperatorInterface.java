@@ -85,7 +85,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger setLEDAnimation(){
+  public default Trigger setLEDAnimation() {
     return new Trigger(() -> false);
   }
 }

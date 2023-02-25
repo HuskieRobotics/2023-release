@@ -75,5 +75,4 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger setLEDAnimation() {
     return new Trigger(controller::getXButton);
   }
-
 }

@@ -63,13 +63,13 @@ public class LEDs extends SubsystemBase {
   private Animation toAnimate;
 
   public LEDs() {
-    candle = new CANdle(22);
+    candle = new CANdle(22, RobotConfig.getInstance().getCANBusName());
 
     CANdleConfiguration configSettings = new CANdleConfiguration();
     configSettings.statusLedOffWhenActive = true;
     configSettings.disableWhenLOS = false;
     configSettings.stripType = LEDStripType.GRB;
-    configSettings.brightnessScalar = 0.1;
+    configSettings.brightnessScalar = .1;
     configSettings.vBatOutputMode = VBatOutputMode.Modulated;
     candle.configAllSettings(configSettings, 100);
     changeAnimationTo(AnimationTypes.RAINBOW);
@@ -228,7 +228,7 @@ public class LEDs extends SubsystemBase {
         break;
 
       case RAINBOW:
-        toAnimate = new RainbowAnimation(0.1, 0.1, ledCount);
+        toAnimate = new RainbowAnimation(1, 0.5, ledCount);
         break;
 
       case RGBFADE:

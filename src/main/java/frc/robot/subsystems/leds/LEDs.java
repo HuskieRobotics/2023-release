@@ -18,12 +18,12 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 
 public class LEDs extends SubsystemBase {
   private final CANdle candle;
+  private boolean[] errors;
   private final int ledCount =
       RobotConfig.getInstance().getLedCount(); // that is how many are there for testing
 
@@ -31,6 +31,28 @@ public class LEDs extends SubsystemBase {
   // not all of these will be used or are that important but it is just good to have a
   // storage of everything
   // FIXME: these need to be changed bases on what aidan needs!
+  
+  
+  public enum RobotStateColors {
+    WHITE,
+    YELLOW,
+    PURPLE,
+    GREEN,
+    BLUE,
+    ORANGE,
+    RED,
+  }
+  
+  public enum Errors {
+    LOSS_OF_CAN_DEVICE,
+    VISION_FAILURE_DISABLED,
+    LOW_VOLTAGE,
+    MANIPULATOR_SENSOR_DISABLED,
+    VISION_FAILURE_NO_CAMERA,
+    AUTO_DRIVE_DISABLED,
+  }
+  
+  
   public enum AnimationTypes {
     COLORFLOW,
     FIRE,
@@ -50,20 +72,19 @@ public class LEDs extends SubsystemBase {
     RED,
   }
 
-  public enum RobotStateColors {
-    YELLOW,
-    PURPLE,
-    GREEN,
-    BLUE,
-    ORANGE,
-    RED,
-  }
 
-  //animation to be set
+  // animation to be set
   private Animation toAnimate;
 
   public LEDs() {
     candle = new CANdle(22, RobotConfig.getInstance().getCANBusName());
+    errors = new boolean[6];
+    // 0 = loss of can device
+    // 1 = vision failure, if we disabled vision
+    // 2 = low voltage
+    // 3 = manipulator sensor disabled
+    // 4 = vision failure, if we dont have a camera
+    // 5 = auto drive disabled
 
     CANdleConfiguration configSettings = new CANdleConfiguration();
     configSettings.statusLedOffWhenActive = true;
@@ -72,7 +93,36 @@ public class LEDs extends SubsystemBase {
     configSettings.brightnessScalar = .1;
     configSettings.vBatOutputMode = VBatOutputMode.Modulated;
     candle.configAllSettings(configSettings, 100);
-    changeAnimationTo(AnimationTypes.RAINBOW);
+    // changeAnimationTo(AnimationTypes.RAINBOW);
+  }
+
+  @Override
+  public void periodic() {
+    // setting top values
+    if (errors[0]) { // loss of can device
+      this.changeRobotStateColors(RobotStateColors.RED, null);
+    } else if (errors[1]) {
+      this.changeRobotStateColors(RobotStateColors.ORANGE, null);
+    } else if (errors[2]) { // low voltage
+      this.changeRobotStateColors(RobotStateColors.YELLOW, null);
+    } else if (errors[3]) { // manipulator sensor disabled
+      this.changeRobotStateColors(RobotStateColors.GREEN, null);
+    } else if (errors[4]) { // vision failure, we dont have a camera
+      this.changeRobotStateColors(RobotStateColors.BLUE, null);
+    } else if (errors[5]) { // auto drive disabled
+      this.changeRobotStateColors(RobotStateColors.PURPLE, null);
+    } else { // nothing is wrong, deafult to white
+      this.changeRobotStateColors(null, null);
+    }
+
+    // setting side values
+    // how to determine what to set the side values to? operator interface ??
+  }
+
+  public void setErrorIndex(int index, boolean isError) {
+    if (index < 6) { 
+      errors[index] = isError;
+    }
   }
 
   public void setLED(int r, int g, int b, int w) {
@@ -127,66 +177,73 @@ public class LEDs extends SubsystemBase {
   public void changeRobotStateColors(RobotStateColors topColor, RobotStateColors sideColor) {
     switch (topColor) {
       case YELLOW:
-        candle.setLEDs(255, 255, 0, 0, 63, 29);
+        candle.setLEDs(255, 255, 0, 0, 71, 29);
         break;
 
       case PURPLE:
-        candle.setLEDs(255, 0, 255, 0, 63, 29);
-  
+        candle.setLEDs(255, 0, 255, 0, 71, 29);
         break;
 
       case GREEN:
-        candle.setLEDs(0, 255, 0, 0, 63, 29);
+        candle.setLEDs(0, 255, 0, 0, 71, 29);
         break;
 
       case BLUE:
-        candle.setLEDs(0, 0, 255, 0, 63, 29);
+        candle.setLEDs(0, 0, 255, 0, 71, 29);
         break;
 
       case ORANGE:
-        candle.setLEDs(255, 172, 28, 0, 63, 29); 
+        candle.setLEDs(255, 172, 28, 0, 71, 29);
         break;
 
       case RED:
-        candle.setLEDs(255, 0, 0, 0, 63, 29);
+        candle.setLEDs(255, 0, 0, 0, 71, 29);
+        break;
+
+      default:
+        candle.setLEDs(255, 255, 255, 0, 71, 29);
         break;
     }
 
     switch (sideColor) {
       case YELLOW:
-        candle.setLEDs(255, 255, 0, 0, 0, 63);
-        candle.setLEDs(255, 0, 0, 0, 93, 80);
+        candle.setLEDs(255, 255, 0, 0, 0, 71);
+        candle.setLEDs(255, 0, 0, 0, 101, 80);
         break;
 
       case PURPLE:
-        candle.setLEDs(255, 0, 255, 0, 0, 63);
-        candle.setLEDs(255, 0, 255, 0, 93, 80);
+        candle.setLEDs(255, 0, 255, 0, 0, 71);
+        candle.setLEDs(255, 0, 255, 0, 101, 80);
         break;
 
       case GREEN:
-        candle.setLEDs(0, 255, 0, 0, 0, 63);
-        candle.setLEDs(0, 255, 0, 0, 93, 80);
+        candle.setLEDs(0, 255, 0, 0, 0, 71);
+        candle.setLEDs(0, 255, 0, 0, 101, 80);
         break;
 
       case BLUE:
-        candle.setLEDs(0, 0, 255, 0, 0, 63);
-        candle.setLEDs(0, 0, 255, 0, 93, 80);
+        candle.setLEDs(0, 0, 255, 0, 0, 71);
+        candle.setLEDs(0, 0, 255, 0, 101, 80);
         break;
 
       case ORANGE:
-        candle.setLEDs(255, 172, 28, 0, 0, 63);
-        candle.setLEDs(255, 172, 28, 0, 93, 80);
+        candle.setLEDs(255, 172, 28, 0, 0, 71);
+        candle.setLEDs(255, 172, 28, 0, 101, 80);
         break;
 
       case RED:
-        candle.setLEDs(255, 0, 0, 0, 0, 63);
-        candle.setLEDs(255, 0, 0, 0, 93, 80);
+        candle.setLEDs(255, 0, 0, 0, 0, 71);
+        candle.setLEDs(255, 0, 0, 0, 101, 80);
+        break;
+      
+      default:
+        candle.setLEDs(255, 255, 255, 0, 0, 71);
+        candle.setLEDs(255, 255, 255, 0, 101, 80);
         break;
     }
-      
   }
 
-  //FIXME: Once Aidan gives the current animations, add them here
+  // FIXME: Once Aidan gives the current animations, add them here
   public void changeAnimationTo(AnimationTypes newAnimation) {
 
     switch (newAnimation) {

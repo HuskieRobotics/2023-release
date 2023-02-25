@@ -49,13 +49,11 @@ import frc.robot.configs.TestBoardConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
-import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.AnimationTypes;
-import frc.robot.subsystems.leds.LEDs.RobotStateColors;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -345,7 +343,11 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
-    oi.setLEDAnimation().onTrue(Commands.runOnce(() -> led.changeRobotStateColors(RobotStateColors.RED, RobotStateColors.BLUE), led));
+    oi.setLEDAnimation()
+        .onTrue(
+            Commands.runOnce(
+                () -> led.changeRobotStateColors(RobotStateColors.RED, RobotStateColors.BLUE),
+                led));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
@@ -361,7 +363,7 @@ public class RobotContainer {
             Commands.print("replace with command to set LED color for auto control"),
             setElevatorPosition,
             Commands.sequence(
-                new MoveToGrid(
+                new MoveToGrid( 
                     drivetrain), // , 2.0), // replace 2.0 with the time to position the elevator
                 // (e.g., setElevatorPosition.getTimeToPosition())
                 Commands.runOnce(

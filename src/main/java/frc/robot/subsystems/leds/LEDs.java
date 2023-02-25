@@ -18,6 +18,7 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 
@@ -41,6 +42,15 @@ public class LEDs extends SubsystemBase {
     TWINKLE,
     TWINKLEOFF,
     SETALL,
+    YELLOW,
+    PURPLE,
+    GREEN,
+    BLUE,
+    ORANGE,
+    RED,
+  }
+
+  public enum RobotStateColors {
     YELLOW,
     PURPLE,
     GREEN,
@@ -112,6 +122,68 @@ public class LEDs extends SubsystemBase {
 
   public void configStatusLedState(boolean offWhenActive) {
     candle.configStatusLedState(offWhenActive, 0);
+  }
+
+  public void changeRobotStateColors(RobotStateColors topColor, RobotStateColors sideColor) {
+    switch (topColor) {
+      case YELLOW:
+        candle.setLEDs(255, 255, 0, 0, 63, 29);
+        break;
+
+      case PURPLE:
+        candle.setLEDs(255, 0, 255, 0, 63, 29);
+  
+        break;
+
+      case GREEN:
+        candle.setLEDs(0, 255, 0, 0, 63, 29);
+        break;
+
+      case BLUE:
+        candle.setLEDs(0, 0, 255, 0, 63, 29);
+        break;
+
+      case ORANGE:
+        candle.setLEDs(255, 172, 28, 0, 63, 29); 
+        break;
+
+      case RED:
+        candle.setLEDs(255, 0, 0, 0, 63, 29);
+        break;
+    }
+
+    switch (sideColor) {
+      case YELLOW:
+        candle.setLEDs(255, 255, 0, 0, 0, 63);
+        candle.setLEDs(255, 0, 0, 0, 93, 80);
+        break;
+
+      case PURPLE:
+        candle.setLEDs(255, 0, 255, 0, 0, 63);
+        candle.setLEDs(255, 0, 255, 0, 93, 80);
+        break;
+
+      case GREEN:
+        candle.setLEDs(0, 255, 0, 0, 0, 63);
+        candle.setLEDs(0, 255, 0, 0, 93, 80);
+        break;
+
+      case BLUE:
+        candle.setLEDs(0, 0, 255, 0, 0, 63);
+        candle.setLEDs(0, 0, 255, 0, 93, 80);
+        break;
+
+      case ORANGE:
+        candle.setLEDs(255, 172, 28, 0, 0, 63);
+        candle.setLEDs(255, 172, 28, 0, 93, 80);
+        break;
+
+      case RED:
+        candle.setLEDs(255, 0, 0, 0, 0, 63);
+        candle.setLEDs(255, 0, 0, 0, 93, 80);
+        break;
+    }
+      
   }
 
   //FIXME: Once Aidan gives the current animations, add them here

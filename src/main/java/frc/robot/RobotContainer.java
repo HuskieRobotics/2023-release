@@ -54,6 +54,7 @@ import frc.robot.subsystems.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.AnimationTypes;
+import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -344,7 +345,7 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
-    oi.setLEDAnimation().onTrue(Commands.runOnce(() -> led.changeAnimationTo(AnimationTypes.FIRE), led));
+    oi.setLEDAnimation().onTrue(Commands.runOnce(() -> led.changeRobotStateColors(RobotStateColors.RED, RobotStateColors.BLUE), led));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {

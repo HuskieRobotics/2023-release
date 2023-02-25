@@ -483,7 +483,7 @@ public abstract class RobotConfig {
     return 0.0;
   }
 
-  public int getLedCount(){
+  public int getLedCount() {
     return 0;
   }
 }

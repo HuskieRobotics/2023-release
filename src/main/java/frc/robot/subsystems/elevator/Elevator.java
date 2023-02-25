@@ -164,29 +164,7 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPositionRadians;
   }
 
-  public boolean storageElevatorPosition() { // is the elevator in the storage position
-    if (getExtensionElevatorEncoderHeight() == 0
-        && getRotationElevatorEncoderAngle() == Units.degreesToRadians(20)) {
-      return true;
-    }
-    return false;
-  }
-
-  public boolean coneFloorPosition() {
-    if (getExtensionElevatorEncoderHeight() == Units.inchesToMeters(34)
-        && getRotationElevatorEncoderAngle() == Units.degreesToRadians(82)) {
-      return true;
-    }
-    return false;
-  }
-
-  public boolean cubeFloorPosition() {
-    if (getExtensionElevatorEncoderHeight() == Units.inchesToMeters(8)
-        && getRotationElevatorEncoderAngle() == Units.degreesToRadians(43)) {
-      return true;
-    }
-    return false;
-  }
+  
 
   public void setPosition(double rotation, double extension, boolean intakeStored) {
     boolean extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();

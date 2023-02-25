@@ -36,8 +36,8 @@ public class MK4IRobotConfig extends RobotConfig {
 
   private static final double TRACKWIDTH_METERS = 0.574675; // 22.625 inches
   private static final double WHEELBASE_METERS = 0.619125; // 24.375 inches
-  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8636; // meters
-  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8636; // meters
+  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8255; // meters
+  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8255; // meters
 
   // FIXME: tune PID values for the angle and drive motors for the swerve modules
 

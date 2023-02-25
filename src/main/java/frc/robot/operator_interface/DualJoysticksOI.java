@@ -72,6 +72,15 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getIntakeChuteButton() {
+    return translateJoystickButtons[4];
+  }
+
+  @Override
+  public Node getNode() {
+    return Node.NODE_5;
+  }
+
   public Trigger getTurboButton() {
     return translateJoystickButtons[1];
   }

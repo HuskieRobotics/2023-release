@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static frc.robot.Constants.*;
+import static frc.robot.FieldRegionConstants.*;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -12,6 +13,8 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,6 +44,7 @@ import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizatio
 import frc.robot.commands.FollowPath;
 import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.MoveToGrid;
+import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
@@ -69,6 +73,7 @@ public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
   private RobotConfig config;
   private Drivetrain drivetrain;
+  private Alliance lastAlliance = DriverStation.Alliance.Invalid;
   private Manipulator manipulator;
   private Vision vision;
 
@@ -250,9 +255,48 @@ public class RobotContainer {
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
     LiveWindow.disableAllTelemetry();
 
+    constructField();
+
     updateOI();
 
     configureAutoCommands();
+  }
+
+  public void constructField() {
+    Field2d.getInstance()
+        .setRegions(
+            new Region2d[] {
+              COMMUNITY_REGION_1,
+              COMMUNITY_REGION_2,
+              COMMUNITY_REGION_3,
+              LOADING_ZONE_REGION_1,
+              LOADING_ZONE_REGION_2,
+              FIELD_ZONE_REGION_1,
+              FIELD_ZONE_REGION_2,
+              FIELD_ZONE_REGION_3
+            });
+
+    COMMUNITY_REGION_1.addNeighbor(COMMUNITY_REGION_2, COMMUNITY_REGION_1_2_TRANSITION_POINT);
+    COMMUNITY_REGION_2.addNeighbor(COMMUNITY_REGION_1, COMMUNITY_REGION_2_1_TRANSITION_POINT);
+    COMMUNITY_REGION_1.addNeighbor(COMMUNITY_REGION_3, COMMUNITY_REGION_1_3_TRANSITION_POINT);
+    COMMUNITY_REGION_3.addNeighbor(COMMUNITY_REGION_1, COMMUNITY_REGION_3_1_TRANSITION_POINT);
+    COMMUNITY_REGION_2.addNeighbor(FIELD_ZONE_REGION_1, COMMUNITY_2_TO_FIELD_1_TRANSITION_POINT);
+    COMMUNITY_REGION_3.addNeighbor(FIELD_ZONE_REGION_1, COMMUNITY_3_TO_FIELD_1_TRANSITION_POINT);
+
+    LOADING_ZONE_REGION_1.addNeighbor(
+        LOADING_ZONE_REGION_2, LOADING_ZONE_REGION_1_2_TRANSITION_POINT);
+    LOADING_ZONE_REGION_2.addNeighbor(
+        LOADING_ZONE_REGION_1, LOADING_ZONE_REGION_2_1_TRANSITION_POINT);
+    LOADING_ZONE_REGION_1.addNeighbor(FIELD_ZONE_REGION_3, LOADING_1_TO_FIELD_3_TRANSITION_POINT);
+
+    FIELD_ZONE_REGION_1.addNeighbor(FIELD_ZONE_REGION_2, FIELD_ZONE_REGION_1_2_TRANSITION_POINT);
+    FIELD_ZONE_REGION_1.addNeighbor(FIELD_ZONE_REGION_3, FIELD_ZONE_REGION_1_3_TRANSITION_POINT);
+    FIELD_ZONE_REGION_2.addNeighbor(FIELD_ZONE_REGION_1, FIELD_ZONE_REGION_2_1_TRANSITION_POINT);
+    FIELD_ZONE_REGION_3.addNeighbor(FIELD_ZONE_REGION_1, FIELD_ZONE_REGION_3_1_TRANSITION_POINT);
+    FIELD_ZONE_REGION_1.addNeighbor(COMMUNITY_REGION_2, FIELD_1_TO_COMMUNITY_2_TRANSITION_POINT);
+    FIELD_ZONE_REGION_1.addNeighbor(COMMUNITY_REGION_3, FIELD_1_TO_COMMUNITY_3_TRANSITION_POINT);
+    FIELD_ZONE_REGION_2.addNeighbor(LOADING_ZONE_REGION_1, FIELD_2_TO_LOADING_1_TRANSITION_POINT);
+    FIELD_ZONE_REGION_2.addNeighbor(LOADING_ZONE_REGION_2, FIELD_2_TO_LOADING_2_TRANSITION_POINT);
   }
 
   /**
@@ -318,6 +362,15 @@ public class RobotContainer {
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
 
+    // move to grid / loading zone
+    oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
+    oi.getIntakeShelfRightButton()
+        .onTrue(new MoveToLoadingZone(drivetrain, FieldRegionConstants.DOUBLE_SUBSTATION_LOWER));
+    oi.getIntakeShelfLeftButton()
+        .onTrue(new MoveToLoadingZone(drivetrain, FieldRegionConstants.DOUBLE_SUBSTATION_UPPER));
+    oi.getIntakeChuteButton()
+        .onTrue(new MoveToLoadingZone(drivetrain, FieldRegionConstants.SINGLE_SUBSTATION));
+
     // toggle manipulator open/close
     oi.toggleManipulatorOpenCloseButton()
         .toggleOnTrue(
@@ -326,11 +379,10 @@ public class RobotContainer {
                 new ReleaseGamePiece(manipulator),
                 manipulator::isOpened));
 
-    // move to grid
-    oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
-
+    // turbo
     oi.getTurboButton().onTrue(Commands.runOnce(drivetrain::enableTurbo, drivetrain));
     oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
+
     // enable/disable vision
     oi.getVisionIsEnabledSwitch().onTrue(Commands.runOnce(() -> vision.enable(true), vision));
     oi.getVisionIsEnabledSwitch()
@@ -577,7 +629,7 @@ public class RobotContainer {
                 new FollowPath(blueLoadingSide2ConePath.get(0), drivetrain, true, true),
                 blueLoadingSide2ConePath.get(0).getMarkers(),
                 autoEventMap),
-            new DriveToPose(drivetrain, FieldConstants.GRID_3_NODE_1),
+            new DriveToPose(drivetrain, FieldRegionConstants.GRID_3_NODE_1),
             Commands.runOnce(
                 () -> drivetrain.drive(-squaringSpeed.get(), 0.0, 0.0, true, true), drivetrain),
             Commands.waitSeconds(squaringDuration.get()),
@@ -674,5 +726,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void checkAllianceColor() {
+    if (DriverStation.getAlliance() != lastAlliance) {
+      lastAlliance = DriverStation.getAlliance();
+      vision.updateAlliance(lastAlliance);
+      Field2d.getInstance().updateAlliance(lastAlliance);
+    }
   }
 }

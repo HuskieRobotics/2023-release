@@ -45,6 +45,7 @@ public class SingleHandheldOI implements OperatorInterface {
     return new Trigger(controller::getYButton);
   }
 
+  // TODO: Remove when simulated testing is done!
   @Override
   public Trigger getTranslationSlowModeButton() {
     return new Trigger(controller::getLeftBumper);
@@ -64,6 +65,11 @@ public class SingleHandheldOI implements OperatorInterface {
   @Override
   public Trigger getMoveToGridButton() {
     return new Trigger(controller::getAButton);
+  }
+
+  @Override
+  public Trigger getIntakeChuteButton() {
+    return new Trigger(controller::getXButton);
   }
 
   @Override

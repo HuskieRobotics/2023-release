@@ -15,6 +15,8 @@ public class ElevatorConstants {
     CONE_STORAGE,
     CUBE_STORAGE,
 
+    AUTO_STORAGE,
+
     CONE_INTAKE_FLOOR,
     CUBE_INTAKE_BUMPER,
 

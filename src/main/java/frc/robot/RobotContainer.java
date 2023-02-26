@@ -276,6 +276,7 @@ public class RobotContainer {
     // FIXME: remove after testing
     armChooser.addDefaultOption("CONE_STORAGE", Position.CONE_STORAGE);
     armChooser.addOption("CUBE_STORAGE", Position.CUBE_STORAGE);
+    armChooser.addOption("AUTO_STORAGE", Position.AUTO_STORAGE);
     armChooser.addOption("CONE_INTAKE_FLOOR", Position.CONE_INTAKE_FLOOR);
     armChooser.addOption("CUBE_INTAKE_BUMPER", Position.CUBE_INTAKE_BUMPER);
     armChooser.addOption("CONE_INTAKE_SHELF", Position.CONE_INTAKE_SHELF);

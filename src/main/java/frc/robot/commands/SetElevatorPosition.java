@@ -6,7 +6,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-public class SetPosition extends CommandBase {
+public class SetElevatorPosition extends CommandBase {
   private Elevator elevator;
   private double rotation;
   private double extension;
@@ -18,7 +18,7 @@ public class SetPosition extends CommandBase {
    * @param subsystem the elevator subsystem this command will control
    * @return
    */
-  public SetPosition(Elevator subsystem, LoggedDashboardChooser<Position> armChooser) {
+  public SetElevatorPosition(Elevator subsystem, LoggedDashboardChooser<Position> armChooser) {
     elevator = subsystem;
     this.armChooser = armChooser;
 

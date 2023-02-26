@@ -49,10 +49,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getMoveArmButton() { {
+  public default Trigger getMoveArmButton() {
     return new Trigger(() -> false);
   }
-  
+
   public default Trigger getTranslationSlowModeButton() {
     return new Trigger(() -> false);
   }

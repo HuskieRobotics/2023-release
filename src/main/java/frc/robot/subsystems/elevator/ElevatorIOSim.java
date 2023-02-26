@@ -55,7 +55,6 @@ public class ElevatorIOSim implements ElevatorIO {
           0.9,
           0.0,
           1.57,
-          10.0,
           false);
 
   private PIDController extensionController =

@@ -164,8 +164,6 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPositionRadians;
   }
 
-  
-
   public void setPosition(double rotation, double extension, boolean intakeStored) {
     boolean extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
     boolean rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();

@@ -44,9 +44,9 @@ import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizatio
 import frc.robot.commands.FollowPath;
 import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.MoveToGrid;
-import frc.robot.commands.SetPosition;
 import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
+import frc.robot.commands.SetElevatorPosition;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
@@ -761,7 +761,7 @@ public class RobotContainer {
 
   private void configureElevatorCommands() {
 
-    oi.getMoveArmButton().onTrue(new SetPosition(elevator, armChooser));
+    oi.getMoveArmButton().onTrue(new SetElevatorPosition(elevator, armChooser));
 
     // FIXME: delete after testing
     elevator.setDefaultCommand(

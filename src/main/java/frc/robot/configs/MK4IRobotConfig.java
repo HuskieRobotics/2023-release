@@ -15,29 +15,29 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 13;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 12;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 36.65;
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 37.35;
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 16;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 15;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 83.58;
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 83.49;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 260.68;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 259.62;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 10;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 9;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 7.91;
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 9.14;
 
   private static final int GYRO_ID = 18;
 
   private static final double TRACKWIDTH_METERS = 0.574675; // 22.625 inches
   private static final double WHEELBASE_METERS = 0.619125; // 24.375 inches
-  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8636; // meters
-  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8636; // meters
+  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8255; // meters
+  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8255; // meters
 
   // FIXME: tune PID values for the angle and drive motors for the swerve modules
 
@@ -53,18 +53,25 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double DRIVE_KD = 5.5;
   private static final double DRIVE_KF = 0.0;
 
-  private static final double DRIVE_KS = 0.66883;
-  private static final double DRIVE_KV = 2.01970;
+  private static final double DRIVE_KS = 0.25988;
+  private static final double DRIVE_KV = 2.46330;
   private static final double DRIVE_KA = 0.12872;
 
   private static final SwerveType SWERVE_TYPE = SwerveType.MK4I;
 
   private static final double MAX_VELOCITY_METERS_PER_SECOND = 4.78;
   private static final double MAX_COAST_VELOCITY_METERS_PER_SECOND = 0.05;
+  private static final double SLOW_MODE_MULTIPLIER = 0.75;
+
+  // FIXME: tune these
+  private static final double MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED = 4.0;
+  private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 2.0 * Math.PI;
 
   private static final String CAN_BUS_NAME = "canbus1";
 
   private static final String CAMERA_NAME = "OV9281";
+
+  private static final int DRIVER_CAMERA_PORT = 0;
 
   // FIXME: update this with the actual transform from the robot to the camera
   private static final Transform3d ROBOT_TO_CAMERA =
@@ -82,9 +89,21 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double AUTO_DRIVE_P_CONTROLLER = 6.0;
   private static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
   private static final double AUTO_DRIVE_D_CONTROLLER = 0.0;
-  private static final double AUTO_TURN_P_CONTROLLER = 10.0;
-  private static final double AUTO_TURN_I_CONTROLLER = 0.0;
-  private static final double AUTO_TURN_D_CONTROLLER = 0.0;
+  private static final double AUTO_TURN_P_CONTROLLER = 0.4;
+  private static final double AUTO_TURN_I_CONTROLLER = 1.6;
+  private static final double AUTO_TURN_D_CONTROLLER = 1.0;
+
+  // FIXME: tune all drive to pose constants
+  // Drive to Pose constants
+  private static final double DRIVE_TO_POSE_DRIVE_KP = 2.5;
+  private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
+  private static final double DRIVE_TO_POSE_THETA_KP = 7.0;
+  private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
+  private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.08;
+  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.035;
+
+  private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
+  private static final double SQUARING_DURATION_SECONDS = 1;
 
   @Override
   public double getSwerveAngleKP() {
@@ -222,6 +241,20 @@ public class MK4IRobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getRobotMaxDriveAcceleration() {
+    return MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED;
+  }
+
+  @Override
+  public double getRobotMaxTurnAcceleration() {
+    return MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
+  }
+
+  public double getRobotSlowModeMultiplier() {
+    return SLOW_MODE_MULTIPLIER;
+  }
+
+  @Override
   public double getRobotMaxCoastVelocity() {
     return MAX_COAST_VELOCITY_METERS_PER_SECOND;
   }
@@ -277,6 +310,11 @@ public class MK4IRobotConfig extends RobotConfig {
   }
 
   @Override
+  public int getDriverCameraPort() {
+    return DRIVER_CAMERA_PORT;
+  }
+
+  @Override
   public int getPneumaticsHubCANID() {
     return PNEUMATICS_HUB_ID;
   }
@@ -294,5 +332,67 @@ public class MK4IRobotConfig extends RobotConfig {
   @Override
   public int getRevLowPressureSensorChannel() {
     return REV_LOW_PRESSURE_SENSOR_CHANNEL;
+  }
+
+  @Override
+  public double getDriveToPoseDriveKP() {
+    return DRIVE_TO_POSE_DRIVE_KP;
+  }
+
+  @Override
+  public double getDriveToPoseDriveKD() {
+    return DRIVE_TO_POSE_DRIVE_KD;
+  }
+
+  @Override
+  public double getDriveToPoseThetaKP() {
+    return DRIVE_TO_POSE_THETA_KP;
+  }
+
+  @Override
+  public double getDriveToPoseThetaKD() {
+    return DRIVE_TO_POSE_THETA_KD;
+  }
+
+  @Override
+  public double getDriveToPoseDriveMaxVelocity() {
+    return getAutoMaxSpeed();
+  }
+
+  @Override
+  public double getDriveToPoseDriveMaxAcceleration() {
+    return getAutoMaxAcceleration();
+  }
+
+  @Override
+  public double getDriveToPoseTurnMaxVelocity() {
+    return getDriveToPoseDriveMaxVelocity()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  @Override
+  public double getDriveToPoseTurnMaxAcceleration() {
+    return getDriveToPoseDriveMaxAcceleration()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  @Override
+  public double getDriveToPoseDriveTolerance() {
+    return DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS;
+  }
+
+  @Override
+  public double getDriveToPoseThetaTolerance() {
+    return DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS;
+  }
+
+  @Override
+  public double getSquaringSpeed() {
+    return SQUARING_SPEED_METERS_PER_SECOND;
+  }
+
+  @Override
+  public double getSquaringDuration() {
+    return SQUARING_DURATION_SECONDS;
   }
 }

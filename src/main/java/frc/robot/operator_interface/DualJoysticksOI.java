@@ -56,7 +56,13 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public Trigger getXStanceButton() {
-    return translateJoystickButtons[1];
+    return rotateJoystickButtons[4];
+  }
+
+  @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    // vision is always enabled with dual joysticks as there is no switch to disable
+    return new Trigger(() -> true);
   }
 
   @Override
@@ -71,12 +77,16 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getHybridLeftMiddleGridButton() {
+  public Trigger getIntakeChuteButton() {
     return translateJoystickButtons[4];
   }
 
   @Override
-  public Trigger getHybridLeftMiddleColumnButton() {
-    return translateJoystickButtons[4];
+  public Node getNode() {
+    return Node.NODE_5;
+  }
+
+  public Trigger getTurboButton() {
+    return translateJoystickButtons[1];
   }
 }

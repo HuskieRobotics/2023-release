@@ -27,10 +27,11 @@ public class Vision extends SubsystemBase {
   private VisionIO visionIO;
   private final VisionIOInputs io = new VisionIOInputs();
   private AprilTagFieldLayout layout;
-  private DriverStation.Alliance lastAlliance = DriverStation.Alliance.Invalid;
 
   private double lastTimestamp;
   private SwerveDrivePoseEstimator poseEstimator;
+  private boolean isEnabled = true;
+  private DriverStation.Alliance lastAlliance = DriverStation.Alliance.Invalid;
 
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -62,9 +63,16 @@ public class Vision extends SubsystemBase {
     return io.lastResult;
   }
 
+  public void updateAlliance(DriverStation.Alliance newAlliance) {
+    if (newAlliance == DriverStation.Alliance.Red) {
+      layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+    } else {
+      layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+    }
+  }
+
   @Override
   public void periodic() {
-
     visionIO.updateInputs(io);
     Logger.getInstance().processInputs("Vision", io);
 
@@ -72,8 +80,17 @@ public class Vision extends SubsystemBase {
       lastAlliance = DriverStation.getAlliance();
       if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
         layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kRedAllianceWallRightSide);
       } else {
         layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        visionIO.setLayoutOrigin(OriginPosition.kBlueAllianceWallRightSide);
+      }
+
+      for (AprilTag tag : layout.getTags()) {
+        if (layout.getTagPose(tag.ID).isPresent()) {
+          Logger.getInstance()
+              .recordOutput("Vision/AprilTags/" + tag.ID, layout.getTagPose(tag.ID).get());
+        }
       }
     }
 
@@ -89,22 +106,31 @@ public class Vision extends SubsystemBase {
             Pose3d robotPose =
                 cameraPose.transformBy(
                     RobotConfig.getInstance().getRobotToCameraTransform().inverse());
+            Logger.getInstance().recordOutput("Vision/NVRobotPose", robotPose.toPose2d());
+
             if (poseEstimator
                     .getEstimatedPosition()
                     .minus(robotPose.toPose2d())
                     .getTranslation()
                     .getNorm()
                 < MAX_POSE_DIFFERENCE_METERS) {
-              poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());
+              if (isEnabled) {
+                poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());
+              }
 
               Logger.getInstance().recordOutput("Vision/TagPose", tagPose);
               Logger.getInstance().recordOutput("Vision/CameraPose", cameraPose);
               Logger.getInstance().recordOutput("Vision/RobotPose", robotPose.toPose2d());
+              Logger.getInstance().recordOutput("Vision/isEnabled", isEnabled);
             }
           }
         }
       }
     }
+  }
+
+  public boolean isEnabled() {
+    return isEnabled;
   }
 
   public boolean tagVisible(int id) {
@@ -151,6 +177,10 @@ public class Vision extends SubsystemBase {
     } else {
       return -1;
     }
+  }
+
+  public void enable(boolean enable) {
+    isEnabled = enable;
   }
 
   public boolean isValidTarget(PhotonTrackedTarget target) {

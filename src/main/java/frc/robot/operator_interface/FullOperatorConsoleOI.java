@@ -32,13 +32,11 @@ public class FullOperatorConsoleOI implements OperatorInterface {
     // to null
     this.translateJoystickButtons = new Trigger[13];
     this.rotateJoystickButtons = new Trigger[13];
-    this.operatorPanelButtons = new Trigger[17];
+    this.operatorPanelButtons = new Trigger[13];
 
     for (int i = 1; i < translateJoystickButtons.length; i++) {
       translateJoystickButtons[i] = translateJoystick.button(i);
       rotateJoystickButtons[i] = rotateJoystick.button(i);
-    }
-    for (int i = 1; i < operatorPanelButtons.length; i++) {
       operatorPanelButtons[i] = operatorPanel.button(i);
     }
   }
@@ -74,38 +72,94 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getTranslationSlowModeButton() {
+    return translateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getRotationSlowModeButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    return operatorPanelButtons[10];
+  }
+
+  @Override
   public Trigger getMoveToGridButton() {
-    return new Trigger(operatorController::getAButton);
+    return operatorPanelButtons[9];
   }
 
-  // TODO: Check if values correspond to the correct values on the switches (based on method names)
-  @Override
-  public Trigger getHybridLeftMiddleGridButton() {
-    return operatorPanelButtons[4];
+  private double getScoringGridSwitchValue() {
+    if (operatorPanelButtons[3].getAsBoolean()) {
+      return -1;
+    } else if (operatorPanelButtons[4].getAsBoolean()) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
-  @Override
-  public Trigger getHybridMiddleRightGridButton() {
-    return operatorPanelButtons[16];
+  private double getScoringColumnSwitchValue() {
+    return operatorPanel.getX();
   }
 
-  @Override
-  public Trigger getHybridLeftMiddleColumnButton() {
-    return operatorPanelButtons[3];
-  }
-
-  @Override
-  public Trigger getHybridMiddleRightColumnButton() {
-    return operatorPanelButtons[15];
+  private double getScoringLevelSwitchValue() {
+    return operatorPanel.getY();
   }
 
   @Override
-  public Trigger getHybridHighMiddleLevelButton() {
-    return operatorPanelButtons[2];
+  public Node getNode() {
+    if (this.getScoringGridSwitchValue() == -1) {
+      if (this.getScoringColumnSwitchValue() == -1) {
+        return Node.NODE_1;
+      } else if (this.getScoringColumnSwitchValue() == 0) {
+        return Node.NODE_2;
+      } else {
+        return Node.NODE_3;
+      }
+    } else if (this.getScoringGridSwitchValue() == 0) {
+      if (this.getScoringColumnSwitchValue() == -1) {
+        return Node.NODE_4;
+      } else if (this.getScoringColumnSwitchValue() == 0) {
+        return Node.NODE_5;
+      } else {
+        return Node.NODE_6;
+      }
+    } else {
+      if (this.getScoringColumnSwitchValue() == -1) {
+        return Node.NODE_7;
+      } else if (this.getScoringColumnSwitchValue() == 0) {
+        return Node.NODE_8;
+      } else {
+        return Node.NODE_9;
+      }
+    }
   }
 
   @Override
-  public Trigger getHybridMiddleLowLevelButton() {
-    return operatorPanelButtons[14];
+  public Trigger getIntakeShelfRightButton() {
+    return operatorPanelButtons[5];
+  }
+
+  @Override
+  public Trigger getIntakeShelfLeftButton() {
+    return operatorPanelButtons[6];
+  }
+
+  @Override
+  public Trigger getIntakeChuteButton() {
+    return operatorPanelButtons[7];
+  }
+
+  @Override
+  public Trigger getTurboButton() {
+    return translateJoystickButtons[4];
+  }
+
+  @Override
+  public Trigger toggleManipulatorOpenCloseButton() {
+    return new Trigger(operatorController::getRightStickButton);
   }
 }

@@ -2,6 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.lib.team6328.util.FieldConstants;
 import java.awt.geom.*;
 import java.util.HashMap;
 import java.util.Set;
@@ -9,11 +11,12 @@ import java.util.Set;
 public class Region2d {
   private Path2D shape;
   private HashMap<Region2d, Translation2d> transitionMap;
+  private DriverStation.Alliance alliance = DriverStation.Alliance.Invalid;
   /**
-   * Create a Region2d, a polygon, from an array of Translation2d specifiying verticies of a
-   * polygon. The polygon is created using the even-odd winding rule.
+   * Create a Region2d, a polygon, from an array of Translation2d specifying vertices of a polygon.
+   * The polygon is created using the even-odd winding rule.
    *
-   * @param points the array of Translation2d that define the verticies of the region.
+   * @param points the array of Translation2d that define the vertices of the region.
    */
   public Region2d(Translation2d[] points) {
     this.transitionMap = new HashMap<>();
@@ -34,7 +37,13 @@ public class Region2d {
    * @return if the pose is inside the region
    */
   public boolean contains(Pose2d other) {
-    return this.shape.contains(new Point2D.Double(other.getX(), other.getY()));
+
+    if (this.alliance == DriverStation.Alliance.Red) {
+      return this.shape.contains(
+          new Point2D.Double(other.getX(), FieldConstants.fieldWidth - other.getY()));
+    } else {
+      return this.shape.contains(new Point2D.Double(other.getX(), other.getY()));
+    }
   }
 
   /**
@@ -47,9 +56,6 @@ public class Region2d {
    */
   public void addNeighbor(Region2d other, Translation2d point) {
     transitionMap.put(other, point);
-    // FIXME: should this mehtod add both regions as neighbors to each other? No, we want the
-    // flexibility to set the transition point inside of one of the regions to avoid obstacles
-    // (e.g., charging station).
   }
 
   /**
@@ -70,9 +76,21 @@ public class Region2d {
    */
   public Translation2d getTransitionPoint(Region2d other) {
     if (getNeighbors().contains(other)) {
-      return transitionMap.get(other);
+
+      if (this.alliance == DriverStation.Alliance.Red) {
+        return new Translation2d(
+            transitionMap.get(other).getX(),
+            FieldConstants.fieldWidth - transitionMap.get(other).getY());
+      } else {
+        return transitionMap.get(other);
+      }
+
     } else {
       return null;
     }
+  }
+
+  public void updateAlliance(DriverStation.Alliance newAlliance) {
+    this.alliance = newAlliance;
   }
 }

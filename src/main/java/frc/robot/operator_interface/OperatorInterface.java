@@ -12,6 +12,18 @@ import edu.wpi.first.wpilibj2.command.button.*;
 
 /** Interface for all driver and operator controls. */
 public interface OperatorInterface {
+  public enum Node {
+    NODE_INVALID,
+    NODE_1,
+    NODE_2,
+    NODE_3,
+    NODE_4,
+    NODE_5,
+    NODE_6,
+    NODE_7,
+    NODE_8,
+    NODE_9
+  }
 
   public default double getTranslateX() {
     return 0.0;
@@ -37,7 +49,19 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getMoveArmButton() {
+  public default Trigger getMoveArmButton() { {
+    return new Trigger(() -> false);
+  }
+  
+  public default Trigger getTranslationSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRotationSlowModeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getVisionIsEnabledSwitch() {
     return new Trigger(() -> false);
   }
 
@@ -45,27 +69,27 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getHybridLeftMiddleGridButton() {
+  public default Node getNode() {
+    return Node.NODE_INVALID;
+  }
+
+  public default Trigger getIntakeShelfRightButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getHybridMiddleRightGridButton() {
+  public default Trigger getIntakeShelfLeftButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getHybridLeftMiddleColumnButton() {
+  public default Trigger getIntakeChuteButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getHybridMiddleRightColumnButton() {
+  public default Trigger getTurboButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getHybridHighMiddleLevelButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getHybridMiddleLowLevelButton() {
+  public default Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(() -> false);
   }
 }

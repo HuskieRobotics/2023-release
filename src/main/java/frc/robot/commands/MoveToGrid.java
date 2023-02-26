@@ -1,123 +1,98 @@
 package frc.robot.commands;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.math.util.Units;
 import frc.lib.team3061.RobotConfig;
-import frc.lib.team6328.util.Alert;
-import frc.lib.team6328.util.Alert.AlertType;
-import frc.robot.FieldConstants;
+import frc.robot.FieldRegionConstants;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.operator_interface.OperatorInterface.Node;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import org.littletonrobotics.junction.Logger;
 
-public class MoveToGrid extends CommandBase {
-  private Drivetrain drivetrain;
+/**
+ * This command, when executed, generates a path from the current pose of the robot to a specified
+ * point on the field and instructs the drivetrain subsystem to follow the specified trajectory
+ * using a PPSwerveControllerCommand object.
+ *
+ * <p>Requires: the Drivetrain subsystem
+ *
+ * <p>Finished When: trajectory is null or time of specified path has elapsed (from
+ * PPSwerveControllerCommand object)
+ *
+ * <p>At End: stops the drivetrain, sets trajectory to null
+ */
+public class MoveToGrid extends MoveToPose {
   private OperatorInterface oi;
-  private PathPlannerTrajectory trajectory;
-  private PPSwerveControllerCommand ppSwerveControllerCommand;
-  private Alert noPathAlert = new Alert("No path between start and end pose", AlertType.WARNING);
+  private double marginOfError = Units.inchesToMeters(6);
 
+  /**
+   * Constructs a new MoveToGrid command object.
+   *
+   * @param subsystem the drivetrain subsystem required by this command
+   */
+  // FIXME: Remove this constructor
   public MoveToGrid(Drivetrain subsystem) {
-    // no requirements for this command, require the drivetrain for the PPSwerveControllerCommand
-    // command
-    this.drivetrain = subsystem;
-
-    FieldConstants.COMMUNITY_REGION_1.addNeighbor(
-        FieldConstants.COMMUNITY_REGION_2, FieldConstants.REGION_1_2_TRANSITION_POINT);
-    FieldConstants.COMMUNITY_REGION_2.addNeighbor(
-        FieldConstants.COMMUNITY_REGION_1, FieldConstants.REGION_2_1_TRANSITION_POINT);
-    FieldConstants.COMMUNITY_REGION_1.addNeighbor(
-        FieldConstants.COMMUNITY_REGION_3, FieldConstants.REGION_1_3_TRANSITION_POINT);
-    FieldConstants.COMMUNITY_REGION_3.addNeighbor(
-        FieldConstants.COMMUNITY_REGION_1, FieldConstants.REGION_3_1_TRANSITION_POINT);
+    super(subsystem);
   }
 
-  public Pose2d endPose() {
-    // When both OI boolean values of the switches are false, the switch is in the middle position
-    boolean gridSwitchValue1 = this.oi.getHybridLeftMiddleGridButton().getAsBoolean();
-    boolean gridSwitchValue2 = this.oi.getHybridMiddleRightGridButton().getAsBoolean();
-    boolean colSwitchValue1 = this.oi.getHybridLeftMiddleColumnButton().getAsBoolean();
-    boolean colSwitchValue2 = this.oi.getHybridMiddleRightColumnButton().getAsBoolean();
-
-    if (gridSwitchValue1) {
-      if (colSwitchValue1) {
-        return FieldConstants.GRID_1_NODE_1;
-      } else if (colSwitchValue2) {
-        return FieldConstants.GRID_1_NODE_2;
-      } else {
-        return FieldConstants.GRID_1_NODE_3;
-      }
-    } else if (gridSwitchValue2) {
-      if (colSwitchValue1) {
-        return FieldConstants.GRID_2_NODE_1;
-      } else if (colSwitchValue2) {
-        return FieldConstants.GRID_2_NODE_2;
-      } else {
-        return FieldConstants.GRID_2_NODE_3;
-      }
-    } else {
-      if (colSwitchValue1) {
-        return FieldConstants.GRID_3_NODE_1;
-      } else if (colSwitchValue2) {
-        return FieldConstants.GRID_3_NODE_2;
-      } else {
-        return FieldConstants.GRID_3_NODE_3;
-      }
-    }
+  public MoveToGrid(Drivetrain subsystem, double minPathTraversalTime) {
+    super(subsystem, minPathTraversalTime);
   }
 
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/MoveToGrid", true);
+
     this.oi = OISelector.getOperatorInterface();
-
-    // reset the theta controller such that old accumulated ID values aren't used with the new path
-    //      this doesn't matter if only the P value is non-zero, which is the current behavior
-    this.drivetrain.getAutoXController().reset();
-    this.drivetrain.getAutoYController().reset();
-    this.drivetrain.getAutoThetaController().reset();
-
-    this.trajectory =
-        FieldConstants.COMMUNITY_ZONE.makePath(
-            this.drivetrain.getPose(),
-            endPose(),
-            new PathConstraints(
-                RobotConfig.getInstance().getAutoMaxSpeed(),
-                RobotConfig.getInstance().getAutoMaxAcceleration()));
-
-    noPathAlert.set(this.trajectory == null);
-
-    if (this.trajectory != null) {
-      this.ppSwerveControllerCommand =
-          new PPSwerveControllerCommand(
-              this.trajectory,
-              this.drivetrain::getPose,
-              RobotConfig.getInstance().getSwerveDriveKinematics(),
-              this.drivetrain.getAutoXController(),
-              this.drivetrain.getAutoYController(),
-              this.drivetrain.getAutoThetaController(),
-              this.drivetrain::setSwerveModuleStates,
-              this.drivetrain);
-      this.ppSwerveControllerCommand.schedule();
-
-      Logger.getInstance().recordOutput("Odometry/trajectory", trajectory);
-    }
-    // FIXME: add alert that no path was found
+    super.initialize();
   }
+  // TODO: add minPathTraversalTime
 
+  /**
+   * This method returns a Pose2d object meant for the end pose of the auto-generated paths based on
+   * the current values of the operator console switches.
+   *
+   * @return the end pose for a path
+   */
   @Override
-  public boolean isFinished() {
-    return this.trajectory == null || ppSwerveControllerCommand.isFinished();
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    if (this.trajectory != null) {
-      this.drivetrain.stop();
+  public Pose2d endPose() {
+    Pose2d endPose = new Pose2d();
+    Node node = this.oi.getNode();
+    switch (node) {
+      case NODE_INVALID:
+        break;
+      case NODE_1:
+        endPose = FieldRegionConstants.GRID_1_NODE_1;
+        break;
+      case NODE_2:
+        endPose = FieldRegionConstants.GRID_1_NODE_2;
+        break;
+      case NODE_3:
+        endPose = FieldRegionConstants.GRID_1_NODE_3;
+        break;
+      case NODE_4:
+        endPose = FieldRegionConstants.GRID_2_NODE_1;
+        break;
+      case NODE_5:
+        endPose = FieldRegionConstants.GRID_2_NODE_2;
+        break;
+      case NODE_6:
+        endPose = FieldRegionConstants.GRID_2_NODE_3;
+        break;
+      case NODE_7:
+        endPose = FieldRegionConstants.GRID_3_NODE_1;
+        break;
+      case NODE_8:
+        endPose = FieldRegionConstants.GRID_3_NODE_2;
+        break;
+      case NODE_9:
+        endPose = FieldRegionConstants.GRID_3_NODE_3;
+        break;
     }
-    this.trajectory = null;
+    return new Pose2d(
+        endPose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2 + marginOfError,
+        endPose.getY(),
+        endPose.getRotation());
   }
 }

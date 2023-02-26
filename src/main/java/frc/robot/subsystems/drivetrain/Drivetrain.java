@@ -10,12 +10,14 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -27,7 +29,9 @@ import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
+import frc.robot.commands.AutoBalanceNonStop;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -36,6 +40,7 @@ import org.littletonrobotics.junction.Logger;
  * robot's rotation.
  */
 public class Drivetrain extends SubsystemBase {
+
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
@@ -51,6 +56,10 @@ public class Drivetrain extends SubsystemBase {
       new TunableNumber("AutoDrive/TurnKi", RobotConfig.getInstance().getAutoTurnKI());
   private final TunableNumber autoTurnKd =
       new TunableNumber("AutoDrive/TurnKd", RobotConfig.getInstance().getAutoTurnKD());
+  private final TunableNumber tunableMaxDriveAcceleration =
+      new TunableNumber(
+          "TeleopSwerve/maxDriveAcceleration",
+          RobotConfig.getInstance().getRobotMaxDriveAcceleration());
 
   private final PIDController autoXController =
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
@@ -88,6 +97,9 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean isFieldRelative;
 
+  private boolean isTranslationSlowMode = false;
+  private boolean isRotationSlowMode = false;
+
   private double gyroOffset;
 
   private ChassisSpeeds chassisSpeeds;
@@ -101,6 +113,10 @@ public class Drivetrain extends SubsystemBase {
 
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
+
+  private boolean hasCrossedToRedSide = false;
+  private boolean hasCrossedToBlueSide = true;
+  private double maxDriveAcceleration;
 
   /** Constructs a new DrivetrainSubsystem object. */
   public Drivetrain(
@@ -121,13 +137,15 @@ public class Drivetrain extends SubsystemBase {
 
     this.zeroGyroscope();
 
-    this.isFieldRelative = false;
+    this.isFieldRelative = true;
 
     this.gyroOffset = 0;
 
     this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
+
+    this.maxDriveAcceleration = RobotConfig.getInstance().getRobotMaxDriveAcceleration();
 
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
@@ -151,12 +169,25 @@ public class Drivetrain extends SubsystemBase {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("Enable XStance", new InstantCommand(this::enableXstance));
       tab.add("Disable XStance", new InstantCommand(this::disableXstance));
+      tab.add("NonStop", new AutoBalanceNonStop(this));
     }
+  }
+
+  public void enableTurbo() {
+    maxDriveAcceleration = 999;
+  }
+
+  public void disableTurbo() {
+    maxDriveAcceleration = tunableMaxDriveAcceleration.get();
+  }
+
+  public double getMaxDriveAcceleration() {
+    return maxDriveAcceleration;
   }
 
   /**
    * Zeroes the gyroscope. This sets the current rotation of the robot to zero degrees. This method
-   * is intended to be invoked only when the alignment beteween the robot's rotation and the gyro is
+   * is intended to be invoked only when the alignment between the robot's rotation and the gyro is
    * sufficiently different to make field-relative driving difficult. The robot needs to be
    * positioned facing away from the driver, ideally aligned to a field wall before this method is
    * invoked.
@@ -173,12 +204,24 @@ public class Drivetrain extends SubsystemBase {
    *
    * @return the rotation of the robot
    */
-  private Rotation2d getRotation() {
+  public Rotation2d getRotation() {
     if (gyroInputs.connected) {
       return Rotation2d.fromDegrees(gyroInputs.positionDeg + this.gyroOffset);
     } else {
       return estimatedPoseWithoutGyro.getRotation();
     }
+  }
+
+  public double getYaw() {
+    return gyroInputs.positionDeg;
+  }
+
+  public double getPitch() {
+    return gyroInputs.pitch;
+  }
+
+  public double getRoll() {
+    return gyroInputs.roll;
   }
 
   /**
@@ -238,6 +281,16 @@ public class Drivetrain extends SubsystemBase {
         new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
   }
 
+  public void resetPoseRotationToGyro() {
+    for (int i = 0; i < 4; i++) {
+      swerveModulePositions[i] = swerveModules[i].getPosition();
+    }
+
+    poseEstimator.resetPosition(
+        this.getRotation(),
+        swerveModulePositions,
+        new Pose2d(this.getPose().getTranslation(), this.getRotation()));
+  }
   /**
    * Controls the drivetrain to move the robot with the desired velocities in the x, y, and
    * rotational directions. The velocities may be specified from either the robot's frame of
@@ -255,14 +308,30 @@ public class Drivetrain extends SubsystemBase {
    *
    * @param translationXSupplier the desired velocity in the x direction (m/s)
    * @param translationYSupplier the desired velocity in the y direction (m/s)
-   * @param rotationSupplier the desired rotational velcoity (rad/s)
+   * @param rotationSupplier the desired rotational velocity (rad/s)
    */
   public void drive(
-      double xVelocity, double yVelocity, double rotationalVelocity, boolean isOpenLoop) {
+      double xVelocity,
+      double yVelocity,
+      double rotationalVelocity,
+      boolean isOpenLoop,
+      boolean overrideFieldRelative) {
 
     switch (driveMode) {
       case NORMAL:
-        if (isFieldRelative) {
+        // get the slowmode multiplier from the config
+        double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
+        // if translation or rotation is in slow mode, multiply the x and y velocities by the
+        // slowmode multiplier
+        if (isTranslationSlowMode) {
+          xVelocity *= slowModeMultiplier;
+          yVelocity *= slowModeMultiplier;
+        }
+        // if rotation is in slow mode, multiply the rotational velocity by the slowmode multiplier
+        if (isRotationSlowMode) {
+          rotationalVelocity *= slowModeMultiplier;
+        }
+        if (isFieldRelative || overrideFieldRelative) {
           chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   xVelocity, yVelocity, rotationalVelocity, getRotation());
@@ -326,7 +395,7 @@ public class Drivetrain extends SubsystemBase {
     gyroIO.updateInputs(gyroInputs);
     Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
 
-    // update and log the swerve moudles inputs
+    // update and log the swerve modules inputs
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.updateAndProcessInputs();
     }
@@ -359,6 +428,33 @@ public class Drivetrain extends SubsystemBase {
 
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
+
+    if (!DriverStation.isDSAttached()) {
+      if (poseEstimator.getEstimatedPosition().getX() > FieldConstants.fieldLength * (2.0 / 3)
+          && !hasCrossedToRedSide) {
+        hasCrossedToRedSide = true;
+        hasCrossedToBlueSide = false;
+        Pose2d pose = poseEstimator.getEstimatedPosition();
+        pose =
+            pose.plus(
+                new Transform2d(
+                    new Translation2d(-Units.inchesToMeters(63.0), Units.inchesToMeters(30.0)),
+                    new Rotation2d()));
+        poseEstimator.resetPosition(getRotation(), swerveModulePositions, pose);
+      } else if (poseEstimator.getEstimatedPosition().getX()
+              < FieldConstants.fieldLength * (1.0 / 3)
+          && !hasCrossedToBlueSide) {
+        hasCrossedToBlueSide = true;
+        hasCrossedToRedSide = false;
+        Pose2d pose = poseEstimator.getEstimatedPosition();
+        pose =
+            pose.plus(
+                new Transform2d(
+                    new Translation2d(Units.inchesToMeters(63.0), -Units.inchesToMeters(30.0)),
+                    new Rotation2d()));
+        poseEstimator.resetPosition(getRotation(), swerveModulePositions, pose);
+      }
+    }
 
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();
@@ -454,6 +550,34 @@ public class Drivetrain extends SubsystemBase {
    */
   public void disableFieldRelative() {
     this.isFieldRelative = false;
+  }
+
+  /*
+   * Enables slow mode for translation. When enabled, the robot will move at a slower speed.
+   */
+  public void enableTranslationSlowMode() {
+    this.isTranslationSlowMode = true;
+  }
+
+  /*
+   * Disables slow mode for translation. When disabled, the robot will move at a normal speed.
+   */
+  public void disableTranslationSlowMode() {
+    this.isTranslationSlowMode = false;
+  }
+
+  /*
+   * enables slow mode for rotation. When enabled, the robot will rotate at a slower speed.
+   */
+  public void enableRotationSlowMode() {
+    this.isRotationSlowMode = true;
+  }
+
+  /*
+   * Disables slow mode for rotation. When disabled, the robot will rotate at a normal speed.
+   */
+  public void disableRotationSlowMode() {
+    this.isRotationSlowMode = false;
   }
 
   /**
@@ -565,7 +689,7 @@ public class Drivetrain extends SubsystemBase {
     characterizationVoltage = volts;
 
     // invoke drive which will set the characterization voltage to each module
-    drive(0, 0, 0, true);
+    drive(0, 0, 0, true, false);
   }
 
   /** Returns the average drive velocity in meters/sec. */

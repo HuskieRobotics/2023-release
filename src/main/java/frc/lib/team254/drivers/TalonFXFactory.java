@@ -58,6 +58,7 @@ public class TalonFXFactory {
     public int BASE_PIDF0_STATUS_FRAME_RATE_MS = kPrimePeriods[5];
     public int TURN_PIDF1_STATUS_FRAME_RATE_MS = kPrimePeriods[6];
     public int FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = kPrimePeriods[7];
+    public int BRUSHLESS_CURRENT_STATUS_FRAME_RATE_MS = kPrimePeriods[8];
 
     public SensorVelocityMeasPeriod VELOCITY_MEASUREMENT_PERIOD =
         SensorVelocityMeasPeriod.Period_100Ms;
@@ -223,6 +224,10 @@ public class TalonFXFactory {
     talon.setStatusFramePeriod(
         StatusFrameEnhanced.Status_21_FeedbackIntegrated,
         config.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS,
+        TIMEOUT_MS);
+    talon.setStatusFramePeriod(
+        StatusFrameEnhanced.Status_Brushless_Current,
+        config.BRUSHLESS_CURRENT_STATUS_FRAME_RATE_MS,
         TIMEOUT_MS);
 
     talon.setControlFramePeriod(ControlFrame.Control_3_General, config.CONTROL_FRAME_PERIOD_MS);

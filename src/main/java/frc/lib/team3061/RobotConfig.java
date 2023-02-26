@@ -287,6 +287,14 @@ public abstract class RobotConfig {
    */
   public abstract double getRobotMaxVelocity();
 
+  /*
+   * Returns the multiplier for when the robot is in slow mode. Defaults to 0.
+   * @return the multiplier for when the robot is in slow mode
+   */
+  public double getRobotSlowModeMultiplier() {
+    return 0.0;
+  }
+
   /**
    * The maximum angular velocity of the robot in radians per second. This is a measure of how fast
    * the robot can rotate in place. By default it is calculated based on the maximum velocity and
@@ -296,6 +304,14 @@ public abstract class RobotConfig {
    */
   public double getRobotMaxAngularVelocity() {
     return getRobotMaxVelocity() / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  public double getRobotMaxDriveAcceleration() {
+    return 1000.0;
+  }
+
+  public double getRobotMaxTurnAcceleration() {
+    return 1000.0;
   }
 
   /**
@@ -412,6 +428,15 @@ public abstract class RobotConfig {
   }
 
   /**
+   * Returns the USB port number of the camera used by the driver. Defaults to 0.
+   *
+   * @return the USB port number of the camera used by the driver
+   */
+  public int getDriverCameraPort() {
+    return 0;
+  }
+
+  /**
    * Returns the CAN ID of the pneumatics hub. Must be overridden.
    *
    * @return the CAN ID of the pneumatics hub
@@ -447,5 +472,55 @@ public abstract class RobotConfig {
    */
   public int getRevLowPressureSensorChannel() {
     return 1;
+  }
+
+  public double getDriveToPoseDriveKP() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseDriveKD() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseThetaKP() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseThetaKD() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseDriveMaxVelocity() {
+    return getAutoMaxSpeed();
+  }
+
+  public double getDriveToPoseDriveMaxAcceleration() {
+    return getAutoMaxAcceleration();
+  }
+
+  public double getDriveToPoseTurnMaxVelocity() {
+    return getDriveToPoseDriveMaxVelocity()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  public double getDriveToPoseTurnMaxAcceleration() {
+    return getDriveToPoseDriveMaxAcceleration()
+        / Math.hypot(getTrackwidth() / 2.0, getWheelbase() / 2.0);
+  }
+
+  public double getDriveToPoseDriveTolerance() {
+    return 0.0;
+  }
+
+  public double getDriveToPoseThetaTolerance() {
+    return 0.0;
+  }
+
+  public double getSquaringSpeed() {
+    return 0.0;
+  }
+
+  public double getSquaringDuration() {
+    return 0.0;
   }
 }

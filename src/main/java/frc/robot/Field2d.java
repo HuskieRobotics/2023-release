@@ -7,6 +7,9 @@ import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.lib.team6328.util.FieldConstants;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,8 +19,17 @@ import java.util.Queue;
 import java.util.Set;
 
 public class Field2d {
-  private Region2d[] regions;
+  private static Field2d instance = null;
 
+  private Region2d[] regions;
+  private DriverStation.Alliance alliance = DriverStation.Alliance.Invalid;
+
+  public static Field2d getInstance() {
+    if (instance == null) {
+      instance = new Field2d();
+    }
+    return instance;
+  }
   /**
    * Construct a field2d from an array of regions. These regions should not be overlapping (aside
    * from edges) and any regions with overlapping edges should be neighbors (see
@@ -25,11 +37,31 @@ public class Field2d {
    *
    * @param regions
    */
-  public Field2d(Region2d[] regions) {
+  public void setRegions(Region2d[] regions) {
     this.regions = regions;
   }
 
-  public PathPlannerTrajectory makePath(Pose2d start, Pose2d end, PathConstraints pathConstants) {
+  public void updateAlliance(DriverStation.Alliance newAlliance) {
+    this.alliance = newAlliance;
+    for (Region2d region : regions) {
+      region.updateAlliance(newAlliance);
+    }
+  }
+
+  public Pose2d mapPoseToCurrentAlliance(Pose2d pose) {
+    if (this.alliance == DriverStation.Alliance.Red) {
+      return new Pose2d(
+          new Translation2d(
+              pose.getTranslation().getX(),
+              FieldConstants.fieldWidth - pose.getTranslation().getY()),
+          pose.getRotation());
+    } else {
+      return pose;
+    }
+  }
+
+  public PathPlannerTrajectory makePath(
+      Pose2d start, Pose2d end, PathConstraints pathConstants, Drivetrain subsystem) {
     Region2d startRegion = null;
     Region2d endRegion = null;
 
@@ -61,6 +93,12 @@ public class Field2d {
       pointLocations.add(from.getTransitionPoint(to));
     }
 
+    // add transition point if starting region & ending region same
+    if (startRegion == endRegion) {
+      pointLocations.add(
+          new Translation2d((start.getX() + end.getX()) / 2, (start.getY() + end.getY()) / 2));
+    }
+
     pointLocations.add(end.getTranslation());
 
     // create points
@@ -71,12 +109,27 @@ public class Field2d {
       double deltaY = pointLocations.get(i + 1).getY() - pointLocations.get(i).getY();
       lastHeading = new Rotation2d(deltaX, deltaY);
       if (i == 0) {
-        // FIXME: the initial heading be the same as the current heading which could be
-        // derived from the current velocity in order to avoid a discontinuity at the start, and we
-        // should also specify a velocity override for the first point.
-        points.add(new PathPoint(pointLocations.get(i), lastHeading, start.getRotation()));
+        if (subsystem.getVelocityX() == 0 && subsystem.getVelocityY() == 0) {
+          points.add(
+              new PathPoint(
+                  pointLocations.get(i),
+                  lastHeading,
+                  start.getRotation(),
+                  Math.sqrt(
+                      Math.pow(subsystem.getVelocityX(), 2)
+                          + Math.pow(subsystem.getVelocityY(), 2))));
+        } else {
+          points.add(
+              new PathPoint(
+                  pointLocations.get(i),
+                  new Rotation2d(subsystem.getVelocityX(), subsystem.getVelocityY()),
+                  start.getRotation(),
+                  Math.sqrt(
+                      Math.pow(subsystem.getVelocityX(), 2)
+                          + Math.pow(subsystem.getVelocityY(), 2))));
+        }
       } else {
-        points.add(new PathPoint(pointLocations.get(i), lastHeading, start.getRotation()));
+        points.add(new PathPoint(pointLocations.get(i), lastHeading, end.getRotation()));
       }
     }
 

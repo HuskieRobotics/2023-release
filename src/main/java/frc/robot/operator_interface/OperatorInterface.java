@@ -49,8 +49,36 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getMoveArmButton() {
+  public default Trigger getMoveArmToChuteButton() {
     return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToShelfButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToStorageButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToLowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToMidButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToHighButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default double getRotateArm() {
+    return 0.0;
+  }
+
+  public default double getMoveElevator() {
+    return 0.0;
   }
 
   public default Trigger getTranslationSlowModeButton() {

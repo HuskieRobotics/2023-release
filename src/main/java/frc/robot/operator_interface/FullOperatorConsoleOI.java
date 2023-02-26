@@ -72,6 +72,46 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getMoveArmToChuteButton() {
+    return new Trigger(operatorController::getLeftBumper);
+  }
+
+  @Override
+  public Trigger getMoveArmToShelfButton() {
+    return new Trigger(operatorController::getRightBumper);
+  }
+
+  @Override
+  public Trigger getMoveArmToStorageButton() {
+    return new Trigger(operatorController::getAButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToLowButton() {
+    return new Trigger(operatorController::getBButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToMidButton() {
+    return new Trigger(operatorController::getYButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToHighButton() {
+    return new Trigger(operatorController::getXButton);
+  }
+
+  @Override
+  public double getRotateArm() {
+    return -operatorController.getLeftY();
+  }
+
+  @Override
+  public double getMoveElevator() {
+    return -operatorController.getRightX();
+  }
+
+  @Override
   public Trigger getTranslationSlowModeButton() {
     return translateJoystickButtons[2];
   }

@@ -12,6 +12,8 @@ public class ElevatorConstants {
   public static final String SUBSYSTEM_NAME = "Elevator";
 
   public enum Position {
+    INVALID,
+
     CONE_STORAGE,
     CUBE_STORAGE,
 

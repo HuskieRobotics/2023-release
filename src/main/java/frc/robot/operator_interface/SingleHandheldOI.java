@@ -45,6 +45,47 @@ public class SingleHandheldOI implements OperatorInterface {
     return new Trigger(controller::getYButton);
   }
 
+  // FIXME: remove after testing elevator
+  @Override
+  public Trigger getMoveArmToChuteButton() {
+    return new Trigger(controller::getLeftBumper);
+  }
+
+  @Override
+  public Trigger getMoveArmToShelfButton() {
+    return new Trigger(controller::getRightBumper);
+  }
+
+  @Override
+  public Trigger getMoveArmToStorageButton() {
+    return new Trigger(controller::getAButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToLowButton() {
+    return new Trigger(controller::getBButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToMidButton() {
+    return new Trigger(controller::getYButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToHighButton() {
+    return new Trigger(controller::getXButton);
+  }
+
+  @Override
+  public double getRotateArm() {
+    return -controller.getLeftY();
+  }
+
+  @Override
+  public double getMoveElevator() {
+    return -controller.getRightX();
+  }
+
   // TODO: Remove when simulated testing is done!
   @Override
   public Trigger getTranslationSlowModeButton() {
@@ -60,11 +101,6 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger getVisionIsEnabledSwitch() {
     // vision is always enabled with Xbox as there is no switch to disable
     return new Trigger(() -> true);
-  }
-
-  @Override
-  public Trigger getMoveArmButton() {
-    return new Trigger(controller::getAButton);
   }
 
   @Override

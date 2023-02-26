@@ -762,15 +762,26 @@ public class RobotContainer {
 
   private void configureElevatorCommands() {
 
-    oi.getMoveArmButton().onTrue(new SetElevatorPosition(elevator, armChooser));
+    // FIXME: we need to distinguish between cone vs. cube for most of these positions
+    oi.getMoveArmToChuteButton()
+        .onTrue(new SetElevatorPosition(elevator, Position.CONE_INTAKE_CHUTE));
+    oi.getMoveArmToShelfButton()
+        .onTrue(new SetElevatorPosition(elevator, Position.CONE_INTAKE_SHELF));
+    oi.getMoveArmToStorageButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_STORAGE));
+    oi.getMoveArmToLowButton()
+        .onTrue(new SetElevatorPosition(elevator, Position.CONE_HYBRID_LEVEL));
+    oi.getMoveArmToMidButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL));
+    oi.getMoveArmToHighButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL));
 
-    // FIXME: delete after testing
     elevator.setDefaultCommand(
         Commands.sequence(
             Commands.runOnce(
-                () -> elevator.setElevatorExtensionMotorPower(oi.getTranslateY()), elevator),
+                () -> elevator.setElevatorExtensionMotorPower(oi.getMoveElevator()), elevator),
             Commands.runOnce(
-                () -> elevator.setElevatorRotationMotorPower(oi.getRotate()), elevator)));
+                () -> elevator.setElevatorRotationMotorPower(oi.getRotateArm()), elevator)));
+
+    // FIXME: delete after testing
+    oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
   }
 
   /**

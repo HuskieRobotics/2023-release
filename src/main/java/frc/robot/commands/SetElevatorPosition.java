@@ -10,7 +10,16 @@ public class SetElevatorPosition extends CommandBase {
   private Elevator elevator;
   private double rotation;
   private double extension;
+  private Position position;
   private LoggedDashboardChooser<Position> armChooser;
+
+  public SetElevatorPosition(Elevator subsystem, Position targetPostion) {
+    this.elevator = subsystem;
+    this.armChooser = null;
+    this.position = targetPostion;
+
+    addRequirements(elevator);
+  }
 
   /**
    * Constructs a new ElevatorPosition command that will set the elevator to the specified position.
@@ -19,8 +28,9 @@ public class SetElevatorPosition extends CommandBase {
    * @return
    */
   public SetElevatorPosition(Elevator subsystem, LoggedDashboardChooser<Position> armChooser) {
-    elevator = subsystem;
+    this.elevator = subsystem;
     this.armChooser = armChooser;
+    this.position = Position.INVALID;
 
     addRequirements(elevator);
   }
@@ -34,9 +44,15 @@ public class SetElevatorPosition extends CommandBase {
   @Override
   public void initialize() {
 
-    Position position = armChooser.get();
+    if (armChooser != null) {
+      this.position = armChooser.get();
+    }
 
     switch (position) { // extension is in meters, rotation is in radians
+      case INVALID:
+        this.extension = this.elevator.getExtensionElevatorEncoderHeight();
+        this.rotation = this.elevator.getRotationElevatorEncoderAngle();
+        break;
       case CONE_STORAGE:
       case CUBE_STORAGE:
         this.extension = 0;

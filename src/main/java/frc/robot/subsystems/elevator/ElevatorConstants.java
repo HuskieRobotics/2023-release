@@ -73,10 +73,13 @@ public class ElevatorConstants {
   public static final int MIN_EXTENSION_POSITION = 0;
   public static final int MAX_EXTENSION_POSITION = 0;
 
+  // FIXME: change to starting position when holding a cone
+  public static final int START_EXTENSION_POSITION_INCHES = 0;
+
   public static final int MIN_ROTATION_POSITION = 0;
   public static final int MAX_ROTATION_POSITION = 0;
 
-  public static final int ELEVATOR_MOTOR_CAN_ID = 0;
+  public static final int ELEVATOR_MOTOR_CAN_ID = 5;
   public static final int ROTATION_ELEVATOR_MOTOR_CAN_ID = 19;
 
   public static final boolean EXTENSION_INVERTED = false;

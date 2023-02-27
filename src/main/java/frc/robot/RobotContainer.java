@@ -762,7 +762,14 @@ public class RobotContainer {
 
   private void configureElevatorCommands() {
 
-    // FIXME: we need to distinguish between cone vs. cube for most of these positions
+    // FIXME: add LED subsystem methods to this command
+    oi.getConeCubeLEDTriggerButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.parallel(Commands.runOnce(elevator::toggleToCube)),
+                Commands.parallel(Commands.runOnce(elevator::toggleToCone)),
+                elevator::getToggledToCone));
+
     oi.getMoveArmToChuteButton()
         .onTrue(new SetElevatorPosition(elevator, Position.CONE_INTAKE_CHUTE));
     oi.getMoveArmToShelfButton()

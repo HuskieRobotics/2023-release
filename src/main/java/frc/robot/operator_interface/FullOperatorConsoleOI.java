@@ -112,6 +112,11 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getConeCubeLEDTriggerButton() {
+    return operatorPanelButtons[1];
+  }
+
+  @Override
   public Trigger getTranslationSlowModeButton() {
     return translateJoystickButtons[2];
   }

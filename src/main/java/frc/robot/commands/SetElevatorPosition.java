@@ -48,6 +48,27 @@ public class SetElevatorPosition extends CommandBase {
       this.position = armChooser.get();
     }
 
+    // check if we are toggled for cones or cubes; if cubes, adjust the position
+    switch (this.position) {
+      case CONE_HYBRID_LEVEL:
+        if (!this.elevator.getToggledToCone()) {
+          this.position = Position.CUBE_HYBRID_LEVEL;
+        }
+        break;
+      case CONE_MID_LEVEL:
+        if (!this.elevator.getToggledToCone()) {
+          this.position = Position.CUBE_MID_LEVEL;
+        }
+        break;
+      case CONE_HIGH_LEVEL:
+        if (!this.elevator.getToggledToCone()) {
+          this.position = Position.CUBE_HIGH_LEVEL;
+        }
+        break;
+      default:
+        break;
+    }
+
     switch (position) { // extension is in meters, rotation is in radians
       case INVALID:
         this.extension = this.elevator.getExtensionElevatorEncoderHeight();

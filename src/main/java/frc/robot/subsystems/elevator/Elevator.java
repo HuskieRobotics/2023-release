@@ -23,6 +23,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
   private double rotationSetpoint = 0.0;
   private double extensionSetpoint = 0.0;
+  private boolean toggledToCone = true;
   private ElevatorIO io;
 
   public Elevator(ElevatorIO io) {
@@ -225,6 +226,18 @@ public class Elevator extends SubsystemBase {
 
   public boolean nearExtensionMinimum() {
     return this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500; // FIXME
+  }
+
+  public boolean getToggledToCone() {
+    return this.toggledToCone;
+  }
+
+  public void toggleToCone() {
+    this.toggledToCone = true;
+  }
+
+  public void toggleToCube() {
+    this.toggledToCone = false;
   }
 
   private double getExtensionSetpoint() {

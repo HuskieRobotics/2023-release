@@ -81,6 +81,10 @@ public interface OperatorInterface {
     return 0.0;
   }
 
+  public default Trigger getConeCubeLEDTriggerButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getTranslationSlowModeButton() {
     return new Trigger(() -> false);
   }

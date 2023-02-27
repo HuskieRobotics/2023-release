@@ -31,8 +31,7 @@ public class LEDs extends SubsystemBase {
   // not all of these will be used or are that important but it is just good to have a
   // storage of everything
   // FIXME: these need to be changed bases on what aidan needs!
-  
-  
+
   public enum RobotStateColors {
     WHITE,
     YELLOW,
@@ -42,7 +41,7 @@ public class LEDs extends SubsystemBase {
     ORANGE,
     RED,
   }
-  
+
   public enum Errors {
     LOSS_OF_CAN_DEVICE,
     VISION_FAILURE_DISABLED,
@@ -51,8 +50,7 @@ public class LEDs extends SubsystemBase {
     VISION_FAILURE_NO_CAMERA,
     AUTO_DRIVE_DISABLED,
   }
-  
-  
+
   public enum AnimationTypes {
     COLORFLOW,
     FIRE,
@@ -71,7 +69,6 @@ public class LEDs extends SubsystemBase {
     ORANGE,
     RED,
   }
-
 
   // animation to be set
   private Animation toAnimate;
@@ -120,7 +117,7 @@ public class LEDs extends SubsystemBase {
   }
 
   public void setErrorIndex(int index, boolean isError) {
-    if (index < 6) { 
+    if (index < 6) {
       errors[index] = isError;
     }
   }
@@ -174,6 +171,8 @@ public class LEDs extends SubsystemBase {
     candle.configStatusLedState(offWhenActive, 0);
   }
 
+  // FIXME: split this into two seperate methods, one for controlling the top and one for
+  // controlling side colors
   public void changeRobotStateColors(RobotStateColors topColor, RobotStateColors sideColor) {
     switch (topColor) {
       case YELLOW:
@@ -235,7 +234,7 @@ public class LEDs extends SubsystemBase {
         candle.setLEDs(255, 0, 0, 0, 0, 71);
         candle.setLEDs(255, 0, 0, 0, 101, 80);
         break;
-      
+
       default:
         candle.setLEDs(255, 255, 255, 0, 0, 71);
         candle.setLEDs(255, 255, 255, 0, 101, 80);
@@ -314,5 +313,19 @@ public class LEDs extends SubsystemBase {
         break;
     }
     candle.animate(toAnimate);
+  }
+
+  // invoke this within the command that goes to the substation and pass in the elevator
+  // isConeOrCube
+  public void setConeCubeLED(boolean isCone) {
+    // FIXME: Set this to the right RGB color for yellow
+    if (isCone) {
+      candle.setLEDs(255, 0, 0, 0, 0, 71);
+      candle.setLEDs(255, 0, 0, 0, 101, 80);
+    } else {
+      // FIXME: Set this to the right RGB color for purple
+      candle.setLEDs(0, 255, 0, 0, 0, 71);
+      candle.setLEDs(0, 255, 0, 0, 101, 80);
+    }
   }
 }

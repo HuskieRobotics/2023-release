@@ -109,7 +109,9 @@ public class Elevator extends SubsystemBase {
     io.setExtensionPosition(
         extension,
         calculateExtensionFeedForward(
-            Units.metersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
+            Units.metersToInches(inputs.extensionPositionMeters),
+            inputs.rotationPositionRadians,
+            (extension > inputs.extensionPositionMeters)));
   }
 
   public void setElevatorRotation(Double rotation) {
@@ -117,7 +119,9 @@ public class Elevator extends SubsystemBase {
     io.setRotationPosition(
         rotation,
         calculateRotationFeedForward(
-            Units.metersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
+            Units.metersToInches(inputs.extensionPositionMeters),
+            inputs.rotationPositionRadians,
+            (rotation > inputs.rotationPositionRadians)));
   }
 
   public boolean atExtensionSetpoint() {
@@ -268,7 +272,9 @@ public class Elevator extends SubsystemBase {
   private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE = 0.1; // FIXME: tune
   private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR = 0.1; // FIXME: tune
 
-  private static double calculateRotationFeedForward(double extension, double rotation) {
+  private static double calculateRotationFeedForward(
+      double extension, double rotation, boolean increasing) {
+    double negation = increasing ? 1.0 : -1.0;
     double r =
         Math.sqrt(
             Math.pow((D2 - D1 * Math.sin(rotation)), 2)
@@ -288,10 +294,12 @@ public class Elevator extends SubsystemBase {
         (M * h * Math.cos(rotation) + T_SPRING * ((2 * rotation / Math.PI) + 1.0 / 3.0))
             / (D1 * Sa);
 
-    return (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR / F1) * F3;
+    return negation * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR / F1) * F3;
   }
 
-  private static double calculateExtensionFeedForward(double extension, double rotation) {
+  private static double calculateExtensionFeedForward(
+      double extension, double rotation, boolean increasing) {
+    double negation = increasing ? 1.0 : -1.0;
     double mass;
     if (extension <= MAX_EXTENSION_BEFORE_MOVING_STAGE_ENGAGEMENT) {
       mass = CARRIAGE_MASS;
@@ -301,6 +309,6 @@ public class Elevator extends SubsystemBase {
 
     double f = mass * Math.cos(rotation);
 
-    return (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE / CARRIAGE_MASS) * f;
+    return negation * (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE / CARRIAGE_MASS) * f;
   }
 }

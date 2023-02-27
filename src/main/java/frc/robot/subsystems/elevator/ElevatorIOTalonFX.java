@@ -104,6 +104,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.3);
     rotationConfig.ENABLE_SOFT_LIMIT = true;
 
+    extensionConfig.FORWARD_SOFT_LIMIT =
+        (int)
+            Conversions.metersToFalcon(
+                Units.inchesToMeters(66), EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+    extensionConfig.REVERSE_SOFT_LIMIT =
+        (int) Conversions.metersToFalcon(0.0, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+    extensionConfig.ENABLE_SOFT_LIMIT = true;
+
     extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
     extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();
     extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMotionCurveStrength.get();
@@ -118,8 +126,20 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
 
+    // FIXME: change to starting position when holding a cone
+    extensionMotor.setSelectedSensorPosition(
+        Conversions.metersToFalcon(
+            Units.inchesToMeters(START_EXTENSION_POSITION_INCHES),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO));
+
     extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());
+    extensionMotor.configPeakOutputForward(ekPeakOutput.get());
+    extensionMotor.configPeakOutputReverse(-ekPeakOutput.get());
+
     rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
+    rotationMotor.configPeakOutputForward(rkPeakOutput.get());
+    rotationMotor.configPeakOutputReverse(-rkPeakOutput.get());
 
     /* Initialize */
     this.pigeon = new Pigeon2(PIGEON_ID, RobotConfig.getInstance().getCANBusName());

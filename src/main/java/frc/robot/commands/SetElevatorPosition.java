@@ -4,6 +4,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class SetElevatorPosition extends CommandBase {
@@ -43,6 +44,8 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public void initialize() {
+
+    Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", true);
 
     if (armChooser != null) {
       this.position = armChooser.get();
@@ -144,6 +147,7 @@ public class SetElevatorPosition extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     elevator.stopElevator();
+    Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", false);
   }
 
   /**

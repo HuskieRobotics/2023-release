@@ -294,7 +294,9 @@ public class Elevator extends SubsystemBase {
         (M * h * Math.cos(rotation) + T_SPRING * ((2 * rotation / Math.PI) + 1.0 / 3.0))
             / (D1 * Sa);
 
-    return negation * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR / F1) * F3;
+    double feedForward = negation * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR / F1) * F3;
+    Logger.getInstance().recordOutput("Elevator/rotationFeedForward", feedForward);
+    return feedForward;
   }
 
   private static double calculateExtensionFeedForward(
@@ -309,6 +311,8 @@ public class Elevator extends SubsystemBase {
 
     double f = mass * Math.cos(rotation);
 
-    return negation * (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE / CARRIAGE_MASS) * f;
+    double feedForward = negation * (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE / CARRIAGE_MASS) * f;
+    Logger.getInstance().recordOutput("Elevator/extensionFeedForward", feedForward);
+    return feedForward;
   }
 }

@@ -71,7 +71,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public ElevatorIOTalonFX() {
     CANDeviceFinder can = new CANDeviceFinder();
-    can.isDevicePresent(CANDeviceType.TALON, ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
+    can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
     can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator Rotation");
 
     TalonFXFactory.Configuration extensionConfig = new TalonFXFactory.Configuration();
@@ -102,7 +102,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // limit rotation between 0 and 90 degrees
     rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(1.3);
     rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.3);
-    rotationConfig.ENABLE_SOFT_LIMIT = true;
+    //rotationConfig.ENABLE_SOFT_LIMIT = true;
 
     extensionConfig.FORWARD_SOFT_LIMIT =
         (int)
@@ -110,7 +110,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 Units.inchesToMeters(66), EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
     extensionConfig.REVERSE_SOFT_LIMIT =
         (int) Conversions.metersToFalcon(0.0, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    extensionConfig.ENABLE_SOFT_LIMIT = true;
+    //extensionConfig.ENABLE_SOFT_LIMIT = true;
 
     extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
     extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();
@@ -120,7 +120,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.MOTION_CRUISE_VELOCITY = rotationMotionVelocity.get();
     rotationConfig.MOTION_CURVE_STRENGTH = (int) rotationMotionCurveStrength.get();
 
-    extensionMotor = TalonFXFactory.createTalon(ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
+    extensionMotor =
+        TalonFXFactory.createTalon(EXTENSION_ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
     rotationMotor =
         TalonFXFactory.createTalon(ROTATION_ELEVATOR_MOTOR_CAN_ID, canBusName, rotationConfig);
 

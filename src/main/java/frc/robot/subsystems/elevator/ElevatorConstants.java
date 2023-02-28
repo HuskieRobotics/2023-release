@@ -79,16 +79,16 @@ public class ElevatorConstants {
   public static final int MIN_ROTATION_POSITION = 0;
   public static final int MAX_ROTATION_POSITION = 0;
 
-  public static final int ELEVATOR_MOTOR_CAN_ID = 5;
+  public static final int EXTENSION_ELEVATOR_MOTOR_CAN_ID = 5;
   public static final int ROTATION_ELEVATOR_MOTOR_CAN_ID = 19;
 
   public static final boolean EXTENSION_INVERTED = false;
   public static final int EXTENSION_POSITION_PID_F = 0;
-  public static final int EXTENSION_POSITION_PID_P = 0;
+  public static final double EXTENSION_POSITION_PID_P = 0.75;
   public static final int EXTENSION_POSITION_PID_I = 0;
   public static final int EXTENSION_POSITION_PID_D = 0;
   public static final int EXTENSION_POSITION_PID_I_ZONE = 0;
-  public static final int EXTENSION_POSITION_PID_PEAK_OUTPUT = 0;
+  public static final double EXTENSION_POSITION_PID_PEAK_OUTPUT = 1.0;
 
   public static final boolean ROTATION_INVERTED = false;
   public static final int ROTATION_POSITION_PID_F = 0;

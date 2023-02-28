@@ -269,7 +269,7 @@ public class Elevator extends SubsystemBase {
   private static final double MOVING_STAGE_MASS = 4.252;
   private static final double FIXED_STAGE_MASS = 9.223;
   private static final double F1 = 11.2;
-  private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE = 0.1; // FIXME: tune
+  private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE = 0.09; // FIXME: tune
   private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR = 0.1; // FIXME: tune
 
   private static double calculateRotationFeedForward(

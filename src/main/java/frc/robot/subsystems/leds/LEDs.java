@@ -18,10 +18,13 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 
 public class LEDs extends SubsystemBase {
+  private boolean cone;
+  private boolean auto;
   private final CANdle candle;
   private boolean[] errors;
   private final int ledCount =
@@ -31,6 +34,14 @@ public class LEDs extends SubsystemBase {
   // not all of these will be used or are that important but it is just good to have a
   // storage of everything
   // FIXME: these need to be changed bases on what aidan needs!
+
+  public enum DriveInfoColors {
+    YELLOW,
+    PURPLE,
+    BLUE,
+    ORANGE,
+  }
+
 
   public enum RobotStateColors {
     WHITE,
@@ -74,6 +85,7 @@ public class LEDs extends SubsystemBase {
   private Animation toAnimate;
 
   public LEDs() {
+    cone = true; // temporary
     candle = new CANdle(22, RobotConfig.getInstance().getCANBusName());
     errors = new boolean[6];
     // 0 = loss of can device
@@ -97,23 +109,66 @@ public class LEDs extends SubsystemBase {
   public void periodic() {
     // setting top values
     if (errors[0]) { // loss of can device
-      this.changeRobotStateColors(RobotStateColors.RED, null);
-    } else if (errors[1]) {
-      this.changeRobotStateColors(RobotStateColors.ORANGE, null);
+      this.changeTopStateColor(RobotStateColors.RED);
+    } else if (errors[1]) { // vision failure, we disabled vision
+      this.changeTopStateColor(RobotStateColors.ORANGE);
     } else if (errors[2]) { // low voltage
-      this.changeRobotStateColors(RobotStateColors.YELLOW, null);
+      this.changeTopStateColor(RobotStateColors.YELLOW);
     } else if (errors[3]) { // manipulator sensor disabled
-      this.changeRobotStateColors(RobotStateColors.GREEN, null);
+      this.changeTopStateColor(RobotStateColors.GREEN);
     } else if (errors[4]) { // vision failure, we dont have a camera
-      this.changeRobotStateColors(RobotStateColors.BLUE, null);
+      this.changeTopStateColor(RobotStateColors.BLUE);
     } else if (errors[5]) { // auto drive disabled
-      this.changeRobotStateColors(RobotStateColors.PURPLE, null);
+      this.changeTopStateColor(RobotStateColors.PURPLE);
     } else { // nothing is wrong, deafult to white
-      this.changeRobotStateColors(null, null);
+      this.changeTopStateColor(null);
     }
+
+    this.configureSideLights();
 
     // setting side values
     // how to determine what to set the side values to? operator interface ??
+  }
+
+  public void enableConeLED() {
+    cone = true;
+  }
+
+  public void enableCubeLED() {
+    cone = false;
+  }
+
+  public boolean pickupCone() {
+    return cone;
+  }
+
+  public void enableAutoLED() {
+    auto = true;
+  }
+
+  public void enableTeleopLED() {
+    auto = false;
+  }
+
+  public boolean autoEnabled() {
+    return auto;
+  }
+
+
+  public void configureSideLights() {
+    if (cone) {
+      if (auto) {
+        this.changeSideStateColors(DriveInfoColors.ORANGE, DriveInfoColors.YELLOW);
+      } else {
+        this.changeSideStateColors(DriveInfoColors.BLUE, DriveInfoColors.YELLOW);
+      }
+    } else {
+      if (auto) {
+        this.changeSideStateColors(DriveInfoColors.ORANGE, DriveInfoColors.PURPLE);
+      } else {
+        this.changeSideStateColors(DriveInfoColors.BLUE, DriveInfoColors.PURPLE);
+      }
+    }
   }
 
   public void setErrorIndex(int index, boolean isError) {
@@ -173,7 +228,8 @@ public class LEDs extends SubsystemBase {
 
   // FIXME: split this into two seperate methods, one for controlling the top and one for
   // controlling side colors
-  public void changeRobotStateColors(RobotStateColors topColor, RobotStateColors sideColor) {
+  
+  public void changeTopStateColor(RobotStateColors topColor) {
     switch (topColor) {
       case YELLOW:
         candle.setLEDs(255, 255, 0, 0, 71, 29);
@@ -203,7 +259,46 @@ public class LEDs extends SubsystemBase {
         candle.setLEDs(255, 255, 255, 0, 71, 29);
         break;
     }
+  }
 
+  
+  public void changeSideStateColors(DriveInfoColors autoTeleop, DriveInfoColors coneCube) {
+    switch (autoTeleop) {
+      case BLUE:
+        candle.setLEDs(0, 0, 255, 0, 0, 24);
+        candle.setLEDs(0, 0, 255, 0, 40, 16);
+        candle.setLEDs(0, 0, 255, 0, 116, 16);
+        candle.setLEDs(0, 0, 255, 0, 148, 16);
+        // other side figure out indexes
+        break;
+      case ORANGE:
+        candle.setLEDs(255, 165, 0, 0, 0, 24);
+        candle.setLEDs(255, 165, 0, 0, 40, 16);
+        candle.setLEDs(255, 165, 0, 0, 116, 16);
+        candle.setLEDs(255, 165, 0, 0, 148, 16);
+        break;
+      default:
+        break;
+    }
+
+    switch (coneCube) {
+      case YELLOW:
+        candle.setLEDs(255, 255, 0, 0, 24, 16);
+        candle.setLEDs(255, 255, 0, 0, 56, 15);
+        candle.setLEDs(255, 255, 0, 0, 101, 15);
+        candle.setLEDs(255, 255, 0, 0, 132, 16);
+        break;
+      case PURPLE:
+        candle.setLEDs(255, 0, 255, 0, 24, 16);
+        candle.setLEDs(255, 0, 255, 0, 56, 15);
+        candle.setLEDs(255, 0, 255, 0, 101, 15);
+        candle.setLEDs(255, 0, 255, 0, 132, 16);
+        break;
+      default:
+        break;
+    }
+    
+    /*
     switch (sideColor) {
       case YELLOW:
         candle.setLEDs(255, 255, 0, 0, 0, 71);
@@ -239,7 +334,9 @@ public class LEDs extends SubsystemBase {
         candle.setLEDs(255, 255, 255, 0, 0, 71);
         candle.setLEDs(255, 255, 255, 0, 101, 80);
         break;
+      
     }
+    */
   }
 
   // FIXME: Once Aidan gives the current animations, add them here

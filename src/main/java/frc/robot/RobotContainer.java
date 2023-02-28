@@ -343,18 +343,13 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
-    oi.setLEDAnimation()
-        .onTrue(
-            Commands.runOnce(
-                () -> led.changeRobotStateColors(RobotStateColors.RED, RobotStateColors.BLUE),
-                led));
 
     oi.getYPLEDToggleButton()
         .toggleOnTrue(
             Commands.either(
-                Commands.runOnce(() -> led.changeRobotStateColors(RobotStateColors.RED, led)),
-                Commands.runOnce(() -> led.changeRobotStateColors(RobotStateColors.BLUE, led)),
-                led::isRed));
+                Commands.runOnce(() -> led.enableConeLED()),
+                Commands.runOnce(() -> led.enableCubeLED()),
+                led::pickupCone));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
@@ -370,7 +365,7 @@ public class RobotContainer {
             Commands.print("replace with command to set LED color for auto control"),
             setElevatorPosition,
             Commands.sequence(
-                new MoveToGrid( 
+                new MoveToGrid(
                     drivetrain), // , 2.0), // replace 2.0 with the time to position the elevator
                 // (e.g., setElevatorPosition.getTimeToPosition())
                 Commands.runOnce(
@@ -457,6 +452,7 @@ public class RobotContainer {
             "testPaths1", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
     Command autoTest =
         Commands.sequence(
+            Commands.runOnce(led::enableAutoLED),
             new FollowPathWithEvents(
                 new FollowPath(auto1Paths.get(0), drivetrain, true, true),
                 auto1Paths.get(0).getMarkers(),
@@ -467,7 +463,9 @@ public class RobotContainer {
             new FollowPathWithEvents(
                 new FollowPath(auto1Paths.get(1), drivetrain, false, true),
                 auto1Paths.get(1).getMarkers(),
-                autoEventMap));
+                autoEventMap),
+            Commands.runOnce(led::enableTeleopLED));
+
 
     PathPlannerTrajectory startPointPath =
         PathPlanner.loadPath(

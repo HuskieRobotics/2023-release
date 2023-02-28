@@ -74,6 +74,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
     can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator Rotation");
 
+    /* create and configure the Pigeon */
+    this.pigeon = new Pigeon2(PIGEON_ID, RobotConfig.getInstance().getCANBusName());
+    Pigeon2Configuration config = new Pigeon2Configuration();
+    // set mount pose as rolled 90 degrees clockwise
+    config.MountPoseYaw = 0;
+    config.MountPoseRoll = -90.0;
+    this.pigeon.configAllSettings(config);
+
     TalonFXFactory.Configuration extensionConfig = new TalonFXFactory.Configuration();
     TalonFXFactory.Configuration rotationConfig = new TalonFXFactory.Configuration();
 
@@ -102,7 +110,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // limit rotation between 0 and 90 degrees
     rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(1.3);
     rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.3);
-    //rotationConfig.ENABLE_SOFT_LIMIT = true;
+    // rotationConfig.ENABLE_SOFT_LIMIT = true;
 
     extensionConfig.FORWARD_SOFT_LIMIT =
         (int)
@@ -110,7 +118,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 Units.inchesToMeters(66), EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
     extensionConfig.REVERSE_SOFT_LIMIT =
         (int) Conversions.metersToFalcon(0.0, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    //extensionConfig.ENABLE_SOFT_LIMIT = true;
+    // extensionConfig.ENABLE_SOFT_LIMIT = true;
 
     extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
     extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();
@@ -141,14 +149,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
     rotationMotor.configPeakOutputForward(rkPeakOutput.get());
     rotationMotor.configPeakOutputReverse(-rkPeakOutput.get());
-
-    /* Initialize */
-    this.pigeon = new Pigeon2(PIGEON_ID, RobotConfig.getInstance().getCANBusName());
-    Pigeon2Configuration config = new Pigeon2Configuration();
-    // set mount pose as rolled 90 degrees counter-clockwise and pitched 90 degrees clockwise
-    config.MountPoseYaw = 0;
-    config.MountPoseRoll = -90.0;
-    this.pigeon.configAllSettings(config);
   }
 
   @Override

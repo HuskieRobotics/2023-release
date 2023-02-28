@@ -111,9 +111,11 @@ public class ElevatorConstants {
 
   public static final double ELEVATOR_EXTENSION_POSITION_TOLERANCE = .01;
   public static final double DEFAULT_EXTENSION_MOTOR_POWER = 0.5;
+  public static final double MAX_MANUAL_POWER_EXTENSION = .4;
 
   public static final double ELEVATOR_ROTATION_POSITION_TOLERANCE = .01;
   public static final double DEFAULT_ROTATION_MOTOR_POWER = 0.5;
+  public static final double MAX_MANUAL_POWER_ROTATION = .4;
 
   public static final double EXTENSION_PULLEY_CIRCUMFERENCE = Units.inchesToMeters(1.128) * Math.PI;
   public static final double EXTENSION_GEAR_RATIO = 3.0;

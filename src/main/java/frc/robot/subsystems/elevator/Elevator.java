@@ -87,23 +87,19 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setElevatorExtensionMotorPower(double power) {
-    // if ((this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500 && power > 0)
-    //     || (this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500
-    //         && power < 0)) {
-    //   stopExtension();
-    // } else
     if (this.isManualControlEnabled()) {
+      if(power >= MAX_MANUAL_POWER_EXTENSION){
+        io.setExtensionMotorPercentage(MAX_MANUAL_POWER_EXTENSION);
+      }
       io.setExtensionMotorPercentage(power);
     }
   }
 
   public void setElevatorRotationMotorPower(double power) {
-    // if ((this.getRotationElevatorEncoderAngle() > MAX_ROTATION_POSITION - 2500 && power > 0)
-    //     || (this.getRotationElevatorEncoderAngle() < MIN_ROTATION_POSITION + 2500 && power < 0))
-    // {
-    //   stopRotation();
-    // } else
     if (this.isManualControlEnabled()) {
+      if(power >= MAX_MANUAL_POWER_ROTATION){
+        io.setRotationMotorPercentage(MAX_MANUAL_POWER_EXTENSION);
+      }
       io.setRotationMotorPercentage(power);
     }
   }

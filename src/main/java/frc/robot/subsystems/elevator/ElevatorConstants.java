@@ -92,7 +92,7 @@ public class ElevatorConstants {
 
   public static final boolean ROTATION_INVERTED = false;
   public static final int ROTATION_POSITION_PID_F = 0;
-  public static final int ROTATION_POSITION_PID_P = 0;
+  public static final double ROTATION_POSITION_PID_P = 1.0;
   public static final int ROTATION_POSITION_PID_I = 0;
   public static final int ROTATION_POSITION_PID_D = 0;
   public static final int ROTATION_POSITION_PID_I_ZONE = 0;

@@ -128,6 +128,16 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getEnableManualElevatorPresetButton() {
+    return new Trigger(() -> operatorController.getRawButton(DPAD_LEFT));
+  }
+
+  @Override
+  public Trigger getDisableManualElevatorPresetButton() {
+    return new Trigger(() -> operatorController.getRawButton(DPAD_RIGHT));
+  }
+
+  @Override
   public Trigger getConeCubeLEDTriggerButton() {
     return operatorPanelButtons[1];
   }

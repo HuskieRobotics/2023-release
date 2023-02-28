@@ -771,19 +771,39 @@ public class RobotContainer {
                 elevator::getToggledToCone));
 
     oi.getMoveArmToChuteButton()
-        .onTrue(new SetElevatorPosition(elevator, Position.CONE_INTAKE_CHUTE));
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_INTAKE_CHUTE)
+                .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToShelfButton()
-        .onTrue(new SetElevatorPosition(elevator, Position.CONE_INTAKE_SHELF));
-    oi.getMoveArmToStorageButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_STORAGE));
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_INTAKE_SHELF)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToStorageButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE)
+                .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToLowButton()
-        .onTrue(new SetElevatorPosition(elevator, Position.CONE_HYBRID_LEVEL));
-    oi.getMoveArmToMidButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL));
-    oi.getMoveArmToHighButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL));
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_HYBRID_LEVEL)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToMidButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToHighButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL)
+                .unless(() -> !elevator.isManualPresetEnabled()));
 
     oi.getEnableManualElevatorControlButton()
         .onTrue(Commands.runOnce(elevator::enableManualControl, elevator));
     oi.getDisableManualElevatorControlButton()
         .onTrue(Commands.runOnce(elevator::disableManualControl, elevator));
+
+    oi.getEnableManualElevatorPresetButton()
+        .onTrue(Commands.runOnce(elevator::enableManualPreset, elevator));
+    oi.getDisableManualElevatorPresetButton()
+        .onTrue(Commands.runOnce(elevator::disableManualPreset, elevator));
 
     elevator.setDefaultCommand(
         Commands.sequence(
@@ -793,7 +813,10 @@ public class RobotContainer {
                 () -> elevator.setElevatorRotationMotorPower(oi.getRotateArm()), elevator)));
 
     // FIXME: delete after testing
-    oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
+    oi.getResetGyroButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, armChooser)
+                .unless(() -> !elevator.isManualPresetEnabled()));
   }
 
   /**

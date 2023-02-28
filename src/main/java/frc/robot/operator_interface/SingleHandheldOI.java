@@ -102,6 +102,16 @@ public class SingleHandheldOI implements OperatorInterface {
     return new Trigger(() -> controller.getRawButton(DPAD_DOWN));
   }
 
+  @Override
+  public Trigger getEnableManualElevatorPresetButton() {
+    return new Trigger(() -> controller.getRawButton(DPAD_LEFT));
+  }
+
+  @Override
+  public Trigger getDisableManualElevatorPresetButton() {
+    return new Trigger(() -> controller.getRawButton(DPAD_RIGHT));
+  }
+
   // TODO: Remove when simulated testing is done!
   @Override
   public Trigger getTranslationSlowModeButton() {

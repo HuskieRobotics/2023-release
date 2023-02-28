@@ -296,9 +296,10 @@ public class Elevator extends SubsystemBase {
   private static final double CARRIAGE_MASS = 8.682;
   private static final double MOVING_STAGE_MASS = 4.252;
   private static final double FIXED_STAGE_MASS = 9.223;
-  private static final double F1 = 11.2;
-  private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE = 0.09; // FIXME: tune
-  private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR = 0.1; // FIXME: tune
+  private static final double F_COLLAPSED_ELEVATOR_AT_30_DEG = 11.2; // FIXME: update after tuning
+  private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG = 0.09; // FIXME: tune
+  private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_30_DEG =
+      0.1; // FIXME: tune
 
   private static double calculateRotationFeedForward(
       double extension, double rotation, boolean increasing) {
@@ -322,7 +323,14 @@ public class Elevator extends SubsystemBase {
         (M * h * Math.cos(rotation) + T_SPRING * ((2 * rotation / Math.PI) + 1.0 / 3.0))
             / (D1 * Sa);
 
-    double feedForward = negation * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR / F1) * F3;
+    // FIXME: delete after tuning
+    Logger.getInstance().recordOutput("Elevator/rotationFeedForwardF3", F3);
+
+    double feedForward =
+        negation
+            * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_30_DEG
+                / F_COLLAPSED_ELEVATOR_AT_30_DEG)
+            * F3;
     Logger.getInstance().recordOutput("Elevator/rotationFeedForward", feedForward);
     return feedForward;
   }
@@ -337,9 +345,10 @@ public class Elevator extends SubsystemBase {
       mass = (CARRIAGE_MASS + MOVING_STAGE_MASS) / 2.0; // two belts are now in tension
     }
 
-    double f = mass * Math.cos(rotation);
+    double f = mass * Math.sin(rotation);
 
-    double feedForward = negation * (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE / CARRIAGE_MASS) * f;
+    double feedForward =
+        negation * (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG / (CARRIAGE_MASS * 0.866)) * f;
     Logger.getInstance().recordOutput("Elevator/extensionFeedForward", feedForward);
     return feedForward;
   }

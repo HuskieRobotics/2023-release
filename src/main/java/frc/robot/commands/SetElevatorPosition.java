@@ -7,6 +7,16 @@ import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+/**
+ * This command, when executed, instructs the elevator subsystem to extend and rotate the elevator
+ * to the specified positions.
+ *
+ * <p>Requires: the Elevator subsystem
+ *
+ * <p>Finished When: the elevator is at the specified positions (within the defined tolerance)
+ *
+ * <p>At End: continues to hold the elevator at the specified positions
+ */
 public class SetElevatorPosition extends CommandBase {
   private Elevator elevator;
   private double rotation;
@@ -146,7 +156,6 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public void end(boolean interrupted) {
-    elevator.stopElevator();
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", false);
   }
 

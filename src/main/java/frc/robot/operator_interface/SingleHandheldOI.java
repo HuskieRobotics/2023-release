@@ -9,6 +9,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with a single Xbox controller. */
 public class SingleHandheldOI implements OperatorInterface {
+  // FIXME: figure out the raw button numbers for the DPAD
+  private static final int DPAD_UP = 1;
+  private static final int DPAD_DOWN = 2;
+  private static final int DPAD_LEFT = 3;
+  private static final int DPAD_RIGHT = 4;
+
   private final XboxController controller;
 
   public SingleHandheldOI(int port) {
@@ -84,6 +90,16 @@ public class SingleHandheldOI implements OperatorInterface {
   @Override
   public double getMoveElevator() {
     return -controller.getRightX();
+  }
+
+  @Override
+  public Trigger getEnableManualElevatorControlButton() {
+    return new Trigger(() -> controller.getRawButton(DPAD_UP));
+  }
+
+  @Override
+  public Trigger getDisableManualElevatorControlButton() {
+    return new Trigger(() -> controller.getRawButton(DPAD_DOWN));
   }
 
   // TODO: Remove when simulated testing is done!

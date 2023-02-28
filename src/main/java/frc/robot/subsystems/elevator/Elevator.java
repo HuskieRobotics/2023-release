@@ -24,6 +24,7 @@ public class Elevator extends SubsystemBase {
   private double rotationSetpoint = 0.0;
   private double extensionSetpoint = 0.0;
   private boolean toggledToCone = true;
+  private boolean manualControlEnabled = false;
   private ElevatorIO io;
 
   public Elevator(ElevatorIO io) {
@@ -35,6 +36,7 @@ public class Elevator extends SubsystemBase {
       tab.add("elevator", this);
       tab.addNumber("Encoder", this::getExtensionElevatorEncoderHeight);
       tab.addNumber("Angle", this::getRotationElevatorEncoderAngle);
+      tab.addBoolean("Manual Enabled", this::isManualControlEnabled);
     }
 
     if (TESTING) {}
@@ -88,7 +90,7 @@ public class Elevator extends SubsystemBase {
     //         && power < 0)) {
     //   stopExtension();
     // } else
-    {
+    if (this.isManualControlEnabled()) {
       io.setExtensionMotorPercentage(power);
     }
   }
@@ -99,7 +101,7 @@ public class Elevator extends SubsystemBase {
     // {
     //   stopRotation();
     // } else
-    {
+    if (this.isManualControlEnabled()) {
       io.setRotationMotorPercentage(power);
     }
   }
@@ -242,6 +244,18 @@ public class Elevator extends SubsystemBase {
 
   public void toggleToCube() {
     this.toggledToCone = false;
+  }
+
+  public boolean isManualControlEnabled() {
+    return this.manualControlEnabled;
+  }
+
+  public void enableManualControl() {
+    this.manualControlEnabled = true;
+  }
+
+  public void disableManualControl() {
+    this.manualControlEnabled = false;
   }
 
   private double getExtensionSetpoint() {

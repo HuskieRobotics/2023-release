@@ -780,6 +780,11 @@ public class RobotContainer {
     oi.getMoveArmToMidButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL));
     oi.getMoveArmToHighButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL));
 
+    oi.getEnableManualElevatorControlButton()
+        .onTrue(Commands.runOnce(elevator::enableManualControl, elevator));
+    oi.getDisableManualElevatorControlButton()
+        .onTrue(Commands.runOnce(elevator::disableManualControl, elevator));
+
     elevator.setDefaultCommand(
         Commands.sequence(
             Commands.runOnce(

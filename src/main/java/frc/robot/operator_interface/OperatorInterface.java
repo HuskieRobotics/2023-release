@@ -81,6 +81,14 @@ public interface OperatorInterface {
     return 0.0;
   }
 
+  public default Trigger getEnableManualElevatorControlButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDisableManualElevatorControlButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getConeCubeLEDTriggerButton() {
     return new Trigger(() -> false);
   }

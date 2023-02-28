@@ -88,4 +88,9 @@ public interface OperatorInterface {
   public default Trigger setLEDAnimation() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getYPLEDToggleButton() {
+    return new Trigger(() -> false);
+  }
+
 }

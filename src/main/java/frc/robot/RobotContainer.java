@@ -348,6 +348,13 @@ public class RobotContainer {
             Commands.runOnce(
                 () -> led.changeRobotStateColors(RobotStateColors.RED, RobotStateColors.BLUE),
                 led));
+
+    oi.getYPLEDToggleButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(() -> led.changeRobotStateColors(RobotStateColors.RED, led)),
+                Commands.runOnce(() -> led.changeRobotStateColors(RobotStateColors.BLUE, led)),
+                led::isRed));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {

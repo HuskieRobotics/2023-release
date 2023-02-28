@@ -133,4 +133,9 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   public Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(operatorController::getRightStickButton);
   }
+
+  @Override
+  public Trigger getYPLEDToggleButton() {
+    return operatorPanelButtons[1];
+  }
 }

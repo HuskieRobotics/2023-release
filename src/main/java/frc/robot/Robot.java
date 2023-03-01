@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
 import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.RobotStateColors;
+import frc.robot.subsystems.leds.LEDs.DriveInfoColors;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -166,7 +166,7 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
     led = new LEDs();
-    led.changeRobotStateColors(RobotStateColors.BLUE, RobotStateColors.RED);
+    led.changeSideStateColors(DriveInfoColors.BLUE, DriveInfoColors.YELLOW);
   }
 
   /** This method is invoked at the start of the test period. */

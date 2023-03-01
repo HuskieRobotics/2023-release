@@ -10,12 +10,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two Xbox controllers. */
 public class FullOperatorConsoleOI implements OperatorInterface {
-  // FIXME: figure out the raw button numbers for the DPAD
-  private static final int DPAD_UP = 1;
-  private static final int DPAD_DOWN = 2;
-  private static final int DPAD_LEFT = 3;
-  private static final int DPAD_RIGHT = 4;
-
   private final CommandJoystick translateJoystick;
   private final Trigger[] translateJoystickButtons;
 
@@ -119,22 +113,22 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getEnableManualElevatorControlButton() {
-    return new Trigger(() -> operatorController.getRawButton(DPAD_UP));
+    return new Trigger(() -> operatorController.getPOV() == 0);
   }
 
   @Override
   public Trigger getDisableManualElevatorControlButton() {
-    return new Trigger(() -> operatorController.getRawButton(DPAD_DOWN));
+    return new Trigger(() -> operatorController.getPOV() == 90);
   }
 
   @Override
   public Trigger getEnableManualElevatorPresetButton() {
-    return new Trigger(() -> operatorController.getRawButton(DPAD_LEFT));
+    return new Trigger(() -> operatorController.getPOV() == 180);
   }
 
   @Override
   public Trigger getDisableManualElevatorPresetButton() {
-    return new Trigger(() -> operatorController.getRawButton(DPAD_RIGHT));
+    return new Trigger(() -> operatorController.getPOV() == 270);
   }
 
   @Override

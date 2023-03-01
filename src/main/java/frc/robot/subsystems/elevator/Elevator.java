@@ -88,7 +88,7 @@ public class Elevator extends SubsystemBase {
 
   public void setElevatorExtensionMotorPower(double power) {
     if (this.isManualControlEnabled()) {
-      if(power >= MAX_MANUAL_POWER_EXTENSION){
+      if (power >= MAX_MANUAL_POWER_EXTENSION) {
         io.setExtensionMotorPercentage(MAX_MANUAL_POWER_EXTENSION);
       }
       io.setExtensionMotorPercentage(power);
@@ -97,7 +97,7 @@ public class Elevator extends SubsystemBase {
 
   public void setElevatorRotationMotorPower(double power) {
     if (this.isManualControlEnabled()) {
-      if(power >= MAX_MANUAL_POWER_ROTATION){
+      if (power >= MAX_MANUAL_POWER_ROTATION) {
         io.setRotationMotorPercentage(MAX_MANUAL_POWER_EXTENSION);
       }
       io.setRotationMotorPercentage(power);

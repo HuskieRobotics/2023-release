@@ -35,11 +35,11 @@ public class LEDs extends SubsystemBase {
   // storage of everything
   // FIXME: these need to be changed bases on what aidan needs!
 
-  public enum DriveInfoColors {
-    YELLOW,
-    PURPLE,
-    BLUE,
-    ORANGE,
+  public enum DriveInfoStates {
+    CONE,
+    CUBE,
+    TELEOP,
+    AUTO,
   }
 
 
@@ -124,10 +124,9 @@ public class LEDs extends SubsystemBase {
       this.changeTopStateColor(null);
     }
 
-    this.configureSideLights();
+    this.configurePickupLEDs();
+    this.configureAutoTeleopLEDs();
 
-    // setting side values
-    // how to determine what to set the side values to? operator interface ??
   }
 
   public void enableConeLED() {
@@ -154,20 +153,19 @@ public class LEDs extends SubsystemBase {
     return auto;
   }
 
-
-  public void configureSideLights() {
-    if (cone) {
-      if (auto) {
-        this.changeSideStateColors(DriveInfoColors.ORANGE, DriveInfoColors.YELLOW);
-      } else {
-        this.changeSideStateColors(DriveInfoColors.BLUE, DriveInfoColors.YELLOW);
-      }
+  public void configureAutoTeleopLEDs() {
+    if (auto) {
+      this.changeAutoTeleopStateColors(DriveInfoStates.AUTO);
     } else {
-      if (auto) {
-        this.changeSideStateColors(DriveInfoColors.ORANGE, DriveInfoColors.PURPLE);
-      } else {
-        this.changeSideStateColors(DriveInfoColors.BLUE, DriveInfoColors.PURPLE);
-      }
+      this.changeAutoTeleopStateColors(DriveInfoStates.TELEOP);
+    }
+  }
+
+  public void configurePickupLEDs() {
+    if (cone) {
+      this.changePickupStateColors(DriveInfoStates.CONE);
+    } else {
+      this.changePickupStateColors(DriveInfoStates.CUBE);
     }
   }
 
@@ -261,17 +259,16 @@ public class LEDs extends SubsystemBase {
     }
   }
 
-  
-  public void changeSideStateColors(DriveInfoColors autoTeleop, DriveInfoColors coneCube) {
+  public void changeAutoTeleopStateColors(DriveInfoStates autoTeleop) {
     switch (autoTeleop) {
-      case BLUE:
+      case TELEOP:
         candle.setLEDs(0, 0, 255, 0, 0, 24);
         candle.setLEDs(0, 0, 255, 0, 40, 16);
         candle.setLEDs(0, 0, 255, 0, 116, 16);
         candle.setLEDs(0, 0, 255, 0, 148, 16);
         // other side figure out indexes
         break;
-      case ORANGE:
+      case AUTO:
         candle.setLEDs(255, 165, 0, 0, 0, 24);
         candle.setLEDs(255, 165, 0, 0, 40, 16);
         candle.setLEDs(255, 165, 0, 0, 116, 16);
@@ -280,15 +277,18 @@ public class LEDs extends SubsystemBase {
       default:
         break;
     }
+  }
 
+
+  public void changePickupStateColors(DriveInfoStates coneCube) {
     switch (coneCube) {
-      case YELLOW:
+      case CONE:
         candle.setLEDs(255, 255, 0, 0, 24, 16);
         candle.setLEDs(255, 255, 0, 0, 56, 15);
         candle.setLEDs(255, 255, 0, 0, 101, 15);
         candle.setLEDs(255, 255, 0, 0, 132, 16);
         break;
-      case PURPLE:
+      case CUBE:
         candle.setLEDs(255, 0, 255, 0, 24, 16);
         candle.setLEDs(255, 0, 255, 0, 56, 15);
         candle.setLEDs(255, 0, 255, 0, 101, 15);
@@ -297,46 +297,6 @@ public class LEDs extends SubsystemBase {
       default:
         break;
     }
-    
-    /*
-    switch (sideColor) {
-      case YELLOW:
-        candle.setLEDs(255, 255, 0, 0, 0, 71);
-        candle.setLEDs(255, 0, 0, 0, 101, 80);
-        break;
-
-      case PURPLE:
-        candle.setLEDs(255, 0, 255, 0, 0, 71);
-        candle.setLEDs(255, 0, 255, 0, 101, 80);
-        break;
-
-      case GREEN:
-        candle.setLEDs(0, 255, 0, 0, 0, 71);
-        candle.setLEDs(0, 255, 0, 0, 101, 80);
-        break;
-
-      case BLUE:
-        candle.setLEDs(0, 0, 255, 0, 0, 71);
-        candle.setLEDs(0, 0, 255, 0, 101, 80);
-        break;
-
-      case ORANGE:
-        candle.setLEDs(255, 172, 28, 0, 0, 71);
-        candle.setLEDs(255, 172, 28, 0, 101, 80);
-        break;
-
-      case RED:
-        candle.setLEDs(255, 0, 0, 0, 0, 71);
-        candle.setLEDs(255, 0, 0, 0, 101, 80);
-        break;
-
-      default:
-        candle.setLEDs(255, 255, 255, 0, 0, 71);
-        candle.setLEDs(255, 255, 255, 0, 101, 80);
-        break;
-      
-    }
-    */
   }
 
   // FIXME: Once Aidan gives the current animations, add them here

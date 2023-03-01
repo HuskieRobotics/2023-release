@@ -166,7 +166,7 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
     led = new LEDs();
-    led.changeRobotStateColors(RobotStateColors.BLUE, RobotStateColors.RED);
+    //led.changeRobotStateColors(RobotStateColors.BLUE, RobotStateColors.RED);
   }
 
   /** This method is invoked at the start of the test period. */

@@ -89,7 +89,7 @@ public class ElevatorConstants {
   public static final double EXTENSION_POSITION_PID_D = 0;
   public static final double EXTENSION_POSITION_PID_I_ZONE = 0;
   public static final double EXTENSION_POSITION_PID_PEAK_OUTPUT = 0.5;
-  public static final double EXTENSION_MAX_STALL_POSITION_OFFSET_METERS = 0.05;
+  public static final int EXTENSION_MAX_STALL_DURATION_CYCLES = 10;
   public static final double EXTENSION_MAX_STALL_VELOCITY_METERS_PER_SECOND = 0.01;
 
   public static final boolean ROTATION_INVERTED = false;

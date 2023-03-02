@@ -29,7 +29,6 @@ import frc.lib.team3061.pneumatics.PneumaticsIORev;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.swerve.SwerveModuleIO;
 import frc.lib.team3061.swerve.SwerveModuleIOSim;
-import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
@@ -124,51 +123,64 @@ public class RobotContainer {
             int[] steerMotorCANDIDs = config.getSwerveSteerMotorCANIDs();
             int[] steerEncoderCANDIDs = config.getSwerveSteerEncoderCANIDs();
             double[] steerOffsets = config.getSwerveSteerOffsets();
+            // SwerveModule flModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             0,
+            //             driveMotorCANIDs[0],
+            //             steerMotorCANDIDs[0],
+            //             steerEncoderCANDIDs[0],
+            //             steerOffsets[0]),
+            //         0,
+            //         config.getRobotMaxVelocity());
+
+            // SwerveModule frModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             1,
+            //             driveMotorCANIDs[1],
+            //             steerMotorCANDIDs[1],
+            //             steerEncoderCANDIDs[1],
+            //             steerOffsets[1]),
+            //         1,
+            //         config.getRobotMaxVelocity());
+
+            // SwerveModule blModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             2,
+            //             driveMotorCANIDs[2],
+            //             steerMotorCANDIDs[2],
+            //             steerEncoderCANDIDs[2],
+            //             steerOffsets[2]),
+            //         2,
+            //         config.getRobotMaxVelocity());
+
+            // SwerveModule brModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             3,
+            //             driveMotorCANIDs[3],
+            //             steerMotorCANDIDs[3],
+            //             steerEncoderCANDIDs[3],
+            //             steerOffsets[3]),
+            //         3,
+            //         config.getRobotMaxVelocity());
+
+            // drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
+
             SwerveModule flModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        0,
-                        driveMotorCANIDs[0],
-                        steerMotorCANDIDs[0],
-                        steerEncoderCANDIDs[0],
-                        steerOffsets[0]),
-                    0,
-                    config.getRobotMaxVelocity());
+                new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
 
             SwerveModule frModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        1,
-                        driveMotorCANIDs[1],
-                        steerMotorCANDIDs[1],
-                        steerEncoderCANDIDs[1],
-                        steerOffsets[1]),
-                    1,
-                    config.getRobotMaxVelocity());
+                new SwerveModule(new SwerveModuleIOSim(), 1, config.getRobotMaxVelocity());
 
             SwerveModule blModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        2,
-                        driveMotorCANIDs[2],
-                        steerMotorCANDIDs[2],
-                        steerEncoderCANDIDs[2],
-                        steerOffsets[2]),
-                    2,
-                    config.getRobotMaxVelocity());
+                new SwerveModule(new SwerveModuleIOSim(), 2, config.getRobotMaxVelocity());
 
             SwerveModule brModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        3,
-                        driveMotorCANIDs[3],
-                        steerMotorCANDIDs[3],
-                        steerEncoderCANDIDs[3],
-                        steerOffsets[3]),
-                    3,
-                    config.getRobotMaxVelocity());
-
-            drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
+                new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
+            drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
@@ -813,21 +825,21 @@ public class RobotContainer {
                 () -> elevator.setElevatorRotationMotorPower(oi.getRotateArm()), elevator)));
 
     // FIXME: delete after testing
-    oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
+    //oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
 
     // FIXME: enable for final testing and then delete
-    // oi.getResetGyroButton()
-    //     .onTrue(
-    //         Commands.either(
-    //             Commands.sequence(
-    //                 new SetElevatorPosition(elevator, armChooser),
-    //                 new GrabGamePiece(manipulator),
-    //                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
-    //             Commands.sequence(
-    //                 new SetElevatorPosition(elevator, armChooser),
-    //                 new ReleaseGamePiece(manipulator),
-    //                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
-    //             manipulator::isOpened));
+    oi.getResetGyroButton()
+        .onTrue(
+            Commands.either(
+                Commands.sequence(
+                    new SetElevatorPosition(elevator, armChooser),
+                    new GrabGamePiece(manipulator),
+                    new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+                Commands.sequence(
+                    new SetElevatorPosition(elevator, armChooser),
+                    new ReleaseGamePiece(manipulator),
+                    new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+                manipulator::isOpened));
   }
 
   /**

@@ -118,17 +118,17 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getDisableManualElevatorControlButton() {
-    return new Trigger(() -> operatorController.getPOV() == 90);
-  }
-
-  @Override
-  public Trigger getEnableManualElevatorPresetButton() {
     return new Trigger(() -> operatorController.getPOV() == 180);
   }
 
   @Override
-  public Trigger getDisableManualElevatorPresetButton() {
+  public Trigger getEnableManualElevatorPresetButton() {
     return new Trigger(() -> operatorController.getPOV() == 270);
+  }
+
+  @Override
+  public Trigger getDisableManualElevatorPresetButton() {
+    return new Trigger(() -> operatorController.getPOV() == 90);
   }
 
   @Override

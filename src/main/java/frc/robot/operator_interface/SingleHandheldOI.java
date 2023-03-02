@@ -93,17 +93,23 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public Trigger getDisableManualElevatorControlButton() {
-    return new Trigger(() -> controller.getPOV() == 90);
-  }
-
-  @Override
-  public Trigger getEnableManualElevatorPresetButton() {
     return new Trigger(() -> controller.getPOV() == 180);
   }
 
   @Override
-  public Trigger getDisableManualElevatorPresetButton() {
+  public Trigger getEnableManualElevatorPresetButton() {
     return new Trigger(() -> controller.getPOV() == 270);
+  }
+
+  @Override
+  public Trigger getDisableManualElevatorPresetButton() {
+    return new Trigger(() -> controller.getPOV() == 90);
+  }
+
+  // FIXME: delete at testing
+  @Override
+  public Trigger getConeCubeLEDTriggerButton() {
+    return new Trigger(controller::getLeftStickButton);
   }
 
   // TODO: Remove when simulated testing is done!

@@ -17,9 +17,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.TunableNumber;
-import frc.robot.FieldConstants;
+import frc.robot.Field2d;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveToPose extends CommandBase {
   private final Drivetrain drivetrain;
@@ -97,6 +98,8 @@ public class DriveToPose extends CommandBase {
 
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/DriveToPose", true);
+
     // Reset all controllers
     Pose2d currentPose = drivetrain.getPose();
     xController.reset(currentPose.getX());
@@ -106,7 +109,7 @@ public class DriveToPose extends CommandBase {
     yController.setTolerance(driveTolerance.get());
     thetaController.setTolerance(thetaTolerance.get());
 
-    this.targetPose = FieldConstants.flipPoseForAlliance(poseSupplier.get());
+    this.targetPose = Field2d.getInstance().mapPoseToCurrentAlliance(poseSupplier.get());
   }
 
   @Override
@@ -159,6 +162,7 @@ public class DriveToPose extends CommandBase {
   public void end(boolean interrupted) {
     drivetrain.stop();
     running = false;
+    Logger.getInstance().recordOutput("ActiveCommands/DriveToPose", false);
   }
 
   @Override

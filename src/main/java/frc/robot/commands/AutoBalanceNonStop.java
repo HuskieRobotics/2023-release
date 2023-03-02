@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import org.littletonrobotics.junction.Logger;
 
 public class AutoBalanceNonStop extends CommandBase {
 
@@ -33,6 +34,9 @@ public class AutoBalanceNonStop extends CommandBase {
 
   @Override
   public void execute() {
+
+    Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", true);
+
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < MAX_ANGLE_DEG
         && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -MAX_ANGLE_DEG) {
       drivetrain.setXStance();
@@ -48,6 +52,11 @@ public class AutoBalanceNonStop extends CommandBase {
       drivetrain.drive(
           frontBackOutput + feedforwardX, leftRightOutput + feedforwardY, 0, true, false);
     }
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", false);
   }
 
   @Override

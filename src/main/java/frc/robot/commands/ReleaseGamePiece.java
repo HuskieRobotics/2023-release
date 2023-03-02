@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.manipulator.Manipulator;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This command, when executed,
@@ -26,6 +27,8 @@ public class ReleaseGamePiece extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/ReleaseGamePiece", true);
+
     manipulator.enableBrakeMode(false);
     manipulator.openPosition();
   }
@@ -40,5 +43,6 @@ public class ReleaseGamePiece extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     manipulator.stop();
+    Logger.getInstance().recordOutput("ActiveCommands/ReleaseGamePiece", false);
   }
 }

@@ -36,8 +36,8 @@ public class MK4IRobotConfig extends RobotConfig {
 
   private static final double TRACKWIDTH_METERS = 0.574675; // 22.625 inches
   private static final double WHEELBASE_METERS = 0.619125; // 24.375 inches
-  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8636; // meters
-  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8636; // meters
+  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8255; // meters
+  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8255; // meters
 
   // FIXME: tune PID values for the angle and drive motors for the swerve modules
 
@@ -70,6 +70,8 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final String CAN_BUS_NAME = "canbus1";
 
   private static final String CAMERA_NAME = "OV9281";
+
+  private static final int DRIVER_CAMERA_PORT = 0;
 
   // FIXME: update this with the actual transform from the robot to the camera
   private static final Transform3d ROBOT_TO_CAMERA =
@@ -307,6 +309,11 @@ public class MK4IRobotConfig extends RobotConfig {
   @Override
   public String getCameraName() {
     return CAMERA_NAME;
+  }
+
+  @Override
+  public int getDriverCameraPort() {
+    return DRIVER_CAMERA_PORT;
   }
 
   @Override

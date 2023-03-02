@@ -396,6 +396,15 @@ public abstract class RobotConfig {
   }
 
   /**
+   * Returns the USB port number of the camera used by the driver. Defaults to 0.
+   *
+   * @return the USB port number of the camera used by the driver
+   */
+  public int getDriverCameraPort() {
+    return 0;
+  }
+
+  /**
    * Returns the CAN ID of the pneumatics hub. Must be overridden.
    *
    * @return the CAN ID of the pneumatics hub

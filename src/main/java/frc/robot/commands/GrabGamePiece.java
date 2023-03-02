@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.manipulator.Manipulator;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This command, when executed,
@@ -27,6 +28,8 @@ public class GrabGamePiece extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/GrabGamePiece", true);
+
     manipulator.enableBrakeMode(true);
     manipulator.openPosition();
     this.isOpened = false;
@@ -44,6 +47,11 @@ public class GrabGamePiece extends CommandBase {
     if (this.isOpened && manipulator.isBlocked()) {
       manipulator.close();
     }
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    Logger.getInstance().recordOutput("ActiveCommands/GrabGamePiece", false);
   }
 
   // Returns true when the command should end.

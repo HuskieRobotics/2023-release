@@ -68,6 +68,8 @@ public class FollowPath extends PPSwerveControllerCommand {
    */
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/FollowPath", true);
+
     super.initialize();
 
     // reset odometry to the starting pose of the trajectory
@@ -100,5 +102,6 @@ public class FollowPath extends PPSwerveControllerCommand {
   public void end(boolean interrupted) {
     this.drivetrain.stop();
     super.end(interrupted);
+    Logger.getInstance().recordOutput("ActiveCommands/FollowPath", false);
   }
 }

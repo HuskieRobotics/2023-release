@@ -10,12 +10,14 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -27,6 +29,7 @@ import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.commands.AutoBalanceNonStop;
 import org.littletonrobotics.junction.Logger;
@@ -111,6 +114,8 @@ public class Drivetrain extends SubsystemBase {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
+  private boolean hasCrossedToRedSide = false;
+  private boolean hasCrossedToBlueSide = true;
   private double maxDriveAcceleration;
 
   /** Constructs a new DrivetrainSubsystem object. */
@@ -423,6 +428,33 @@ public class Drivetrain extends SubsystemBase {
 
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
+
+    if (!DriverStation.isDSAttached()) {
+      if (poseEstimator.getEstimatedPosition().getX() > FieldConstants.fieldLength * (2.0 / 3)
+          && !hasCrossedToRedSide) {
+        hasCrossedToRedSide = true;
+        hasCrossedToBlueSide = false;
+        Pose2d pose = poseEstimator.getEstimatedPosition();
+        pose =
+            pose.plus(
+                new Transform2d(
+                    new Translation2d(-Units.inchesToMeters(63.0), Units.inchesToMeters(30.0)),
+                    new Rotation2d()));
+        poseEstimator.resetPosition(getRotation(), swerveModulePositions, pose);
+      } else if (poseEstimator.getEstimatedPosition().getX()
+              < FieldConstants.fieldLength * (1.0 / 3)
+          && !hasCrossedToBlueSide) {
+        hasCrossedToBlueSide = true;
+        hasCrossedToRedSide = false;
+        Pose2d pose = poseEstimator.getEstimatedPosition();
+        pose =
+            pose.plus(
+                new Transform2d(
+                    new Translation2d(Units.inchesToMeters(63.0), -Units.inchesToMeters(30.0)),
+                    new Rotation2d()));
+        poseEstimator.resetPosition(getRotation(), swerveModulePositions, pose);
+      }
+    }
 
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();

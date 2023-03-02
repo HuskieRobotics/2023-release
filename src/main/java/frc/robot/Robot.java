@@ -4,8 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
 import frc.robot.subsystems.leds.LEDs;
@@ -26,6 +31,7 @@ public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
   private LEDs led;
+  private UsbCamera driverCamera;
 
   private final Alert logReceiverQueueAlert =
       new Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.ERROR);
@@ -112,6 +118,15 @@ public class Robot extends LoggedRobot {
 
     // Invoke the factory method to create the RobotContainer singleton.
     robotContainer = RobotContainer.getInstance();
+
+    if (Constants.getRobot() != Constants.RobotType.ROBOT_SIMBOT) {
+      driverCamera =
+          CameraServer.startAutomaticCapture(RobotConfig.getInstance().getDriverCameraPort());
+      driverCamera.setResolution(320, 240);
+      driverCamera.setFPS(15);
+      driverCamera.setPixelFormat(PixelFormat.kYUYV);
+      driverCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    }
   }
 
   /**
@@ -137,6 +152,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     robotContainer.updateOI();
+    robotContainer.checkAllianceColor();
   }
 
   /**
@@ -145,6 +161,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    robotContainer.checkAllianceColor();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command

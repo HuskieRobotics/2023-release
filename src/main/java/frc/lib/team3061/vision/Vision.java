@@ -27,11 +27,11 @@ public class Vision extends SubsystemBase {
   private VisionIO visionIO;
   private final VisionIOInputs io = new VisionIOInputs();
   private AprilTagFieldLayout layout;
-  private DriverStation.Alliance lastAlliance = DriverStation.Alliance.Invalid;
 
   private double lastTimestamp;
   private SwerveDrivePoseEstimator poseEstimator;
   private boolean isEnabled = true;
+  private DriverStation.Alliance lastAlliance = DriverStation.Alliance.Invalid;
 
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -63,9 +63,16 @@ public class Vision extends SubsystemBase {
     return io.lastResult;
   }
 
+  public void updateAlliance(DriverStation.Alliance newAlliance) {
+    if (newAlliance == DriverStation.Alliance.Red) {
+      layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+    } else {
+      layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+    }
+  }
+
   @Override
   public void periodic() {
-
     visionIO.updateInputs(io);
     Logger.getInstance().processInputs("Vision", io);
 

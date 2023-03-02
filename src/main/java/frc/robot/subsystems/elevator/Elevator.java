@@ -49,6 +49,9 @@ public class Elevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.getInstance().processInputs("Elevator", inputs);
 
+    Logger.getInstance().recordOutput("Elevator/rotationAtSetpoint", atRotationSetpoint());
+    Logger.getInstance().recordOutput("Elevator/extentionAtSetpoint", atExtensionSetpoint());
+
     // FIXME: update feedforward to call methods once elevator is assembled
     if (TESTING) {
       if (rotationPositionRadians.get() != 0) {
@@ -88,19 +91,13 @@ public class Elevator extends SubsystemBase {
 
   public void setElevatorExtensionMotorPower(double power) {
     if (this.isManualControlEnabled()) {
-      if (power >= MAX_MANUAL_POWER_EXTENSION) {
-        io.setExtensionMotorPercentage(MAX_MANUAL_POWER_EXTENSION);
-      }
-      io.setExtensionMotorPercentage(power);
+      io.setExtensionMotorPercentage(power * MAX_MANUAL_POWER_EXTENSION);
     }
   }
 
   public void setElevatorRotationMotorPower(double power) {
     if (this.isManualControlEnabled()) {
-      if (power >= MAX_MANUAL_POWER_ROTATION) {
-        io.setRotationMotorPercentage(MAX_MANUAL_POWER_EXTENSION);
-      }
-      io.setRotationMotorPercentage(power);
+      io.setRotationMotorPercentage(power * MAX_MANUAL_POWER_ROTATION);
     }
   }
 
@@ -173,11 +170,14 @@ public class Elevator extends SubsystemBase {
     boolean extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
     boolean rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();
 
+    this.setElevatorRotation(rotation);
+    this.setElevatorExtension(extension);
+
     /*
      * We can't call atRotationSetpoint or atExtensionSetpoint because we haven't set
      * the new setpoint values yet. Instead, we will compare the current position to the eventual position.
      */
-
+/* 
     if (extensionIsIncreasing && !rotationIsIncreasing) {
       if ((extension < Units.inchesToMeters(52.0))
           || (this.getRotationElevatorEncoderAngle() <= Units.degreesToRadians(90.0 - 48.0))
@@ -221,7 +221,7 @@ public class Elevator extends SubsystemBase {
       }
 
       this.setElevatorExtension(extension);
-    }
+    }*/
   }
 
   public boolean nearExtensionMaximum() {
@@ -292,10 +292,10 @@ public class Elevator extends SubsystemBase {
   private static final double CARRIAGE_MASS = 8.682;
   private static final double MOVING_STAGE_MASS = 4.252;
   private static final double FIXED_STAGE_MASS = 9.223;
-  private static final double F_COLLAPSED_ELEVATOR_AT_30_DEG = 11.2; // FIXME: update after tuning
-  private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG = 0.09; // FIXME: tune
-  private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_30_DEG =
-      0.1; // FIXME: tune
+  private static final double F_COLLAPSED_ELEVATOR_AT_11_DEG = 25.712; // FIXME: update after tuning
+  private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG = 0.05; // FIXME: tune
+  private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_11_DEG =
+      0.05; // FIXME: tune
 
   private static double calculateRotationFeedForward(
       double extension, double rotation, boolean increasing) {
@@ -324,8 +324,8 @@ public class Elevator extends SubsystemBase {
 
     double feedForward =
         negation
-            * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_30_DEG
-                / F_COLLAPSED_ELEVATOR_AT_30_DEG)
+            * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_11_DEG
+                / F_COLLAPSED_ELEVATOR_AT_11_DEG)
             * F3;
     Logger.getInstance().recordOutput("Elevator/rotationFeedForward", feedForward);
     return feedForward;

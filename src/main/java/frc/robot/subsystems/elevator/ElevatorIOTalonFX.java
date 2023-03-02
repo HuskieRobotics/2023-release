@@ -12,6 +12,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
+
 import edu.wpi.first.math.util.Units;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
@@ -81,6 +83,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.MountPoseYaw = 0;
     config.MountPoseRoll = -90.0;
     this.pigeon.configAllSettings(config);
+    this.pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 9);
 
     TalonFXFactory.Configuration extensionConfig = new TalonFXFactory.Configuration();
     TalonFXFactory.Configuration rotationConfig = new TalonFXFactory.Configuration();
@@ -108,17 +111,19 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.SENSOR_PHASE = true;
 
     // limit rotation between 0 and 90 degrees
-    rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(1.3);
-    rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(0.3);
-    // rotationConfig.ENABLE_SOFT_LIMIT = true;
+    rotationConfig.FORWARD_SOFT_LIMIT = (int) radiansToPigeon(MAX_ROTATION_POSITION);
+    rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(MIN_ROTATION_POSITION);
+    rotationConfig.ENABLE_SOFT_LIMIT = true;
 
     extensionConfig.FORWARD_SOFT_LIMIT =
         (int)
             Conversions.metersToFalcon(
-                Units.inchesToMeters(66), EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+                MAX_EXTENSION_POSITION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
     extensionConfig.REVERSE_SOFT_LIMIT =
-        (int) Conversions.metersToFalcon(0.0, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    // extensionConfig.ENABLE_SOFT_LIMIT = true;
+        (int)
+            Conversions.metersToFalcon(
+                MIN_EXTENSION_POSITION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
+    extensionConfig.ENABLE_SOFT_LIMIT = true;
 
     extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
     extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();
@@ -128,12 +133,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.MOTION_CRUISE_VELOCITY = rotationMotionVelocity.get();
     rotationConfig.MOTION_CURVE_STRENGTH = (int) rotationMotionCurveStrength.get();
 
+    rotationConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
+    rotationConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
+
     extensionMotor =
         TalonFXFactory.createTalon(EXTENSION_ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
     rotationMotor =
         TalonFXFactory.createTalon(ROTATION_ELEVATOR_MOTOR_CAN_ID, canBusName, rotationConfig);
 
     rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+    rotationMotor.config_IntegralZone(0, radiansToPigeon(ROTATION_POSITION_PID_I_ZONE));
 
     // FIXME: change to starting position when holding a cone
     extensionMotor.setSelectedSensorPosition(

@@ -170,58 +170,51 @@ public class Elevator extends SubsystemBase {
     boolean extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
     boolean rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();
 
-    this.setElevatorRotation(rotation);
-    this.setElevatorExtension(extension);
+    // this.setElevatorRotation(rotation);
+    // this.setElevatorExtension(extension);
 
     /*
      * We can't call atRotationSetpoint or atExtensionSetpoint because we haven't set
      * the new setpoint values yet. Instead, we will compare the current position to the eventual position.
      */
-/* 
+
     if (extensionIsIncreasing && !rotationIsIncreasing) {
+      // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
+      // positions
       if ((extension < Units.inchesToMeters(52.0))
-          || (this.getRotationElevatorEncoderAngle() <= Units.degreesToRadians(90.0 - 48.0))
-          || (this.atRotation(rotation))) {
+          || (this.getRotationElevatorEncoderAngle() < Units.degreesToRadians(90.0 - 35.0))) {
         this.setElevatorExtension(extension);
-      } else {
+      } else if (this.getRotationElevatorEncoderAngle() > Units.degreesToRadians(90.0 - 32.0)) {
         this.setElevatorExtension(Units.inchesToMeters(52.0));
       }
 
-      if ((this.getExtensionElevatorEncoderHeight() >= Units.inchesToMeters(22.0))
-          || (this.atExtension(extension))) {
-        this.setElevatorRotation(rotation);
-      }
+      this.setElevatorRotation(rotation);
     } else if (!extensionIsIncreasing && rotationIsIncreasing) {
+      // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
+      // positions
       if ((extension >= Units.inchesToMeters(22.0))
-          || (this.getRotationElevatorEncoderAngle() >= Units.degreesToRadians(90.0 - 20.0))
-          || (this.atRotation(rotation))) {
+          || (this.getRotationElevatorEncoderAngle() > Units.degreesToRadians(90.0 - 32.0))) {
         this.setElevatorExtension(extension);
-      } else {
+      } else if (this.getRotationElevatorEncoderAngle() < Units.degreesToRadians(90.0 - 35.0)) {
         this.setElevatorExtension(Units.inchesToMeters(22.0));
       }
 
-      if ((this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(52.0))
-          || (this.atExtension(extension))) {
-        this.setElevatorRotation(rotation);
-      }
+      this.setElevatorRotation(rotation);
     } else if (extensionIsIncreasing && rotationIsIncreasing) {
+      // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
+      // positions
       if ((extension < Units.inchesToMeters(52.0))
-          || (this.getRotationElevatorEncoderAngle() >= Units.degreesToRadians(90.0 - 48.0))
-          || (this.atRotation(rotation))) {
+          || (this.getRotationElevatorEncoderAngle() > Units.degreesToRadians(90.0 - 46.0))) {
         this.setElevatorExtension(extension);
-      } else {
+      } else if (this.getRotationElevatorEncoderAngle() < Units.degreesToRadians(90.0 - 49.0)) {
         this.setElevatorExtension(Units.inchesToMeters(52.0));
       }
 
       this.setElevatorRotation(rotation);
     } else if (!extensionIsIncreasing && !rotationIsIncreasing) {
-      if ((this.getExtensionElevatorEncoderHeight() <= Units.inchesToMeters(52.0))
-          || (this.atExtension(extension))) {
-        this.setElevatorRotation(rotation);
-      }
-
+      this.setElevatorRotation(rotation);
       this.setElevatorExtension(extension);
-    }*/
+    }
   }
 
   public boolean nearExtensionMaximum() {

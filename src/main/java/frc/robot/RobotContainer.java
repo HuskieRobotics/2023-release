@@ -825,7 +825,7 @@ public class RobotContainer {
                 () -> elevator.setElevatorRotationMotorPower(oi.getRotateArm()), elevator)));
 
     // FIXME: delete after testing
-    //oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
+    // oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
 
     // FIXME: enable for final testing and then delete
     oi.getResetGyroButton()

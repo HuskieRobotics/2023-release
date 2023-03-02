@@ -202,6 +202,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     // check if we are stalled against a hard stop while retracting; if so, zero the encoder
     if (inputs.extensionSetpointMeters == 0
+        && inputs.extensionPositionMeters < EXTENSION_MAX_STALL_POSITION_OFFSET_METERS
         && Math.abs(inputs.extensionVelocityMetersPerSec)
             < EXTENSION_MAX_STALL_VELOCITY_METERS_PER_SECOND) {
       extensionMotor.setSelectedSensorPosition(0);

@@ -10,6 +10,7 @@ import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
@@ -167,6 +168,7 @@ public class Robot extends LoggedRobot {
     // schedule the autonomous command
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
+      Commands.runOnce(() -> robotContainer.getLEDs().enableAutoLED()).schedule();
     }
   }
 
@@ -180,11 +182,9 @@ public class Robot extends LoggedRobot {
      */
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
+      Commands.runOnce(() -> robotContainer.getLEDs().enableTeleopLED()).schedule();
     }
-    led = new LEDs();
-    //led.changeRobotStateColors(RobotStateColors.BLUE, RobotStateColors.RED);
   }
-
   /** This method is invoked at the start of the test period. */
   @Override
   public void testInit() {

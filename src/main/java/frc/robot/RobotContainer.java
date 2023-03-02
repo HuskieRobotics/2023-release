@@ -368,7 +368,7 @@ public class RobotContainer {
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
 
     // move to grid / loading zone
-    oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
+    oi.getMoveToGridButton().onTrue(Commands.sequence(Commands.runOnce(led::enableAutoLED), new MoveToGrid(drivetrain), Commands.runOnce(led::enableTeleopLED)));
     oi.getIntakeShelfRightButton()
         .onTrue(new MoveToLoadingZone(drivetrain, FieldRegionConstants.DOUBLE_SUBSTATION_LOWER));
     oi.getIntakeShelfLeftButton()
@@ -504,7 +504,6 @@ public class RobotContainer {
             "testPaths1", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
     Command autoTest =
         Commands.sequence(
-            Commands.runOnce(led::enableAutoLED),
             new FollowPathWithEvents(
                 new FollowPath(auto1Paths.get(0), drivetrain, true, true),
                 auto1Paths.get(0).getMarkers(),
@@ -515,8 +514,7 @@ public class RobotContainer {
             new FollowPathWithEvents(
                 new FollowPath(auto1Paths.get(1), drivetrain, false, true),
                 auto1Paths.get(1).getMarkers(),
-                autoEventMap),
-            Commands.runOnce(led::enableTeleopLED));
+                autoEventMap));
 
 
     PathPlannerTrajectory startPointPath =
@@ -749,5 +747,9 @@ public class RobotContainer {
       vision.updateAlliance(lastAlliance);
       Field2d.getInstance().updateAlliance(lastAlliance);
     }
+  }
+
+  public LEDs getLEDs() {
+    return led;
   }
 }

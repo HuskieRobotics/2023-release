@@ -100,6 +100,8 @@ public class DriveToPose extends CommandBase {
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/DriveToPose", true);
 
+    
+
     // Reset all controllers
     Pose2d currentPose = drivetrain.getPose();
     xController.reset(currentPose.getX());

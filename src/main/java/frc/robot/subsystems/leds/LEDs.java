@@ -1,5 +1,6 @@
 package frc.robot.subsystems.leds;
 
+import java.util.*;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -23,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 
 public class LEDs extends SubsystemBase {
+  private int nextError, currentError;
+  private int timer;
   private boolean cone;
   private boolean auto;
   private final CANdle candle;
@@ -85,15 +88,18 @@ public class LEDs extends SubsystemBase {
   private Animation toAnimate;
 
   public LEDs() {
+    nextError = -1;
+    currentError = -1;
+    timer = 0;
     cone = true; // temporary
     candle = new CANdle(22, RobotConfig.getInstance().getCANBusName());
     errors = new boolean[6];
-    // 0 = loss of can device
-    // 1 = vision failure, if we disabled vision
-    // 2 = low voltage
-    // 3 = manipulator sensor disabled
-    // 4 = vision failure, if we dont have a camera
-    // 5 = auto drive disabled
+    // 0 = loss of can device - red
+    // 1 = vision failure, if we disabled vision - orange
+    // 2 = low voltage - yellow
+    // 3 = manipulator sensor disabled - green
+    // 4 = vision failure, if we dont have a camera - blue
+    // 5 = auto drive disabled - purple
 
     CANdleConfiguration configSettings = new CANdleConfiguration();
     configSettings.statusLedOffWhenActive = true;
@@ -107,27 +113,78 @@ public class LEDs extends SubsystemBase {
 
   @Override
   public void periodic() {
+    
+
+    this.checkErrors();
+    
+    
     // setting top values
-    if (errors[0]) { // loss of can device
+    if (currentError==0) { // loss of can device
       this.changeTopStateColor(RobotStateColors.RED);
-    } else if (errors[1]) { // vision failure, we disabled vision
+    } else if (currentError==1) { // vision failure, we disabled vision
       this.changeTopStateColor(RobotStateColors.ORANGE);
-    } else if (errors[2]) { // low voltage
+    } else if (currentError==2) { // low voltage
       this.changeTopStateColor(RobotStateColors.YELLOW);
-    } else if (errors[3]) { // manipulator sensor disabled
+    } else if (currentError==3) { // manipulator sensor disabled
       this.changeTopStateColor(RobotStateColors.GREEN);
-    } else if (errors[4]) { // vision failure, we dont have a camera
+    } else if (currentError==4) { // vision failure, we dont have a camera
       this.changeTopStateColor(RobotStateColors.BLUE);
-    } else if (errors[5]) { // auto drive disabled
+    } else if (currentError==5) { // auto drive disabled
       this.changeTopStateColor(RobotStateColors.PURPLE);
     } else { // nothing is wrong, deafult to white
       this.changeTopStateColor(null);
     }
+    
 
     this.configurePickupLEDs();
     this.configureAutoTeleopLEDs();
 
   }
+
+  public void checkErrors() {
+    boolean foundNextError = false;
+    
+    for (int i = 0; i<errors.length; i++) {
+      if (errors[i]) {
+        if (i > currentError ) {
+          nextError = i;
+          foundNextError = true;
+          break;
+        }
+      }
+    }
+
+    if (!foundNextError && currentError != -1) {
+      for (int i = 0; i <= currentError; i++) {
+        if (errors[i]) {
+          nextError = i;
+          foundNextError = true;
+        } 
+      }
+    }
+
+    if (!foundNextError) {
+      nextError = -1;
+    }
+   
+    if (timer >= 50) {
+      currentError = nextError;
+      timer = 0;
+    } else {
+      timer++;
+    }
+
+      
+  }
+
+
+
+    // two for loops
+    // one from current index to end
+    // boolean called found next error
+    // if not found, then go to next foor loop
+    // if at the end of both for loops, next error is still false, then set next error to -1 and white
+  
 
   public void enableConeLED() {
     cone = true;
@@ -169,9 +226,27 @@ public class LEDs extends SubsystemBase {
     }
   }
 
-  public void setErrorIndex(int index, boolean isError) {
-    if (index < 6) {
-      errors[index] = isError;
+  public void setErrorIndex(Errors error, boolean isError) {
+    switch (error) {
+      case LOSS_OF_CAN_DEVICE:
+        errors[0] = isError;
+        break;
+      case VISION_FAILURE_DISABLED:
+        errors[1] = isError;
+        break;
+      case LOW_VOLTAGE:
+        errors[2] = isError;
+      case MANIPULATOR_SENSOR_DISABLED:
+        errors[3] = isError;
+        break;
+      case VISION_FAILURE_NO_CAMERA:
+        errors[4] = isError;
+        break;
+      case AUTO_DRIVE_DISABLED:
+        errors[5] = isError;
+        break;
+      default:
+        break;
     }
   }
 

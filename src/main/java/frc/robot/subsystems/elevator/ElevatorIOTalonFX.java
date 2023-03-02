@@ -13,7 +13,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
-
 import edu.wpi.first.math.util.Units;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
@@ -200,6 +199,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.pitchRadians = Units.degreesToRadians(pigeon.getPitch());
     inputs.rollRadians = Units.degreesToRadians(pigeon.getRoll());
+
+    // check if we are stalled against a hard stop while retracting; if so, zero the encoder
+    if (inputs.extensionSetpointMeters == 0
+        && Math.abs(inputs.extensionVelocityMetersPerSec)
+            < EXTENSION_MAX_STALL_VELOCITY_METERS_PER_SECOND) {
+      extensionMotor.setSelectedSensorPosition(0);
+    }
 
     // update tunables
     if (rkP.hasChanged() || rkI.hasChanged() || rkD.hasChanged() || rkPeakOutput.hasChanged()) {

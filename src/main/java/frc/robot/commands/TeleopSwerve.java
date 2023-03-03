@@ -39,6 +39,10 @@ public class TeleopSwerve extends CommandBase {
           "TeleopSwerve/maxTurnAcceleration",
           RobotConfig.getInstance().getRobotMaxTurnAcceleration());
   private final TunableNumber joystickPower = new TunableNumber("TeleopSwerve/joystickPower", 2.0);
+  private final TunableNumber maxDriveAcceleration =
+      new TunableNumber(
+          "TeleopSwerve/maxDriveAcceleration",
+          RobotConfig.getInstance().getRobotMaxDriveAcceleration());
 
   /**
    * Create a new TeleopSwerve command object.
@@ -82,28 +86,34 @@ public class TeleopSwerve extends CommandBase {
     Logger.getInstance().recordOutput("TeleopSwerve/yVelocity", yVelocity);
     Logger.getInstance().recordOutput("TeleopSwerve/rotationalVelocity", rotationalVelocity);
 
-    double driveAccelerationMetersPer20Ms = drivetrain.getMaxDriveAcceleration() / 50.0;
+    if (!drivetrain.getTurbo()) {
 
-    if (Math.abs(xVelocity - lastXVelocity) > driveAccelerationMetersPer20Ms) {
-      xVelocity =
-          lastXVelocity + Math.copySign(driveAccelerationMetersPer20Ms, xVelocity - lastXVelocity);
+      double driveAccelerationMetersPer20Ms = maxDriveAcceleration.get() / 50.0;
+
+      if (Math.abs(xVelocity - lastXVelocity) > driveAccelerationMetersPer20Ms) {
+        xVelocity =
+            lastXVelocity
+                + Math.copySign(driveAccelerationMetersPer20Ms, xVelocity - lastXVelocity);
+      }
+
+      if (Math.abs(yVelocity - lastYVelocity) > driveAccelerationMetersPer20Ms) {
+        yVelocity =
+            lastYVelocity
+                + Math.copySign(driveAccelerationMetersPer20Ms, yVelocity - lastYVelocity);
+      }
+
+      double turnAccelerationRadiansPer20Ms = maxTurnAcceleration.get() / 50.0;
+
+      if (Math.abs(rotationalVelocity - lastAngularVelocity) > turnAccelerationRadiansPer20Ms) {
+        rotationalVelocity =
+            lastAngularVelocity
+                + Math.copySign(
+                    turnAccelerationRadiansPer20Ms, rotationalVelocity - lastAngularVelocity);
+      }
     }
+
     lastXVelocity = xVelocity;
-
-    if (Math.abs(yVelocity - lastYVelocity) > driveAccelerationMetersPer20Ms) {
-      yVelocity =
-          lastYVelocity + Math.copySign(driveAccelerationMetersPer20Ms, yVelocity - lastYVelocity);
-    }
     lastYVelocity = yVelocity;
-
-    double turnAccelerationRadiansPer20Ms = maxTurnAcceleration.get() / 50.0;
-
-    if (Math.abs(rotationalVelocity - lastAngularVelocity) > turnAccelerationRadiansPer20Ms) {
-      rotationalVelocity =
-          lastAngularVelocity
-              + Math.copySign(
-                  turnAccelerationRadiansPer20Ms, rotationalVelocity - lastAngularVelocity);
-    }
     lastAngularVelocity = rotationalVelocity;
 
     drivetrain.drive(xVelocity, yVelocity, rotationalVelocity, true, false);

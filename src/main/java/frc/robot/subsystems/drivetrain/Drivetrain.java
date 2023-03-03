@@ -56,10 +56,6 @@ public class Drivetrain extends SubsystemBase {
       new TunableNumber("AutoDrive/TurnKi", RobotConfig.getInstance().getAutoTurnKI());
   private final TunableNumber autoTurnKd =
       new TunableNumber("AutoDrive/TurnKd", RobotConfig.getInstance().getAutoTurnKD());
-  private final TunableNumber tunableMaxDriveAcceleration =
-      new TunableNumber(
-          "TeleopSwerve/maxDriveAcceleration",
-          RobotConfig.getInstance().getRobotMaxDriveAcceleration());
 
   private final PIDController autoXController =
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
@@ -114,6 +110,7 @@ public class Drivetrain extends SubsystemBase {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
+  private boolean isTurbo;
   private boolean hasCrossedToRedSide = false;
   private boolean hasCrossedToBlueSide = true;
   private double maxDriveAcceleration;
@@ -145,7 +142,7 @@ public class Drivetrain extends SubsystemBase {
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
 
-    this.maxDriveAcceleration = RobotConfig.getInstance().getRobotMaxDriveAcceleration();
+    this.isTurbo = false;
 
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
@@ -174,15 +171,15 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void enableTurbo() {
-    maxDriveAcceleration = 999;
+    isTurbo = true;
   }
 
   public void disableTurbo() {
-    maxDriveAcceleration = tunableMaxDriveAcceleration.get();
+    isTurbo = false;
   }
 
-  public double getMaxDriveAcceleration() {
-    return maxDriveAcceleration;
+  public boolean getTurbo() {
+    return isTurbo;
   }
 
   /**
@@ -319,15 +316,15 @@ public class Drivetrain extends SubsystemBase {
 
     switch (driveMode) {
       case NORMAL:
-        // get the slowmode multiplier from the config
+        // get the slow-mode multiplier from the config
         double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
         // if translation or rotation is in slow mode, multiply the x and y velocities by the
-        // slowmode multiplier
+        // slow-mode multiplier
         if (isTranslationSlowMode) {
           xVelocity *= slowModeMultiplier;
           yVelocity *= slowModeMultiplier;
         }
-        // if rotation is in slow mode, multiply the rotational velocity by the slowmode multiplier
+        // if rotation is in slow mode, multiply the rotational velocity by the slow-mode multiplier
         if (isRotationSlowMode) {
           rotationalVelocity *= slowModeMultiplier;
         }

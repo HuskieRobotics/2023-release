@@ -58,22 +58,22 @@ public class SingleHandheldOI implements OperatorInterface {
 
   @Override
   public Trigger getMoveArmToStorageButton() {
-    return new Trigger(controller::getAButton);
-  }
-
-  @Override
-  public Trigger getMoveArmToLowButton() {
     return new Trigger(controller::getBButton);
   }
 
   @Override
+  public Trigger getMoveArmToLowButton() {
+    return new Trigger(controller::getAButton);
+  }
+
+  @Override
   public Trigger getMoveArmToMidButton() {
-    return new Trigger(controller::getYButton);
+    return new Trigger(controller::getXButton);
   }
 
   @Override
   public Trigger getMoveArmToHighButton() {
-    return new Trigger(controller::getXButton);
+    return new Trigger(controller::getYButton);
   }
 
   @Override

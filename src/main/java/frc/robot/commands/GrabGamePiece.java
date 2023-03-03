@@ -19,7 +19,6 @@ import org.littletonrobotics.junction.Logger;
  */
 public class GrabGamePiece extends CommandBase {
   private final Manipulator manipulator;
-  private boolean isOpened = false;
 
   public GrabGamePiece(Manipulator subsystem) {
     this.manipulator = subsystem;
@@ -29,22 +28,11 @@ public class GrabGamePiece extends CommandBase {
   @Override
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/GrabGamePiece", true);
-
-    manipulator.enableBrakeMode(true);
-    manipulator.openPosition();
-    this.isOpened = false;
   }
 
   @Override
   public void execute() {
-    if (!this.isOpened) {
-      if (manipulator.isOpened()) {
-        this.isOpened = true;
-        manipulator.stop();
-      }
-    }
-
-    if (this.isOpened && manipulator.isBlocked()) {
+    if (manipulator.isBlocked()) {
       manipulator.close();
     }
   }

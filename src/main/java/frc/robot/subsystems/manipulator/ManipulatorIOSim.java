@@ -51,14 +51,4 @@ public class ManipulatorIOSim implements ManipulatorIO {
     appliedVolts = -percentage * 12.0;
     falconSim.setInputVoltage(appliedVolts);
   }
-
-  @Override
-  public void enableBrakeMode(boolean mode) {
-    // not needed for simulation
-  }
-
-  @Override
-  public void setPosition(double position) {
-    setPower(-ManipulatorConstants.MANIPULATOR_POWER);
-  }
 }

@@ -28,6 +28,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
   private int stallCount;
+  private double extensionSetpoint = -1.0;
 
   private final TunableNumber rkP =
       new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
@@ -202,7 +203,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.rollRadians = Units.degreesToRadians(pigeon.getRoll());
 
     // check if we are stalled against a hard stop while retracting; if so, zero the encoder
-    if (inputs.extensionSetpointMeters == 0
+    if (this.extensionSetpoint == 0
         && Math.abs(inputs.extensionVelocityMetersPerSec)
             < EXTENSION_MAX_STALL_VELOCITY_METERS_PER_SECOND) {
       stallCount++;
@@ -256,6 +257,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
+    this.extensionSetpoint = position;
     extensionMotor.set(
         TalonFXControlMode.Position,
         Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),

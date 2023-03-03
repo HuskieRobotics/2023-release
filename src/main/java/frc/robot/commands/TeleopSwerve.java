@@ -69,6 +69,11 @@ public class TeleopSwerve extends CommandBase {
   }
 
   @Override
+  public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/TeleopSwerve", true);
+  }
+
+  @Override
   public void execute() {
 
     // invert the controller input and apply the deadband and squaring to make the robot more
@@ -81,7 +86,6 @@ public class TeleopSwerve extends CommandBase {
     double yVelocity = yPercentage * maxVelocityMetersPerSecond;
     double rotationalVelocity = rotationPercentage * maxAngularVelocityRadiansPerSecond;
 
-    Logger.getInstance().recordOutput("ActiveCommands/TeleopSwerve", true);
     Logger.getInstance().recordOutput("TeleopSwerve/xVelocity", xVelocity);
     Logger.getInstance().recordOutput("TeleopSwerve/yVelocity", yVelocity);
     Logger.getInstance().recordOutput("TeleopSwerve/rotationalVelocity", rotationalVelocity);

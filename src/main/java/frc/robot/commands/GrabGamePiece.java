@@ -37,11 +37,9 @@ public class GrabGamePiece extends CommandBase {
 
   @Override
   public void execute() {
-    if (!this.isOpened) {
-      if (manipulator.isOpened()) {
-        this.isOpened = true;
-        manipulator.stop();
-      }
+    if (!this.isOpened && manipulator.isOpened()) {
+      this.isOpened = true;
+      manipulator.stop();
     }
 
     if (this.isOpened && manipulator.isBlocked()) {

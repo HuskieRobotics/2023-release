@@ -29,9 +29,12 @@ import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team6328.util.Alert;
+import frc.lib.team6328.util.Alert.AlertType;
 import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.commands.AutoBalanceNonStop;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -115,6 +118,11 @@ public class Drivetrain extends SubsystemBase {
   private boolean hasCrossedToBlueSide = true;
   private double maxDriveAcceleration;
 
+  private boolean isMoveToGridEnabled;
+
+  private Alert noPoseAlert =
+      new Alert("Attempted to reset pose from vision, but no pose was found.", AlertType.WARNING);
+
   /** Constructs a new DrivetrainSubsystem object. */
   public Drivetrain(
       GyroIO gyroIO,
@@ -143,6 +151,8 @@ public class Drivetrain extends SubsystemBase {
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
 
     this.isTurbo = false;
+
+    this.isMoveToGridEnabled = true;
 
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
@@ -287,6 +297,19 @@ public class Drivetrain extends SubsystemBase {
         this.getRotation(),
         swerveModulePositions,
         new Pose2d(this.getPose().getTranslation(), this.getRotation()));
+  }
+
+  public void resetPoseToVision(Supplier<Pose3d> poseSupplier) {
+    Pose3d pose = poseSupplier.get();
+    if (pose != null) {
+      noPoseAlert.set(false);
+      poseEstimator.resetPosition(
+          this.getRotation(),
+          swerveModulePositions,
+          new Pose2d(new Translation2d(pose.getX(), pose.getY()), this.getRotation()));
+    } else {
+      noPoseAlert.set(true);
+    }
   }
   /**
    * Controls the drivetrain to move the robot with the desired velocities in the x, y, and
@@ -629,6 +652,14 @@ public class Drivetrain extends SubsystemBase {
     return chassisSpeeds.vyMetersPerSecond;
   }
 
+  public double getAverageDriveCurrent() {
+    double totalCurrent = 0.0;
+    for (SwerveModule module : swerveModules) {
+      totalCurrent += module.getDriveCurrent();
+    }
+    return totalCurrent / swerveModules.length;
+  }
+
   /**
    * Puts the drivetrain into the x-stance orientation. In this orientation the wheels are aligned
    * to make an 'X'. This makes it more difficult for other robots to push the robot, which is
@@ -696,6 +727,14 @@ public class Drivetrain extends SubsystemBase {
       driveVelocityAverage += swerveModule.getState().speedMetersPerSecond;
     }
     return driveVelocityAverage / 4.0;
+  }
+
+  public void enableMoveToGrid(boolean state) {
+    this.isMoveToGridEnabled = state;
+  }
+
+  public boolean isMoveToGridEnabled() {
+    return this.isMoveToGridEnabled;
   }
 
   private enum DriveMode {

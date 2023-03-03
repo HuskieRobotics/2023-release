@@ -81,6 +81,7 @@ public class DualJoysticksOI implements OperatorInterface {
     return Node.NODE_5;
   }
 
+  @Override
   public Trigger getTurboButton() {
     return translateJoystickButtons[1];
   }

@@ -14,10 +14,10 @@ import static frc.robot.Constants.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.TunableNumber;
-import frc.robot.Field2d;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -28,15 +28,19 @@ public class DriveToPose extends CommandBase {
   private Pose2d targetPose;
 
   private boolean running = false;
+  private Timer timer;
 
   private static final TunableNumber driveKp =
       new TunableNumber("DriveToPose/DriveKp", RobotConfig.getInstance().getDriveToPoseDriveKP());
   private static final TunableNumber driveKd =
       new TunableNumber("DriveToPose/DriveKd", RobotConfig.getInstance().getDriveToPoseDriveKD());
+  private static final TunableNumber driveKi = new TunableNumber("DriveToPose/DriveKi", 0);
   private static final TunableNumber thetaKp =
       new TunableNumber("DriveToPose/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
   private static final TunableNumber thetaKd =
       new TunableNumber("DriveToPose/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKD());
+  private static final TunableNumber thetaKi =
+      new TunableNumber("DriveToPose/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
   private static final TunableNumber driveMaxVelocity =
       new TunableNumber(
           "DriveToPose/DriveMaxVelocity",
@@ -59,39 +63,35 @@ public class DriveToPose extends CommandBase {
   private static final TunableNumber thetaTolerance =
       new TunableNumber(
           "DriveToPose/ThetaTolerance", RobotConfig.getInstance().getDriveToPoseThetaTolerance());
+  private static final TunableNumber timeout = new TunableNumber("DriveToPose/timeout", 2.0);
 
   private final ProfiledPIDController xController =
       new ProfiledPIDController(
           driveKp.get(),
-          0.0,
+          driveKi.get(),
           driveKd.get(),
           new TrapezoidProfile.Constraints(driveMaxVelocity.get(), driveMaxAcceleration.get()),
           LOOP_PERIOD_SECS);
   private final ProfiledPIDController yController =
       new ProfiledPIDController(
           driveKp.get(),
-          0.0,
+          driveKi.get(),
           driveKd.get(),
           new TrapezoidProfile.Constraints(driveMaxVelocity.get(), driveMaxAcceleration.get()),
           LOOP_PERIOD_SECS);
   private final ProfiledPIDController thetaController =
       new ProfiledPIDController(
           thetaKp.get(),
-          0.0,
+          thetaKi.get(),
           thetaKd.get(),
           new TrapezoidProfile.Constraints(thetaMaxVelocity.get(), thetaMaxAcceleration.get()),
           LOOP_PERIOD_SECS);
-  // ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain").addDouble("X Error",
-  // xController::getPositionError);
-  /** Drives to the specified pose under full software control. */
-  public DriveToPose(Drivetrain drivetrain, Pose2d pose) {
-    this(drivetrain, () -> pose);
-  }
 
   /** Drives to the specified pose under full software control. */
   public DriveToPose(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
+    this.timer = new Timer();
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -108,8 +108,11 @@ public class DriveToPose extends CommandBase {
     xController.setTolerance(driveTolerance.get());
     yController.setTolerance(driveTolerance.get());
     thetaController.setTolerance(thetaTolerance.get());
+    this.targetPose = poseSupplier.get();
 
-    this.targetPose = Field2d.getInstance().mapPoseToCurrentAlliance(poseSupplier.get());
+    Logger.getInstance().recordOutput("DriveToPose/targetPose", targetPose);
+
+    this.timer.restart();
   }
 
   @Override
@@ -119,24 +122,29 @@ public class DriveToPose extends CommandBase {
     // Update from tunable numbers
     if (driveKp.hasChanged()
         || driveKd.hasChanged()
+        || driveKi.hasChanged()
         || thetaKp.hasChanged()
         || thetaKd.hasChanged()
+        || thetaKi.hasChanged()
         || driveMaxVelocity.hasChanged()
         || driveMaxAcceleration.hasChanged()
         || thetaMaxVelocity.hasChanged()
         || thetaMaxAcceleration.hasChanged()) {
       xController.setP(driveKp.get());
       xController.setD(driveKd.get());
+      xController.setI(driveKi.get());
       xController.setConstraints(
           new TrapezoidProfile.Constraints(driveMaxVelocity.get(), driveMaxAcceleration.get()));
       xController.setTolerance(driveTolerance.get());
       yController.setP(driveKp.get());
       yController.setD(driveKd.get());
+      yController.setI(driveKi.get());
       yController.setConstraints(
           new TrapezoidProfile.Constraints(driveMaxVelocity.get(), driveMaxAcceleration.get()));
       yController.setTolerance(driveTolerance.get());
       thetaController.setP(thetaKp.get());
       thetaController.setD(thetaKd.get());
+      thetaController.setI(thetaKi.get());
       thetaController.setConstraints(
           new TrapezoidProfile.Constraints(thetaMaxVelocity.get(), thetaMaxAcceleration.get()));
       thetaController.setTolerance(thetaTolerance.get());
@@ -167,6 +175,12 @@ public class DriveToPose extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return running && xController.atGoal() && yController.atGoal() && thetaController.atGoal();
+    Logger.getInstance().recordOutput("DriveToPose/xErr", xController.atGoal());
+    Logger.getInstance().recordOutput("DriveToPose/yErr", yController.atGoal());
+    Logger.getInstance().recordOutput("DriveToPose/tErr", thetaController.atGoal());
+
+    return !drivetrain.isMoveToGridEnabled()
+        || this.timer.hasElapsed(timeout.get())
+        || (running && xController.atGoal() && yController.atGoal() && thetaController.atGoal());
   }
 }

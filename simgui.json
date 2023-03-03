@@ -35,6 +35,7 @@
       "/Shuffleboard/MAIN/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Auto Routine": "String Chooser",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
+      "/SmartDashboard/Region": "String Chooser",
       "/SmartDashboard/simCamera Sim Field": "Field2d"
     }
   }

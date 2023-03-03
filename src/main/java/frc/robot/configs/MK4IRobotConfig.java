@@ -39,8 +39,6 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8255; // meters
   private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8255; // meters
 
-  // FIXME: tune PID values for the angle and drive motors for the swerve modules
-
   /* Angle Motor PID Values */
   private static final double ANGLE_KP = 0.4;
   private static final double ANGLE_KI = 0.0;
@@ -63,7 +61,6 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double MAX_COAST_VELOCITY_METERS_PER_SECOND = 0.05;
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
-  // FIXME: tune these
   private static final double MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED = 4.0;
   private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 2.0 * Math.PI;
 
@@ -73,7 +70,6 @@ public class MK4IRobotConfig extends RobotConfig {
 
   private static final int DRIVER_CAMERA_PORT = 0;
 
-  // FIXME: update this with the actual transform from the robot to the camera
   private static final Transform3d ROBOT_TO_CAMERA =
       new Transform3d(new Translation3d(0.356, 0.0, 0.465), new Rotation3d(0, 0, 0));
 
@@ -81,8 +77,6 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final int FLOW_SENSOR_CHANNEL = 0;
   private static final int REV_HIGH_PRESSURE_SENSOR_CHANNEL = 0;
   private static final int REV_LOW_PRESSURE_SENSOR_CHANNEL = 1;
-
-  // FIXME: specify maximum velocity and acceleration and tune PID values for auto paths
 
   private static final double AUTO_MAX_SPEED_METERS_PER_SECOND = 2.0;
   private static final double AUTO_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 2.0;
@@ -93,14 +87,14 @@ public class MK4IRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_I_CONTROLLER = 1.6;
   private static final double AUTO_TURN_D_CONTROLLER = 1.0;
 
-  // FIXME: tune all drive to pose constants
   // Drive to Pose constants
   private static final double DRIVE_TO_POSE_DRIVE_KP = 2.5;
   private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
-  private static final double DRIVE_TO_POSE_THETA_KP = 7.0;
+  private static final double DRIVE_TO_POSE_THETA_KP = 18.0;
+  private static final double DRIVE_TO_POSE_THETA_KI = 10.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
   private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.08;
-  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.035;
+  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.008;
 
   private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
   private static final double SQUARING_DURATION_SECONDS = 1;
@@ -250,6 +244,7 @@ public class MK4IRobotConfig extends RobotConfig {
     return MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
   }
 
+  @Override
   public double getRobotSlowModeMultiplier() {
     return SLOW_MODE_MULTIPLIER;
   }
@@ -345,6 +340,11 @@ public class MK4IRobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getDriveToPoseThetaKI() {
+    return DRIVE_TO_POSE_THETA_KI;
+  }
+
+  @Override
   public double getDriveToPoseThetaKP() {
     return DRIVE_TO_POSE_THETA_KP;
   }
@@ -356,7 +356,7 @@ public class MK4IRobotConfig extends RobotConfig {
 
   @Override
   public double getDriveToPoseDriveMaxVelocity() {
-    return getAutoMaxSpeed();
+    return 0.5;
   }
 
   @Override

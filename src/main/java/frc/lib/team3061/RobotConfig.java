@@ -454,6 +454,10 @@ public abstract class RobotConfig {
     return 0.0;
   }
 
+  public double getDriveToPoseThetaKI() {
+    return 0.0;
+  }
+
   public double getDriveToPoseThetaKD() {
     return 0.0;
   }

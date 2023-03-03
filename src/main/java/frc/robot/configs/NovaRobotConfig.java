@@ -101,10 +101,11 @@ public class NovaRobotConfig extends RobotConfig {
   // Drive to Pose constants
   private static final double DRIVE_TO_POSE_DRIVE_KP = 2.5;
   private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
-  private static final double DRIVE_TO_POSE_THETA_KP = 7.0;
+  private static final double DRIVE_TO_POSE_THETA_KP = 18.0;
+  private static final double DRIVE_TO_POSE_THETA_KI = 10.0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
   private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.08;
-  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.035;
+  private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.008;
 
   private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
   private static final double SQUARING_DURATION_SECONDS = 1;
@@ -254,6 +255,7 @@ public class NovaRobotConfig extends RobotConfig {
     return MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
   }
 
+  @Override
   public double getRobotSlowModeMultiplier() {
     return SLOW_MODE_MULTIPLIER;
   }
@@ -329,6 +331,11 @@ public class NovaRobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getDriveToPoseThetaKI() {
+    return DRIVE_TO_POSE_THETA_KI;
+  }
+
+  @Override
   public double getDriveToPoseThetaKP() {
     return DRIVE_TO_POSE_THETA_KP;
   }
@@ -340,7 +347,7 @@ public class NovaRobotConfig extends RobotConfig {
 
   @Override
   public double getDriveToPoseDriveMaxVelocity() {
-    return getAutoMaxSpeed();
+    return 0.5;
   }
 
   @Override

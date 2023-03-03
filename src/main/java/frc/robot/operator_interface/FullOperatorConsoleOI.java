@@ -4,6 +4,8 @@
 
 package frc.robot.operator_interface;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -58,17 +60,22 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getFieldRelativeButton() {
-    return translateJoystickButtons[3];
+    return translateJoystickButtons[5];
   }
 
   @Override
   public Trigger getResetGyroButton() {
-    return rotateJoystickButtons[3];
+    return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getResetPoseToVisionButton() {
+    return rotateJoystickButtons[5];
   }
 
   @Override
   public Trigger getXStanceButton() {
-    return translateJoystickButtons[1];
+    return rotateJoystickButtons[4];
   }
 
   @Override
@@ -92,21 +99,35 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   private double getScoringGridSwitchValue() {
-    if (operatorPanelButtons[3].getAsBoolean()) {
-      return -1;
-    } else if (operatorPanelButtons[4].getAsBoolean()) {
-      return 1;
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      if (operatorPanelButtons[3].getAsBoolean()) {
+        return 1;
+      } else if (operatorPanelButtons[4].getAsBoolean()) {
+        return -1;
+      } else {
+        return 0;
+      }
     } else {
-      return 0;
+      if (operatorPanelButtons[3].getAsBoolean()) {
+        return -1;
+      } else if (operatorPanelButtons[4].getAsBoolean()) {
+        return 1;
+      } else {
+        return 0;
+      }
     }
   }
 
   private double getScoringColumnSwitchValue() {
-    return operatorPanel.getX();
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      return (Math.round(operatorPanel.getX()) * -1);
+    } else {
+      return Math.round(operatorPanel.getX());
+    }
   }
 
   private double getScoringLevelSwitchValue() {
-    return operatorPanel.getY();
+    return Math.round(operatorPanel.getY());
   }
 
   @Override
@@ -161,5 +182,10 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   @Override
   public Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(operatorController::getRightStickButton);
+  }
+
+  @Override
+  public Trigger getMoveToGridEnabledSwitch() {
+    return operatorPanelButtons[11];
   }
 }

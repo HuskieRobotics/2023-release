@@ -62,6 +62,8 @@
     "TRACKWIDTH",
     "tunables",
     "Vandermonde",
-    "Xstance"
+    "WPILOG",
+    "Xstance",
+    "YUYV"
   ]  
 }

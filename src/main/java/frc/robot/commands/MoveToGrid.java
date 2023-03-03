@@ -3,11 +3,13 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import frc.lib.team3061.RobotConfig;
+import frc.robot.Field2d;
 import frc.robot.FieldRegionConstants;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.operator_interface.OperatorInterface.Node;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -31,7 +33,7 @@ public class MoveToGrid extends MoveToPose {
    *
    * @param subsystem the drivetrain subsystem required by this command
    */
-  // FIXME: Remove this constructor
+  // FIXME: Remove this constructor if we need to account for path traversal times
   public MoveToGrid(Drivetrain subsystem) {
     super(subsystem);
   }
@@ -47,7 +49,18 @@ public class MoveToGrid extends MoveToPose {
     this.oi = OISelector.getOperatorInterface();
     super.initialize();
   }
+
+  @Override
+  public void end(boolean interrupted) {
+    super.end(interrupted);
+    Logger.getInstance().recordOutput("ActiveCommands/MoveToGrid", false);
+  }
+
   // TODO: add minPathTraversalTime
+
+  public Supplier<Pose2d> endPoseSupplier() {
+    return this::endPose;
+  }
 
   /**
    * This method returns a Pose2d object meant for the end pose of the auto-generated paths based on
@@ -64,7 +77,15 @@ public class MoveToGrid extends MoveToPose {
         break;
       case NODE_1:
         endPose = FieldRegionConstants.GRID_1_NODE_1;
-        break;
+        endPose =
+            Field2d.getInstance()
+                .mapPoseToCurrentAlliance(
+                    new Pose2d(
+                        endPose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                        endPose.getY(),
+                        endPose.getRotation()));
+        Logger.getInstance().recordOutput("MoveToGrid/endPose", endPose);
+        return endPose;
       case NODE_2:
         endPose = FieldRegionConstants.GRID_1_NODE_2;
         break;
@@ -88,11 +109,28 @@ public class MoveToGrid extends MoveToPose {
         break;
       case NODE_9:
         endPose = FieldRegionConstants.GRID_3_NODE_3;
-        break;
+        endPose =
+            Field2d.getInstance()
+                .mapPoseToCurrentAlliance(
+                    new Pose2d(
+                        endPose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                        endPose.getY(),
+                        endPose.getRotation()));
+        Logger.getInstance().recordOutput("MoveToGrid/endPose", endPose);
+        return endPose;
     }
-    return new Pose2d(
-        endPose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2 + marginOfError,
-        endPose.getY(),
-        endPose.getRotation());
+    endPose =
+        new Pose2d(
+            endPose.getX()
+                + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2
+                + marginOfError,
+            endPose.getY(),
+            endPose.getRotation());
+
+    endPose = Field2d.getInstance().mapPoseToCurrentAlliance(endPose);
+
+    Logger.getInstance().recordOutput("MoveToGrid/endPose", endPose);
+
+    return endPose;
   }
 }

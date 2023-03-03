@@ -29,7 +29,6 @@ public class Robot extends LoggedRobot {
 
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private UsbCamera driverCamera;
 
   private final Alert logReceiverQueueAlert =
       new Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.ERROR);
@@ -63,7 +62,7 @@ public class Robot extends LoggedRobot {
         logger.recordMetadata(GIT_DIRTY, "All changes committed");
         break;
       case 1:
-        logger.recordMetadata(GIT_DIRTY, "Uncomitted changes");
+        logger.recordMetadata(GIT_DIRTY, "Uncommitted changes");
         break;
       default:
         logger.recordMetadata(GIT_DIRTY, "Unknown");
@@ -118,7 +117,7 @@ public class Robot extends LoggedRobot {
     robotContainer = RobotContainer.getInstance();
 
     if (Constants.getRobot() != Constants.RobotType.ROBOT_SIMBOT) {
-      driverCamera =
+      UsbCamera driverCamera =
           CameraServer.startAutomaticCapture(RobotConfig.getInstance().getDriverCameraPort());
       driverCamera.setResolution(320, 240);
       driverCamera.setFPS(15);
@@ -129,7 +128,7 @@ public class Robot extends LoggedRobot {
 
   /**
    * This method is called every robot packet, no matter the mode. Use this for items like
-   * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
+   * diagnostics that you want ran during disabled, autonomous, teleop and test.
    *
    * <p>This runs after the mode specific periodic methods, but before LiveWindow and SmartDashboard
    * integrated updating.
@@ -168,7 +167,7 @@ public class Robot extends LoggedRobot {
     }
   }
 
-  /** This method is invoked at the start of the teleoperated period. */
+  /** This method is invoked at the start of the teleop period. */
   @Override
   public void teleopInit() {
     /*

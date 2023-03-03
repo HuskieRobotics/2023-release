@@ -72,7 +72,8 @@ public class LEDs extends SubsystemBase {
     RAINBOW,
     RGBFADE,
     SINGLEFADE,
-    STROBE,
+    STROBEORANGE,
+    STROBEBLUE,
     TWINKLE,
     TWINKLEOFF,
     SETALL,
@@ -427,10 +428,12 @@ public class LEDs extends SubsystemBase {
         toAnimate = new SingleFadeAnimation(50, 2, 200, 0, 0.5, ledCount);
         break;
 
-      case STROBE:
-        toAnimate = new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, ledCount);
+      case STROBEORANGE:
+        toAnimate = new StrobeAnimation(255,69,0, 0, 98.0 / 256.0, ledCount);
         break;
-
+      case STROBEBLUE:
+        toAnimate = new StrobeAnimation(0,0,128, 0, 98.0 / 256.0, ledCount);
+        break;
       case TWINKLE:
         toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, ledCount, TwinklePercent.Percent6);
         break;

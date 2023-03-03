@@ -29,7 +29,6 @@ import frc.lib.team3061.pneumatics.PneumaticsIORev;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.swerve.SwerveModuleIO;
 import frc.lib.team3061.swerve.SwerveModuleIOSim;
-import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
@@ -46,6 +45,7 @@ import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
+import frc.robot.commands.SetElevatorPosition;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
@@ -55,6 +55,10 @@ import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
@@ -73,6 +77,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
+  private Elevator elevator;
   private RobotConfig config;
   private Drivetrain drivetrain;
   private Alliance lastAlliance = DriverStation.Alliance.Invalid;
@@ -86,6 +91,9 @@ public class RobotContainer {
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
+
+  private final LoggedDashboardChooser<Position> armChooser =
+      new LoggedDashboardChooser<>("Arm Position");
 
   // RobotContainer singleton
   private static RobotContainer robotContainer = new RobotContainer();
@@ -111,58 +119,71 @@ public class RobotContainer {
             } else { // default to ROBOT_2023_MK4I
               config = new MK4IRobotConfig();
             }
-
+            elevator = new Elevator(new ElevatorIOTalonFX());
             GyroIO gyro = new GyroIOPigeon2(config.getGyroCANID());
 
             int[] driveMotorCANIDs = config.getSwerveDriveMotorCANIDs();
             int[] steerMotorCANDIDs = config.getSwerveSteerMotorCANIDs();
             int[] steerEncoderCANDIDs = config.getSwerveSteerEncoderCANIDs();
             double[] steerOffsets = config.getSwerveSteerOffsets();
+            // SwerveModule flModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             0,
+            //             driveMotorCANIDs[0],
+            //             steerMotorCANDIDs[0],
+            //             steerEncoderCANDIDs[0],
+            //             steerOffsets[0]),
+            //         0,
+            //         config.getRobotMaxVelocity());
+
+            // SwerveModule frModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             1,
+            //             driveMotorCANIDs[1],
+            //             steerMotorCANDIDs[1],
+            //             steerEncoderCANDIDs[1],
+            //             steerOffsets[1]),
+            //         1,
+            //         config.getRobotMaxVelocity());
+
+            // SwerveModule blModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             2,
+            //             driveMotorCANIDs[2],
+            //             steerMotorCANDIDs[2],
+            //             steerEncoderCANDIDs[2],
+            //             steerOffsets[2]),
+            //         2,
+            //         config.getRobotMaxVelocity());
+
+            // SwerveModule brModule =
+            //     new SwerveModule(
+            //         new SwerveModuleIOTalonFX(
+            //             3,
+            //             driveMotorCANIDs[3],
+            //             steerMotorCANDIDs[3],
+            //             steerEncoderCANDIDs[3],
+            //             steerOffsets[3]),
+            //         3,
+            //         config.getRobotMaxVelocity());
+
+            // drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
+
             SwerveModule flModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        0,
-                        driveMotorCANIDs[0],
-                        steerMotorCANDIDs[0],
-                        steerEncoderCANDIDs[0],
-                        steerOffsets[0]),
-                    0,
-                    config.getRobotMaxVelocity());
+                new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
 
             SwerveModule frModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        1,
-                        driveMotorCANIDs[1],
-                        steerMotorCANDIDs[1],
-                        steerEncoderCANDIDs[1],
-                        steerOffsets[1]),
-                    1,
-                    config.getRobotMaxVelocity());
+                new SwerveModule(new SwerveModuleIOSim(), 1, config.getRobotMaxVelocity());
 
             SwerveModule blModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        2,
-                        driveMotorCANIDs[2],
-                        steerMotorCANDIDs[2],
-                        steerEncoderCANDIDs[2],
-                        steerOffsets[2]),
-                    2,
-                    config.getRobotMaxVelocity());
+                new SwerveModule(new SwerveModuleIOSim(), 2, config.getRobotMaxVelocity());
 
             SwerveModule brModule =
-                new SwerveModule(
-                    new SwerveModuleIOTalonFX(
-                        3,
-                        driveMotorCANIDs[3],
-                        steerMotorCANDIDs[3],
-                        steerEncoderCANDIDs[3],
-                        steerOffsets[3]),
-                    3,
-                    config.getRobotMaxVelocity());
-
-            drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
+                new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
+            drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
@@ -198,6 +219,9 @@ public class RobotContainer {
         case ROBOT_SIMBOT:
           {
             config = new MK4IRobotConfig();
+
+            elevator = new Elevator(new ElevatorIOSim());
+
             SwerveModule flModule =
                 new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
 
@@ -265,6 +289,25 @@ public class RobotContainer {
     updateOI();
 
     configureAutoCommands();
+
+    // FIXME: remove after testing
+    armChooser.addDefaultOption("CONE_STORAGE", Position.CONE_STORAGE);
+    armChooser.addOption("CUBE_STORAGE", Position.CUBE_STORAGE);
+    armChooser.addOption("AUTO_STORAGE", Position.AUTO_STORAGE);
+    armChooser.addOption("CONE_INTAKE_FLOOR", Position.CONE_INTAKE_FLOOR);
+    armChooser.addOption("CUBE_INTAKE_BUMPER", Position.CUBE_INTAKE_BUMPER);
+    armChooser.addOption("CONE_INTAKE_SHELF", Position.CONE_INTAKE_SHELF);
+    armChooser.addOption("CUBE_INTAKE_SHELF", Position.CUBE_INTAKE_SHELF);
+    armChooser.addOption("CONE_INTAKE_CHUTE", Position.CONE_INTAKE_CHUTE);
+    armChooser.addOption("CUBE_INTAKE_CHUTE", Position.CUBE_INTAKE_CHUTE);
+    armChooser.addOption("CONE_HYBRID_LEVEL", Position.CONE_HYBRID_LEVEL);
+    armChooser.addOption("CONE_MID_LEVEL", Position.CONE_MID_LEVEL);
+    armChooser.addOption("CONE_HIGH_LEVEL", Position.CONE_HIGH_LEVEL);
+    armChooser.addOption("CUBE_HYBRID_LEVEL", Position.CUBE_HYBRID_LEVEL);
+    armChooser.addOption("CUBE_MID_LEVEL", Position.CUBE_MID_LEVEL);
+    armChooser.addOption("CUBE_HIGH_LEVEL", Position.CUBE_HIGH_LEVEL);
+
+    Shuffleboard.getTab("Elevator").add(armChooser.getSendableChooser());
   }
 
   public void constructField() {
@@ -366,6 +409,8 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
+
+    configureElevatorCommands();
 
     // move to grid / loading zone
     oi.getMoveToGridButton().onTrue(Commands.sequence(Commands.runOnce(led::enableAutoLED), new MoveToGrid(drivetrain), Commands.runOnce(led::enableTeleopLED)));
@@ -515,14 +560,18 @@ public class RobotContainer {
                 new FollowPath(auto1Paths.get(1), drivetrain, false, true),
                 auto1Paths.get(1).getMarkers(),
                 autoEventMap));
-
-
+    // 1.8465179792483901,1.0401321541158826,-9.588751578589954e-17
     PathPlannerTrajectory startPointPath =
         PathPlanner.loadPath(
             "StartPoint", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
+    PathPlannerTrajectory blueTestPath =
+        PathPlanner.loadPath("BlueTest", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
     Command startPoint =
         Commands.runOnce(
             () -> drivetrain.resetOdometry(startPointPath.getInitialState()), drivetrain);
+    Command blueTest =
+        Commands.runOnce(
+            () -> drivetrain.resetOdometry(blueTestPath.getInitialState()), drivetrain);
 
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
@@ -531,6 +580,9 @@ public class RobotContainer {
     autoChooser.addOption("Test Path", autoTest);
 
     autoChooser.addOption("Start Point", startPoint);
+
+    autoChooser.addOption("Blue Test", blueTest);
+
     // "auto" command for tuning the drive velocity PID
     autoChooser.addOption(
         "Drive Velocity Tuning",
@@ -730,6 +782,76 @@ public class RobotContainer {
     if (TUNING_MODE) {
       PathPlannerServer.startServer(3061);
     }
+  }
+
+  private void configureElevatorCommands() {
+
+    // FIXME: add LED subsystem methods to this command
+    oi.getConeCubeLEDTriggerButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.parallel(Commands.runOnce(elevator::toggleToCube)),
+                Commands.parallel(Commands.runOnce(elevator::toggleToCone)),
+                elevator::getToggledToCone));
+
+    oi.getMoveArmToChuteButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_INTAKE_CHUTE)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToShelfButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_INTAKE_SHELF)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToStorageButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToLowButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_HYBRID_LEVEL)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToMidButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToHighButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+
+    oi.getEnableManualElevatorControlButton()
+        .onTrue(Commands.runOnce(elevator::enableManualControl, elevator));
+    oi.getDisableManualElevatorControlButton()
+        .onTrue(Commands.runOnce(elevator::disableManualControl, elevator));
+
+    oi.getEnableManualElevatorPresetButton()
+        .onTrue(Commands.runOnce(elevator::enableManualPreset, elevator));
+    oi.getDisableManualElevatorPresetButton()
+        .onTrue(Commands.runOnce(elevator::disableManualPreset, elevator));
+
+    elevator.setDefaultCommand(
+        Commands.sequence(
+            Commands.runOnce(
+                () -> elevator.setElevatorExtensionMotorPower(oi.getMoveElevator()), elevator),
+            Commands.runOnce(
+                () -> elevator.setElevatorRotationMotorPower(oi.getRotateArm()), elevator)));
+
+    // FIXME: delete after testing
+    oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
+
+    // FIXME: enable for final testing and then delete
+    // oi.getResetGyroButton()
+    //     .onTrue(
+    //         Commands.either(
+    //             Commands.sequence(
+    //                 new SetElevatorPosition(elevator, armChooser),
+    //                 new GrabGamePiece(manipulator),
+    //                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+    //             Commands.sequence(
+    //                 new SetElevatorPosition(elevator, armChooser),
+    //                 new ReleaseGamePiece(manipulator),
+    //                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+    //             manipulator::isOpened));
   }
 
   /**

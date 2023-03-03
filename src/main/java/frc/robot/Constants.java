@@ -22,9 +22,9 @@ import frc.lib.team6328.util.Alert.AlertType;
  */
 public final class Constants {
 
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
 
-  private static final RobotType ROBOT = RobotType.ROBOT_2023_MK4I;
+  private static final RobotType ROBOT = RobotType.ROBOT_SIMBOT;
 
   private static final Alert invalidRobotAlert =
       new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR);

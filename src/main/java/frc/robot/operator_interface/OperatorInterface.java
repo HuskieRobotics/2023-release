@@ -8,7 +8,7 @@
 
 package frc.robot.operator_interface;
 
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.*;
 
 /** Interface for all driver and operator controls. */
 public interface OperatorInterface {
@@ -46,6 +46,58 @@ public interface OperatorInterface {
   }
 
   public default Trigger getXStanceButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToChuteButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToShelfButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToStorageButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToLowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToMidButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToHighButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default double getRotateArm() {
+    return 0.0;
+  }
+
+  public default double getMoveElevator() {
+    return 0.0;
+  }
+
+  public default Trigger getEnableManualElevatorControlButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDisableManualElevatorControlButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getEnableManualElevatorPresetButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDisableManualElevatorPresetButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getConeCubeLEDTriggerButton() {
     return new Trigger(() -> false);
   }
 

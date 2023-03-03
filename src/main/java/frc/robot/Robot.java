@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
         logger.recordMetadata(GIT_DIRTY, "All changes committed");
         break;
       case 1:
-        logger.recordMetadata(GIT_DIRTY, "Uncomitted changes");
+        logger.recordMetadata(GIT_DIRTY, "Uncommitted changes");
         break;
       default:
         logger.recordMetadata(GIT_DIRTY, "Unknown");
@@ -186,6 +186,8 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
       Commands.runOnce(() -> robotContainer.getLEDs().enableTeleopLED()).schedule();
     }
+
+    robotContainer.checkAllianceColor();
   }
   /** This method is invoked at the start of the test period. */
   @Override

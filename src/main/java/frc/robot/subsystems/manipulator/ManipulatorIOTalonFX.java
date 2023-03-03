@@ -1,5 +1,7 @@
 package frc.robot.subsystems.manipulator;
 
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -11,13 +13,8 @@ import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
 
 public class ManipulatorIOTalonFX implements ManipulatorIO {
-  // stall for 20 * 0.02 seconds (0.4 seconds) while opening before zeroing the position and
-  // stopping the motor
-  private static final int MIN_STALL_COUNT_FOR_ZERO = 20;
-
   private TalonFX manipulatorMotor;
   private final DigitalInput manipulatorSensor;
-  private boolean wasZeroed = false;
   private boolean isSensorEnabled = true;
   private int stallCount = 0;
 
@@ -44,31 +41,27 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.appliedPercentage = manipulatorMotor.getMotorOutputVoltage();
     inputs.statorCurrentAmps = new double[] {manipulatorMotor.getStatorCurrent()};
     inputs.isBlocked = !manipulatorSensor.get() || !isSensorEnabled;
-    inputs.isOpen = wasZeroed && inputs.positionDeg < 200.0;
+
     inputs.isClosed =
         inputs.appliedPercentage > 0
             && inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1]
-                > ManipulatorConstants.CLOSE_THRESHOLD;
+                > ManipulatorConstants.CLOSE_THRESHOLD_CURRENT;
+
+    inputs.isOpen = false;
+    if (inputs.appliedPercentage < 0
+        && inputs.statorCurrentAmps[0] > ManipulatorConstants.OPEN_THRESHOLD_CURRENT) {
+      stallCount++;
+      if (stallCount > OPEN_THRESHOLD_ITERATIONS) {
+        inputs.isOpen = true;
+      }
+    } else {
+      stallCount = 0;
+    }
+
     if (manipulatorKP.hasChanged() || manipulatorKI.hasChanged() || manipulatorKD.hasChanged()) {
       manipulatorMotor.config_kP(0, manipulatorKP.get());
       manipulatorMotor.config_kI(0, manipulatorKI.get());
       manipulatorMotor.config_kD(0, manipulatorKD.get());
-    }
-    inputs.wasZeroed = this.wasZeroed;
-    // if the Talon sensor has not been zeroed, check if it is opening and, if so, if it is stalling
-    //  against the hard stop. If it is, stop the motor, zero the sensor, and update wasZeroed.
-    if (!wasZeroed
-        && inputs.appliedPercentage < 0
-        && inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1]
-            > ManipulatorConstants.OPEN_THRESHOLD) {
-      stallCount++;
-
-      if (stallCount > MIN_STALL_COUNT_FOR_ZERO) {
-        setPower(0.0);
-        manipulatorMotor.setSelectedSensorPosition(0);
-        wasZeroed = true;
-        stallCount = 0;
-      }
     }
   }
 
@@ -84,24 +77,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       manipulatorMotor.set(TalonFXControlMode.PercentOutput, percentage);
     } else if (percentage == 0) {
       manipulatorMotor.set(TalonFXControlMode.PercentOutput, percentage);
-    }
-  }
-
-  @Override
-  public void setPosition(double position) {
-    if (wasZeroed) {
-      manipulatorMotor.set(TalonFXControlMode.Position, position);
-    } else {
-      setPower(-ManipulatorConstants.MANIPULATOR_POWER);
-    }
-  }
-
-  @Override
-  public void enableBrakeMode(boolean mode) {
-    if (mode) {
-      manipulatorMotor.setNeutralMode(NeutralMode.Brake);
-    } else {
-      manipulatorMotor.setNeutralMode(NeutralMode.Coast);
     }
   }
 

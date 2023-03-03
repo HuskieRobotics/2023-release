@@ -45,6 +45,73 @@ public class SingleHandheldOI implements OperatorInterface {
     return new Trigger(controller::getYButton);
   }
 
+  // FIXME: remove after testing elevator
+  @Override
+  public Trigger getMoveArmToChuteButton() {
+    return new Trigger(controller::getLeftBumper);
+  }
+
+  @Override
+  public Trigger getMoveArmToShelfButton() {
+    return new Trigger(controller::getRightBumper);
+  }
+
+  @Override
+  public Trigger getMoveArmToStorageButton() {
+    return new Trigger(controller::getBButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToLowButton() {
+    return new Trigger(controller::getAButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToMidButton() {
+    return new Trigger(controller::getXButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToHighButton() {
+    return new Trigger(controller::getYButton);
+  }
+
+  @Override
+  public double getRotateArm() {
+    return -controller.getLeftY();
+  }
+
+  @Override
+  public double getMoveElevator() {
+    return -controller.getRightX();
+  }
+
+  @Override
+  public Trigger getEnableManualElevatorControlButton() {
+    return new Trigger(() -> controller.getPOV() == 0);
+  }
+
+  @Override
+  public Trigger getDisableManualElevatorControlButton() {
+    return new Trigger(() -> controller.getPOV() == 180);
+  }
+
+  @Override
+  public Trigger getEnableManualElevatorPresetButton() {
+    return new Trigger(() -> controller.getPOV() == 270);
+  }
+
+  @Override
+  public Trigger getDisableManualElevatorPresetButton() {
+    return new Trigger(() -> controller.getPOV() == 90);
+  }
+
+  // FIXME: delete at testing
+  @Override
+  public Trigger getConeCubeLEDTriggerButton() {
+    return new Trigger(controller::getLeftStickButton);
+  }
+
   // TODO: Remove when simulated testing is done!
   @Override
   public Trigger getTranslationSlowModeButton() {
@@ -60,11 +127,6 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger getVisionIsEnabledSwitch() {
     // vision is always enabled with Xbox as there is no switch to disable
     return new Trigger(() -> true);
-  }
-
-  @Override
-  public Trigger getMoveToGridButton() {
-    return new Trigger(controller::getAButton);
   }
 
   @Override

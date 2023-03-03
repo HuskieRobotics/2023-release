@@ -48,6 +48,7 @@ import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
+import frc.robot.configs.NovaRobotConfig;
 import frc.robot.configs.SierraRobotConfig;
 import frc.robot.configs.TestBoardConfig;
 import frc.robot.operator_interface.OISelector;
@@ -99,14 +100,17 @@ public class RobotContainer {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.getRobot()) {
         case ROBOT_DEFAULT:
+        case ROBOT_2023_NOVA:
         case ROBOT_2023_MK4I:
         case ROBOT_2022_SIERRA:
           {
             // create the specific RobotConfig subclass instance first
             if (Constants.getRobot() == Constants.RobotType.ROBOT_2022_SIERRA) {
               config = new SierraRobotConfig();
-            } else { // default to ROBOT_2023_MK4I
+            } else if (Constants.getRobot() == Constants.RobotType.ROBOT_2023_MK4I) {
               config = new MK4IRobotConfig();
+            } else { // default to ROBOT_2023_NOVA
+              config = new NovaRobotConfig();
             }
 
             GyroIO gyro = new GyroIOPigeon2(config.getGyroCANID());

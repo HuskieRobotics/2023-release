@@ -53,12 +53,11 @@ import frc.robot.configs.TestBoardConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
@@ -413,7 +412,12 @@ public class RobotContainer {
     configureElevatorCommands();
 
     // move to grid / loading zone
-    oi.getMoveToGridButton().onTrue(Commands.sequence(Commands.runOnce(led::enableAutoLED), new MoveToGrid(drivetrain), Commands.runOnce(led::enableTeleopLED)));
+    oi.getMoveToGridButton()
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(led::enableAutoLED),
+                new MoveToGrid(drivetrain),
+                Commands.runOnce(led::enableTeleopLED)));
     oi.getIntakeShelfRightButton()
         .onTrue(new MoveToLoadingZone(drivetrain, FieldRegionConstants.DOUBLE_SUBSTATION_LOWER));
     oi.getIntakeShelfLeftButton()
@@ -440,7 +444,6 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
-
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
@@ -784,8 +787,10 @@ public class RobotContainer {
     oi.getConeCubeLEDTriggerButton()
         .toggleOnTrue(
             Commands.either(
-                Commands.parallel(Commands.runOnce(elevator::toggleToCube),Commands.runOnce(led::enableCubeLED)),
-                Commands.parallel(Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
+                Commands.parallel(
+                    Commands.runOnce(elevator::toggleToCube), Commands.runOnce(led::enableCubeLED)),
+                Commands.parallel(
+                    Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
                 elevator::getToggledToCone));
 
     oi.getMoveArmToChuteButton()

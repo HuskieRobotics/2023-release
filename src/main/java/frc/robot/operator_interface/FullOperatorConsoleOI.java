@@ -227,5 +227,4 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   public Trigger toggleManipulatorOpenCloseButton() {
     return new Trigger(operatorController::getRightStickButton);
   }
-
 }

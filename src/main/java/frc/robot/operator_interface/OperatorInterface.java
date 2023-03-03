@@ -144,5 +144,4 @@ public interface OperatorInterface {
   public default Trigger setLEDAnimation() {
     return new Trigger(() -> false);
   }
-
 }

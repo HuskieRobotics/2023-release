@@ -5,7 +5,6 @@ import static frc.robot.subsystems.manipulator.ManipulatorConstants.OPEN_THRESHO
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
@@ -32,7 +31,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     can.isDevicePresent(
         CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
 
-
     this.manipulatorSensor = new DigitalInput(ManipulatorConstants.MANIPULATOR_SENSOR_ID);
 
     configManipulatorMotor(ManipulatorConstants.MANIPULATOR_MOTOR_ID);
@@ -44,8 +42,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.appliedPercentage = manipulatorMotor.getMotorOutputVoltage();
     inputs.statorCurrentAmps = new double[] {manipulatorMotor.getStatorCurrent()};
     inputs.isBlocked = !manipulatorSensor.get() || !isSensorEnabled;
-    inputs.isCanDevicePresent = can.isDevicePresent(
-      CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
+    inputs.isCanDevicePresent =
+        can.isDevicePresent(
+            CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
 
     inputs.isClosed =
         inputs.appliedPercentage > 0
@@ -100,6 +99,4 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     manipulatorMotor.setSelectedSensorPosition(0);
   }
-
-  
 }

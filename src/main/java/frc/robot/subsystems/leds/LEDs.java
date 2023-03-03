@@ -1,6 +1,5 @@
 package frc.robot.subsystems.leds;
 
-import java.util.*;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -19,9 +18,9 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
+import java.util.*;
 
 public class LEDs extends SubsystemBase {
   private int nextError, currentError;
@@ -44,7 +43,6 @@ public class LEDs extends SubsystemBase {
     TELEOP,
     AUTO,
   }
-
 
   public enum RobotStateColors {
     WHITE,
@@ -114,40 +112,36 @@ public class LEDs extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
 
     this.checkErrors();
-    
-    
+
     // setting top values
-    if (currentError==0) { // loss of can device
+    if (currentError == 0) { // loss of can device
       this.changeTopStateColor(RobotStateColors.RED);
-    } else if (currentError==1) { // vision failure, we disabled vision
+    } else if (currentError == 1) { // vision failure, we disabled vision
       this.changeTopStateColor(RobotStateColors.ORANGE);
-    } else if (currentError==2) { // low voltage
+    } else if (currentError == 2) { // low voltage
       this.changeTopStateColor(RobotStateColors.YELLOW);
-    } else if (currentError==3) { // manipulator sensor disabled
+    } else if (currentError == 3) { // manipulator sensor disabled
       this.changeTopStateColor(RobotStateColors.GREEN);
-    } else if (currentError==4) { // vision failure, we dont have a camera
+    } else if (currentError == 4) { // vision failure, we dont have a camera
       this.changeTopStateColor(RobotStateColors.BLUE);
-    } else if (currentError==5) { // auto drive disabled
+    } else if (currentError == 5) { // auto drive disabled
       this.changeTopStateColor(RobotStateColors.PURPLE);
     } else { // nothing is wrong, deafult to white
       this.changeTopStateColor(null);
     }
-    
 
     this.configurePickupLEDs();
     this.configureAutoTeleopLEDs();
-
   }
 
   public void checkErrors() {
     boolean foundNextError = false;
-    
-    for (int i = 0; i<errors.length; i++) {
+
+    for (int i = 0; i < errors.length; i++) {
       if (errors[i]) {
-        if (i > currentError ) {
+        if (i > currentError) {
           nextError = i;
           foundNextError = true;
           break;
@@ -160,32 +154,27 @@ public class LEDs extends SubsystemBase {
         if (errors[i]) {
           nextError = i;
           foundNextError = true;
-        } 
+        }
       }
     }
 
     if (!foundNextError) {
       nextError = -1;
     }
-   
+
     if (timer >= 50) {
       currentError = nextError;
       timer = 0;
     } else {
       timer++;
     }
-
-      
   }
 
-
-
-    // two for loops
-    // one from current index to end
-    // boolean called found next error
-    // if not found, then go to next foor loop
-    // if at the end of both for loops, next error is still false, then set next error to -1 and white
-  
+  // two for loops
+  // one from current index to end
+  // boolean called found next error
+  // if not found, then go to next foor loop
+  // if at the end of both for loops, next error is still false, then set next error to -1 and white
 
   public void enableConeLED() {
     cone = true;
@@ -302,7 +291,7 @@ public class LEDs extends SubsystemBase {
 
   // FIXME: split this into two seperate methods, one for controlling the top and one for
   // controlling side colors
-  
+
   public void changeTopStateColor(RobotStateColors topColor) {
     switch (topColor) {
       case YELLOW:
@@ -354,7 +343,6 @@ public class LEDs extends SubsystemBase {
         break;
     }
   }
-
 
   public void changePickupStateColors(DriveInfoStates coneCube) {
     switch (coneCube) {
@@ -429,10 +417,10 @@ public class LEDs extends SubsystemBase {
         break;
 
       case STROBEORANGE:
-        toAnimate = new StrobeAnimation(255,69,0, 0, 98.0 / 256.0, ledCount);
+        toAnimate = new StrobeAnimation(255, 69, 0, 0, 98.0 / 256.0, ledCount);
         break;
       case STROBEBLUE:
-        toAnimate = new StrobeAnimation(0,0,128, 0, 98.0 / 256.0, ledCount);
+        toAnimate = new StrobeAnimation(0, 0, 128, 0, 98.0 / 256.0, ledCount);
         break;
       case TWINKLE:
         toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, ledCount, TwinklePercent.Percent6);

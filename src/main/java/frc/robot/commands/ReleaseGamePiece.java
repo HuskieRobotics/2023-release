@@ -29,8 +29,7 @@ public class ReleaseGamePiece extends CommandBase {
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/ReleaseGamePiece", true);
 
-    manipulator.enableBrakeMode(false);
-    manipulator.openPosition();
+    manipulator.open();
   }
 
   // Returns true when the command should end.
@@ -42,7 +41,6 @@ public class ReleaseGamePiece extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    manipulator.stop();
     Logger.getInstance().recordOutput("ActiveCommands/ReleaseGamePiece", false);
   }
 }

@@ -34,15 +34,7 @@ public class Manipulator extends SubsystemBase {
     io.setPower(speed);
   }
 
-  public void enableBrakeMode(boolean mode) {
-    io.enableBrakeMode(mode);
-  }
-
-  public void openPosition() {
-    io.setPosition(0);
-  }
-
-  public void openPower() {
+  public void open() {
     io.setPower(-ManipulatorConstants.MANIPULATOR_POWER);
   }
 

@@ -37,6 +37,9 @@ public class TalonFXFactory {
     public int FORWARD_SOFT_LIMIT = 0;
     public int REVERSE_SOFT_LIMIT = 0;
 
+    public double PEAK_OUTPUT_FORWARD = 1.0;
+    public double PEAK_OUTPUT_REVERSE = -1.0;
+
     public boolean INVERTED = false;
     public boolean SENSOR_PHASE = false;
     public SensorInitializationStrategy SENSOR_INITIALIZATION_STRATEGY =
@@ -73,6 +76,13 @@ public class TalonFXFactory {
     public double SLOT0_KI = 0.0;
     public double SLOT0_KD = 0.0;
     public double SLOT0_KF = 0.0;
+
+    public int REMOTE_SENSOR_DEVICE_ID = 0;
+    public RemoteSensorSource REMOTE_SENSOR_SOURCE = RemoteSensorSource.Off;
+
+    public double MOTION_ACCELERATION = 0.0;
+    public double MOTION_CRUISE_VELOCITY = 0.0;
+    public int MOTION_CURVE_STRENGTH = 0;
   }
 
   private static final Configuration kDefaultConfiguration = new Configuration();
@@ -122,8 +132,8 @@ public class TalonFXFactory {
     talonFXConfig.nominalOutputReverse = 0.0;
     talonFXConfig.neutralDeadband = config.NEUTRAL_DEADBAND;
 
-    talonFXConfig.peakOutputForward = 1.0;
-    talonFXConfig.peakOutputReverse = -1.0;
+    talonFXConfig.peakOutputForward = config.PEAK_OUTPUT_FORWARD;
+    talonFXConfig.peakOutputReverse = config.PEAK_OUTPUT_REVERSE;
 
     talonFXConfig.forwardSoftLimitThreshold = config.FORWARD_SOFT_LIMIT;
     talonFXConfig.forwardSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
@@ -149,6 +159,13 @@ public class TalonFXFactory {
     talonFXConfig.slot0.kD = config.SLOT0_KD;
     talonFXConfig.slot0.kF = config.SLOT0_KF;
 
+    talonFXConfig.motionAcceleration = config.MOTION_ACCELERATION;
+    talonFXConfig.motionCruiseVelocity = config.MOTION_CRUISE_VELOCITY;
+    talonFXConfig.motionCurveStrength = config.MOTION_CURVE_STRENGTH;
+
+    talonFXConfig.remoteFilter0.remoteSensorDeviceID = config.REMOTE_SENSOR_DEVICE_ID;
+    talonFXConfig.remoteFilter0.remoteSensorSource = config.REMOTE_SENSOR_SOURCE;
+
     talon.configAllSettings(talonFXConfig, TIMEOUT_MS);
 
     talon.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
@@ -165,8 +182,8 @@ public class TalonFXFactory {
 
     talon.overrideSoftLimitsEnable(config.ENABLE_SOFT_LIMIT);
 
-    talon.setInverted(config.INVERTED);
     talon.setSensorPhase(config.SENSOR_PHASE);
+    talon.setInverted(config.INVERTED);
 
     talon.selectProfileSlot(0, 0);
 

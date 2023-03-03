@@ -178,6 +178,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    robotContainer.checkAllianceColor();
   }
 
   /** This method is invoked at the start of the test period. */

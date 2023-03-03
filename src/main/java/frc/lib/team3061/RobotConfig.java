@@ -20,6 +20,38 @@ public abstract class RobotConfig {
     RobotConfig.robotConfig = this;
   }
 
+  public double getElevatorExtensionKF() {
+    return 0.0;
+  }
+
+  public double getElevatorExtensionKP() {
+    return 0.0;
+  }
+
+  public double getElevatorExtensionKI() {
+    return 0.0;
+  }
+
+  public double getElevatorExtensionKD() {
+    return 0.0;
+  }
+
+  public double getElevatorRotationKF() {
+    return 0.0;
+  }
+
+  public double getElevatorRotationKP() {
+    return 0.0;
+  }
+
+  public double getElevatorRotationKI() {
+    return 0.0;
+  }
+
+  public double getElevatorRotationKD() {
+    return 0.0;
+  }
+
   /**
    * Returns the proportional constant for the PID controller for the angle motor on the swerve
    * module. Defaults to 0.

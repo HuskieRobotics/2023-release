@@ -120,4 +120,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     manipulatorMotor.setSelectedSensorPosition(0);
   }
+
+  public boolean isCanDevicePresent() {
+    return can.isDevicePresent(
+      CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
+  }
 }

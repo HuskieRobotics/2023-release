@@ -21,4 +21,6 @@ public interface ManipulatorIO {
   public default void enableBrakeMode(boolean enable) {}
 
   public default void setPosition(double position) {}
+
+  public default boolean isCanDevicePresent() { return false; }
 }

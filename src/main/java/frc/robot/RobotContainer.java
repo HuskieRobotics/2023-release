@@ -441,12 +441,6 @@ public class RobotContainer {
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
 
-    oi.getYPLEDToggleButton()
-        .toggleOnTrue(
-            Commands.either(
-                Commands.runOnce(() -> led.enableConeLED()),
-                Commands.runOnce(() -> led.enableCubeLED()),
-                led::pickupCone));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
@@ -790,8 +784,8 @@ public class RobotContainer {
     oi.getConeCubeLEDTriggerButton()
         .toggleOnTrue(
             Commands.either(
-                Commands.parallel(Commands.runOnce(elevator::toggleToCube)),
-                Commands.parallel(Commands.runOnce(elevator::toggleToCone)),
+                Commands.parallel(Commands.runOnce(elevator::toggleToCube),Commands.runOnce(led::enableCubeLED)),
+                Commands.parallel(Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
                 elevator::getToggledToCone));
 
     oi.getMoveArmToChuteButton()

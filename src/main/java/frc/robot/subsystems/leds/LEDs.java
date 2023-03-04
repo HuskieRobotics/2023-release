@@ -130,7 +130,7 @@ public class LEDs extends SubsystemBase {
     } else if (currentError == 5) { // auto drive disabled
       this.changeTopStateColor(RobotStateColors.PURPLE);
     } else { // nothing is wrong, deafult to white
-      this.changeTopStateColor(null);
+      this.changeTopStateColor(RobotStateColors.WHITE);
     }
 
     this.configurePickupLEDs();

@@ -155,6 +155,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default boolean getManualManipulatorClose() {
+    return false;
+  }
+
   public default Trigger getToggleManipulatorSensorButton() {
     return new Trigger(() -> false);
   }

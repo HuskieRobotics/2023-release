@@ -110,6 +110,8 @@ public class NovaRobotConfig extends RobotConfig {
   private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
   private static final double SQUARING_DURATION_SECONDS = 1;
 
+  private static final int LED_COUNT = 200;
+
   @Override
   public double getSwerveAngleKP() {
     return ANGLE_KP;
@@ -390,5 +392,10 @@ public class NovaRobotConfig extends RobotConfig {
   @Override
   public int getPneumaticsHubCANID() {
     return 0;
+  }
+
+  @Override
+  public int getLEDCount() {
+    return LED_COUNT;
   }
 }

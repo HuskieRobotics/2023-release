@@ -45,6 +45,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       new TunableNumber("ElevatorExtension/kI", EXTENSION_POSITION_PID_I);
   private final TunableNumber ekD =
       new TunableNumber("ElevatorExtension/kD", EXTENSION_POSITION_PID_D);
+  private final TunableNumber ekF =
+      new TunableNumber("ElevatorExtension/kF", EXTENSION_POSITION_PID_F);
   private final TunableNumber ekPeakOutput =
       new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
 
@@ -87,6 +89,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.SLOT0_KP = ekP.get();
     extensionConfig.SLOT0_KI = ekI.get();
     extensionConfig.SLOT0_KD = ekD.get();
+    extensionConfig.SLOT0_KF = ekF.get();
 
     rotationConfig.INVERTED = ROTATION_INVERTED;
     rotationConfig.NEUTRAL_MODE = NeutralMode.Brake;
@@ -223,10 +226,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       this.rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
     }
 
-    if (ekP.hasChanged() || ekI.hasChanged() || ekD.hasChanged() || ekPeakOutput.hasChanged()) {
+    if (ekP.hasChanged()
+        || ekI.hasChanged()
+        || ekD.hasChanged()
+        || ekF.hasChanged()
+        || ekPeakOutput.hasChanged()) {
       this.extensionMotor.config_kP(SLOT_INDEX, ekP.get());
       this.extensionMotor.config_kI(SLOT_INDEX, ekI.get());
       this.extensionMotor.config_kD(SLOT_INDEX, ekD.get());
+      this.extensionMotor.config_kF(SLOT_INDEX, ekF.get());
       this.extensionMotor.configPeakOutputForward(ekPeakOutput.get());
       this.extensionMotor.configPeakOutputReverse(-ekPeakOutput.get());
       this.extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());

@@ -53,6 +53,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       stallCount++;
       if (stallCount > OPEN_THRESHOLD_ITERATIONS) {
         inputs.isOpen = true;
+        this.setPower(0.0);
       }
     } else {
       stallCount = 0;

@@ -152,8 +152,4 @@ public interface OperatorInterface {
   public default Trigger getMoveToGridEnabledSwitch() {
     return new Trigger(() -> false);
   }
-
-  public default Trigger setLEDAnimation() {
-    return new Trigger(() -> false);
-  }
 }

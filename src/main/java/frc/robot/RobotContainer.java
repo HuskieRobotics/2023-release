@@ -446,7 +446,6 @@ public class RobotContainer {
                 manipulator::isOpened));
 
     // move to grid
-    // FIXME: restore oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
     MoveToGrid moveToGridCommand = new MoveToGrid(drivetrain);
     oi.getMoveToGridButton()
         .onTrue(

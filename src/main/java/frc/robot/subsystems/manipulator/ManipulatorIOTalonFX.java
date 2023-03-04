@@ -54,7 +54,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         inputs.isOpen = true;
         this.setPower(0.0);
       }
-    } else if(inputs.appliedPercentage > 0) {
+    } else if (inputs.appliedPercentage > 0) {
       stallCount = 0;
       inputs.isOpen = false;
     } else {

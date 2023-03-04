@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.manipulator.Manipulator;
@@ -39,8 +38,7 @@ public class GrabGamePiece extends CommandBase {
   public void execute() {
     if (manipulator.isBlocked() && manipulator.isManipulatorSensorEnabled()) {
       manipulator.close();
-    } else if (!manipulator.isManipulatorSensorEnabled()
-        && oi.getManualManipulatorClose()) {
+    } else if (!manipulator.isManipulatorSensorEnabled() && oi.getManualManipulatorClose()) {
       manipulator.close();
     }
   }

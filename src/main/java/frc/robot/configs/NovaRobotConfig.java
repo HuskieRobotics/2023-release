@@ -16,7 +16,7 @@ public class NovaRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 13;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 12;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 37.35;
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 37.70;
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 16;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 15;
@@ -26,19 +26,19 @@ public class NovaRobotConfig extends RobotConfig {
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 259.62;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 262.44;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 10;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 9;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 9.14;
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 9.49;
 
   private static final int GYRO_ID = 18;
 
-  private static final double TRACKWIDTH_METERS = 0.574675; // 22.625 inches
-  private static final double WHEELBASE_METERS = 0.619125; // 24.375 inches
-  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8255; // meters
-  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8255; // meters
+  private static final double TRACKWIDTH_METERS = 0.523875; // 20.625
+  private static final double WHEELBASE_METERS = 0.52705; // 20.75
+  private static final double ROBOT_WIDTH_WITH_BUMPERS = 0.8382; // meters //33 in
+  private static final double ROBOT_LENGTH_WITH_BUMPERS = 0.8382; // meters // 33 in
 
   // FIXME: tune PID values for the angle and drive motors for the swerve modules
 
@@ -57,8 +57,8 @@ public class NovaRobotConfig extends RobotConfig {
   private static final double DRIVE_KF = 0.0;
 
   // FIXME: adjust with characterization
-  private static final double DRIVE_KS = 0.25988;
-  private static final double DRIVE_KV = 2.46330;
+  private static final double DRIVE_KS = 0.28006;
+  private static final double DRIVE_KV = 2.32216;
   private static final double DRIVE_KA = 0.12872;
 
   private static final SwerveType SWERVE_TYPE = SwerveType.MK4I;
@@ -68,8 +68,8 @@ public class NovaRobotConfig extends RobotConfig {
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
   // FIXME: tune these
-  private static final double MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED = 4.0;
-  private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 2.0 * Math.PI;
+  private static final double MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED = 10.0;
+  private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 8.0 * Math.PI;
 
   private static final String CAN_BUS_NAME = "canbus1";
 
@@ -82,9 +82,9 @@ public class NovaRobotConfig extends RobotConfig {
       new Transform3d(
           new Translation3d(
               Units.inchesToMeters(-11.251),
-              Units.inchesToMeters(7.003),
+              Units.inchesToMeters(-7.003),
               Units.inchesToMeters(49.528)),
-          new Rotation3d(0, Units.degreesToRadians(25), 0));
+          new Rotation3d(0, Units.degreesToRadians(65), 0));
 
   // FIXME: specify maximum velocity and acceleration and tune PID values for auto paths
 

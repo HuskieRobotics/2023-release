@@ -49,7 +49,7 @@ public class Intake extends SubsystemBase {
         this.setRotationMotorPercentage(rotationPower.get());
       }
 
-        if (rollerPower.get() != 0) {
+      if (rollerPower.get() != 0) {
         this.setRollerMotorPercentage(rollerPower.get());
       }
     }

@@ -47,6 +47,7 @@ import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
 import frc.robot.commands.SetElevatorPosition;
+import frc.robot.commands.SetIntakeState;
 import frc.robot.commands.StallAgainstElement;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
@@ -57,11 +58,17 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.manipulator.Manipulator;
+import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
@@ -84,6 +91,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = DriverStation.Alliance.Invalid;
   private Manipulator manipulator;
+  private Intake intake;
   private Vision vision;
   private LEDs led;
 
@@ -92,7 +100,7 @@ public class RobotContainer {
       new LoggedDashboardChooser<>("Auto Routine");
 
   // FIXME: delete after testing
-  private final LoggedDashboardChooser<Position> armChooser =
+  private final LoggedDashboardChooser<ElevatorConstants.Position> armChooser =
       new LoggedDashboardChooser<>("Arm Position");
 
   // RobotContainer singleton
@@ -177,6 +185,8 @@ public class RobotContainer {
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
+            intake = new Intake(new IntakeIOTalonFX());
+
             vision = new Vision(new VisionIOPhotonVision(config.getCameraName()));
 
             led = new LEDs();
@@ -204,6 +214,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
+            intake = new Intake(new IntakeIOTalonFX());
             led = new LEDs();
             break;
           }
@@ -226,6 +237,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOSim());
+            intake = new Intake(new IntakeIOSim());
             led = new LEDs();
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;
@@ -240,7 +252,6 @@ public class RobotContainer {
                         layout,
                         drivetrain::getPose,
                         RobotConfig.getInstance().getRobotToCameraTransform()));
-
             break;
           }
         default:
@@ -260,6 +271,8 @@ public class RobotContainer {
       SwerveModule brModule =
           new SwerveModule(new SwerveModuleIO() {}, 3, config.getRobotMaxVelocity());
       drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
+      manipulator = new Manipulator(new ManipulatorIO() {});
+      intake = new Intake(new IntakeIO() {});
       vision = new Vision(new VisionIO() {});
     }
 
@@ -275,21 +288,21 @@ public class RobotContainer {
     configureAutoCommands();
 
     // FIXME: remove after testing
-    armChooser.addDefaultOption("CONE_STORAGE", Position.CONE_STORAGE);
-    armChooser.addOption("CUBE_STORAGE", Position.CUBE_STORAGE);
-    armChooser.addOption("AUTO_STORAGE", Position.AUTO_STORAGE);
-    armChooser.addOption("CONE_INTAKE_FLOOR", Position.CONE_INTAKE_FLOOR);
-    armChooser.addOption("CUBE_INTAKE_BUMPER", Position.CUBE_INTAKE_BUMPER);
-    armChooser.addOption("CONE_INTAKE_SHELF", Position.CONE_INTAKE_SHELF);
-    armChooser.addOption("CUBE_INTAKE_SHELF", Position.CUBE_INTAKE_SHELF);
-    armChooser.addOption("CONE_INTAKE_CHUTE", Position.CONE_INTAKE_CHUTE);
-    armChooser.addOption("CUBE_INTAKE_CHUTE", Position.CUBE_INTAKE_CHUTE);
-    armChooser.addOption("CONE_HYBRID_LEVEL", Position.CONE_HYBRID_LEVEL);
-    armChooser.addOption("CONE_MID_LEVEL", Position.CONE_MID_LEVEL);
-    armChooser.addOption("CONE_HIGH_LEVEL", Position.CONE_HIGH_LEVEL);
-    armChooser.addOption("CUBE_HYBRID_LEVEL", Position.CUBE_HYBRID_LEVEL);
-    armChooser.addOption("CUBE_MID_LEVEL", Position.CUBE_MID_LEVEL);
-    armChooser.addOption("CUBE_HIGH_LEVEL", Position.CUBE_HIGH_LEVEL);
+    armChooser.addDefaultOption("CONE_STORAGE", ElevatorConstants.Position.CONE_STORAGE);
+    armChooser.addOption("CUBE_STORAGE", ElevatorConstants.Position.CUBE_STORAGE);
+    armChooser.addOption("AUTO_STORAGE", ElevatorConstants.Position.AUTO_STORAGE);
+    armChooser.addOption("CONE_INTAKE_FLOOR", ElevatorConstants.Position.CONE_INTAKE_FLOOR);
+    armChooser.addOption("CUBE_INTAKE_BUMPER", ElevatorConstants.Position.CUBE_INTAKE_BUMPER);
+    armChooser.addOption("CONE_INTAKE_SHELF", ElevatorConstants.Position.CONE_INTAKE_SHELF);
+    armChooser.addOption("CUBE_INTAKE_SHELF", ElevatorConstants.Position.CUBE_INTAKE_SHELF);
+    armChooser.addOption("CONE_INTAKE_CHUTE", ElevatorConstants.Position.CONE_INTAKE_CHUTE);
+    armChooser.addOption("CUBE_INTAKE_CHUTE", ElevatorConstants.Position.CUBE_INTAKE_CHUTE);
+    armChooser.addOption("CONE_HYBRID_LEVEL", ElevatorConstants.Position.CONE_HYBRID_LEVEL);
+    armChooser.addOption("CONE_MID_LEVEL", ElevatorConstants.Position.CONE_MID_LEVEL);
+    armChooser.addOption("CONE_HIGH_LEVEL", ElevatorConstants.Position.CONE_HIGH_LEVEL);
+    armChooser.addOption("CUBE_HYBRID_LEVEL", ElevatorConstants.Position.CUBE_HYBRID_LEVEL);
+    armChooser.addOption("CUBE_MID_LEVEL", ElevatorConstants.Position.CUBE_MID_LEVEL);
+    armChooser.addOption("CUBE_HIGH_LEVEL", ElevatorConstants.Position.CUBE_HIGH_LEVEL);
 
     Shuffleboard.getTab("Elevator").add(armChooser.getSendableChooser());
   }
@@ -474,12 +487,47 @@ public class RobotContainer {
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
 
+    configureIntakeButtons();
+
     oi.getToggleManipulatorSensorButton()
         .toggleOnTrue(
             Commands.either(
                 Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator),
                 Commands.runOnce(() -> manipulator.enableManipulatorSensor(true), manipulator),
                 manipulator::isManipulatorSensorEnabled));
+  }
+
+  private void configureIntakeButtons() {
+    oi.getIntakeDeployButton()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intake.setRotationMotorPercentage(
+                        IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
+                intake));
+    oi.getIntakeDeployButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
+
+    oi.getIntakeRetractButton()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intake.setRotationMotorPercentage(
+                        -IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
+                intake));
+    oi.getIntakeRetractButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
+
+    oi.getToggleIntakeRollerButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(intake::stopRoller, intake),
+                Commands.runOnce(intake::enableRoller, intake),
+                intake::isRollerSpinning));
+
+    oi.getPositionIntakeToPushCubeCone()
+        .onTrue(new SetIntakeState(intake, IntakeConstants.Position.PUSH_CONE_CUBE));
+
+    // FIXME: delete after testing intake positions
+    oi.getMoveToGridButton().onTrue(new SetIntakeState(intake));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
@@ -1048,27 +1096,27 @@ public class RobotContainer {
 
     oi.getMoveArmToChuteButton()
         .onTrue(
-            new SetElevatorPosition(elevator, Position.CONE_INTAKE_CHUTE)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_CHUTE)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToShelfButton()
         .onTrue(
-            new SetElevatorPosition(elevator, Position.CONE_INTAKE_SHELF)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_SHELF)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToStorageButton()
         .onTrue(
-            new SetElevatorPosition(elevator, Position.CONE_STORAGE)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToLowButton()
         .onTrue(
-            new SetElevatorPosition(elevator, Position.CONE_HYBRID_LEVEL)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HYBRID_LEVEL)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToMidButton()
         .onTrue(
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_MID_LEVEL)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToHighButton()
         .onTrue(
-            new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HIGH_LEVEL)
                 .unless(() -> !elevator.isManualPresetEnabled()));
 
     oi.getEnableManualElevatorControlButton()

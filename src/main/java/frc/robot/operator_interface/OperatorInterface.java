@@ -152,4 +152,20 @@ public interface OperatorInterface {
   public default Trigger getMoveToGridEnabledSwitch() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getIntakeDeployButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeRetractButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getToggleIntakeRollerButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getPositionIntakeToPushCubeCone() {
+    return new Trigger(() -> false);
+  }
 }

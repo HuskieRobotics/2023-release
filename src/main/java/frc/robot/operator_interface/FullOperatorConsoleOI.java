@@ -250,6 +250,26 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getIntakeDeployButton() {
+    return new Trigger(operatorController::getLeftBumper);
+  }
+
+  @Override
+  public Trigger getIntakeRetractButton() {
+    return new Trigger(operatorController::getRightBumper);
+  }
+
+  @Override
+  public Trigger getToggleIntakeRollerButton() {
+    return new Trigger(operatorController::getLeftStickButton);
+  }
+
+  @Override
+  public Trigger getPositionIntakeToPushCubeCone() {
+    return new Trigger(operatorController::getStartButton);
+  }
+
+  @Override
   public Trigger getToggleManipulatorSensorButton() {
     return operatorPanelButtons[13];
   }

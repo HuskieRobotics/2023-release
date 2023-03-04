@@ -27,6 +27,7 @@
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/Shuffleboard/Intake/Intake": "Subsystem",
       "/Shuffleboard/Drivetrain/Disable XStance": "Command",
       "/Shuffleboard/Drivetrain/Enable XStance": "Command",
       "/Shuffleboard/Drivetrain/MultiDirectional Auto Balance": "Command",

@@ -138,4 +138,24 @@ public class SingleHandheldOI implements OperatorInterface {
   public Trigger getToggleManipulatorOpenCloseButton() {
     return new Trigger(controller::getRightStickButton);
   }
+
+  @Override
+  public Trigger getIntakeDeployButton() {
+    return new Trigger(controller::getLeftBumper);
+  }
+
+  @Override
+  public Trigger getIntakeRetractButton() {
+    return new Trigger(controller::getRightBumper);
+  }
+
+  @Override
+  public Trigger getToggleIntakeRollerButton() {
+    return new Trigger(controller::getLeftStickButton);
+  }
+
+  @Override
+  public Trigger getPositionIntakeToPushCubeCone() {
+    return new Trigger(controller::getStartButton);
+  }
 }

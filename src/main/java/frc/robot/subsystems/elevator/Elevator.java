@@ -105,7 +105,6 @@ public class Elevator extends SubsystemBase {
     // only set the extension position if it has changed
     if (extension != this.extensionSetpoint) {
       this.extensionSetpoint = extension;
-      // FIXME: add check against previous value to avoid multiple calls
       io.setExtensionPosition(
           extension,
           calculateExtensionFeedForward(

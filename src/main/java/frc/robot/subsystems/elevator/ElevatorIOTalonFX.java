@@ -265,7 +265,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     this.extensionSetpoint = position;
     extensionMotor.set(
         TalonFXControlMode.MotionMagic,
-        Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO));
+        Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
+        DemandType.ArbitraryFeedForward,
+        arbitraryFeedForward);
   }
 
   @Override

@@ -12,7 +12,6 @@ public interface ManipulatorIO {
     boolean isOpen = false;
     boolean isClosed = false;
     boolean wasZeroed = false;
-    boolean isCanDevicePresent = false;
   }
 
   public default void updateInputs(ManipulatorIOInputs inputs) {}

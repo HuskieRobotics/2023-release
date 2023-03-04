@@ -66,7 +66,7 @@ public class Elevator extends SubsystemBase {
       }
 
       if (extensionPositionMeters.get() != 0) {
-        io.setExtensionPosition(extensionPositionMeters.get(), 0.0);
+        io.setExtensionPosition(extensionPositionMeters.get(), 0.05);
       }
 
       if (extensionPower.get() != 0) {

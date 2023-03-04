@@ -1047,21 +1047,21 @@ public class RobotContainer {
                 () -> elevator.setElevatorRotationMotorPower(oi.getRotateArm()), elevator)));
 
     // FIXME: delete after testing
-    oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
+    // oi.getResetGyroButton().onTrue(new SetElevatorPosition(elevator, armChooser));
 
     // FIXME: enable for final testing and then delete
-    // oi.getResetGyroButton()
-    //     .onTrue(
-    //         Commands.either(
-    //             Commands.sequence(
-    //                 new SetElevatorPosition(elevator, armChooser),
-    //                 new GrabGamePiece(manipulator),
-    //                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
-    //             Commands.sequence(
-    //                 new SetElevatorPosition(elevator, armChooser),
-    //                 new ReleaseGamePiece(manipulator),
-    //                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
-    //             manipulator::isOpened));
+    oi.getResetGyroButton()
+        .onTrue(
+            Commands.either(
+                Commands.sequence(
+                    new SetElevatorPosition(elevator, armChooser),
+                    new GrabGamePiece(manipulator),
+                    new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE)),
+                Commands.sequence(
+                    new SetElevatorPosition(elevator, armChooser),
+                    new ReleaseGamePiece(manipulator),
+                    new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE)),
+                manipulator::isOpened));
   }
 
   private void configureManipulatorCommands() {
@@ -1069,8 +1069,8 @@ public class RobotContainer {
     oi.getToggleManipulatorOpenCloseButton()
         .toggleOnTrue(
             Commands.either(
-                new GrabGamePiece(manipulator),
-                new ReleaseGamePiece(manipulator),
+                Commands.runOnce(manipulator::close),
+                Commands.runOnce(manipulator::open),
                 manipulator::isOpened));
 
     // toggle manipulator sensor enable/disable
@@ -1083,12 +1083,12 @@ public class RobotContainer {
   }
 
   private void configureIntakeButtons() {
-    intake.setDefaultCommand(
-        Commands.sequence(
-            Commands.runOnce(
-                () -> intake.setRotationMotorPercentage(oi.getIntakeDeployPower()), intake),
-            Commands.runOnce(
-                () -> intake.setRotationMotorPercentage(oi.getIntakeRetractPower()), intake)));
+    // intake.setDefaultCommand(
+    //     Commands.sequence(
+    //         Commands.runOnce(
+    //             () -> intake.setRotationMotorPercentage(oi.getIntakeDeployPower()), intake),
+    //         Commands.runOnce(
+    //             () -> intake.setRotationMotorPercentage(oi.getIntakeRetractPower()), intake)));
 
     oi.getToggleIntakeRollerButton()
         .toggleOnTrue(

@@ -33,16 +33,6 @@ public class Intake extends SubsystemBase {
       tab.add("Set Intake State", new SetIntakeState(this));
       tab.add("Auto Zero", new AutoZeroIntake(this));
     }
-
-    if (TUNING) {
-      tab.addNumber("Rotation Motor Position Degrees", () -> inputs.rotationPositionDeg);
-      tab.addNumber("Rotation Motor Power", () -> inputs.rotationPower);
-      tab.addNumber("Rotation Closed Loop Error", () -> inputs.rotationClosedLoopError);
-      tab.addNumber("Rotation Velocity", () -> inputs.rotationVelocityDegPerSec);
-      tab.addNumber("Rotation Motor Volts", () -> inputs.rotationAppliedVolts);
-
-      tab.addNumber("Roller Motor Volts", () -> inputs.rollerAppliedVolts);
-    }
   }
 
   @Override
@@ -59,7 +49,7 @@ public class Intake extends SubsystemBase {
         this.setRotationMotorPercentage(rotationPower.get());
       }
 
-      if (rollerPower.get() != 0) {
+        if (rollerPower.get() != 0) {
         this.setRollerMotorPercentage(rollerPower.get());
       }
     }

@@ -386,148 +386,20 @@ public class RobotContainer {
 
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
-    // field-relative toggle
-    oi.getFieldRelativeButton()
-        .toggleOnTrue(
-            Commands.either(
-                Commands.runOnce(drivetrain::disableFieldRelative, drivetrain),
-                Commands.runOnce(drivetrain::enableFieldRelative, drivetrain),
-                drivetrain::getFieldRelative));
 
-    // slow mode toggle
-    oi.getTranslationSlowModeButton()
-        .onTrue(Commands.runOnce(drivetrain::enableTranslationSlowMode, drivetrain));
-    oi.getTranslationSlowModeButton()
-        .onFalse(Commands.runOnce(drivetrain::disableTranslationSlowMode, drivetrain));
-
-    oi.getRotationSlowModeButton()
-        .onTrue(Commands.runOnce(drivetrain::enableRotationSlowMode, drivetrain));
-    oi.getRotationSlowModeButton()
-        .onFalse(Commands.runOnce(drivetrain::disableRotationSlowMode, drivetrain));
-    // reset gyro to 0 degrees
-    oi.getResetGyroButton().onTrue(Commands.runOnce(drivetrain::zeroGyroscope, drivetrain));
-
-    // reset pose based on vision
-    oi.getResetPoseToVisionButton()
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPoseToVision(() -> vision.getRobotPose())));
-
-    // x-stance
-    oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
-    oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
-
+    configureDrivetrainCommands();
     configureElevatorCommands();
-
-    // FIXME: do we want to use Drive to Pose and Stall Against Element???
-    // move to grid / loading zone
-    oi.getIntakeShelfRightButton()
-        .onTrue(
-            Commands.sequence(
-                new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_LOWER),
-                new DriveToPose(
-                    drivetrain,
-                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_LOWER).endPoseSupplier()),
-                new StallAgainstElement(
-                    drivetrain,
-                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_LOWER).endPoseSupplier())));
-    oi.getIntakeShelfLeftButton()
-        .onTrue(
-            Commands.sequence(
-                new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_UPPER),
-                new DriveToPose(
-                    drivetrain,
-                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_UPPER).endPoseSupplier()),
-                new StallAgainstElement(
-                    drivetrain,
-                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_UPPER).endPoseSupplier())));
-    oi.getIntakeChuteButton()
-        .onTrue(
-            Commands.sequence(
-                new MoveToLoadingZone(drivetrain, SINGLE_SUBSTATION),
-                new DriveToPose(
-                    drivetrain,
-                    new MoveToLoadingZone(drivetrain, SINGLE_SUBSTATION).endPoseSupplier()),
-                new StallAgainstElement(
-                    drivetrain,
-                    new MoveToLoadingZone(drivetrain, SINGLE_SUBSTATION).endPoseSupplier())));
-
-    // toggle manipulator open/close
-    oi.getToggleManipulatorOpenCloseButton()
-        .toggleOnTrue(
-            Commands.either(
-                new GrabGamePiece(manipulator),
-                new ReleaseGamePiece(manipulator),
-                manipulator::isOpened));
-
-    // move to grid
-    MoveToGrid moveToGridCommand = new MoveToGrid(drivetrain);
-    oi.getMoveToGridButton()
-        .onTrue(
-            Commands.sequence(
-                Commands.runOnce(led::enableAutoLED),
-                moveToGridCommand,
-                new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
-                new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier()),
-                Commands.runOnce(led::enableTeleopLED)));
-
-    // enable/disable move to grid
-    oi.getMoveToGridEnabledSwitch()
-        .onTrue(Commands.runOnce(() -> drivetrain.enableMoveToGrid(true)));
-    oi.getMoveToGridEnabledSwitch()
-        .onFalse(Commands.runOnce(() -> drivetrain.enableMoveToGrid(false)));
-
-    // turbo
-    oi.getTurboButton().onTrue(Commands.runOnce(drivetrain::enableTurbo, drivetrain));
-    oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
+    configureManipulatorCommands();
+    configureIntakeButtons();
+    configureAutomatedSequenceCommands();
 
     // enable/disable vision
-    oi.getVisionIsEnabledSwitch().onTrue(Commands.runOnce(() -> vision.enable(true), vision));
+    oi.getVisionIsEnabledSwitch().onTrue(Commands.runOnce(() -> vision.enable(true)));
     oi.getVisionIsEnabledSwitch()
         .onFalse(
             Commands.parallel(
-                Commands.runOnce(() -> vision.enable(false)),
+                Commands.runOnce(() -> vision.enable(false), vision),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
-
-    configureIntakeButtons();
-
-    oi.getToggleManipulatorSensorButton()
-        .toggleOnTrue(
-            Commands.either(
-                Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator),
-                Commands.runOnce(() -> manipulator.enableManipulatorSensor(true), manipulator),
-                manipulator::isManipulatorSensorEnabled));
-  }
-
-  private void configureIntakeButtons() {
-    oi.getIntakeDeployButton()
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    intake.setRotationMotorPercentage(
-                        IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
-                intake));
-    oi.getIntakeDeployButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
-
-    oi.getIntakeRetractButton()
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    intake.setRotationMotorPercentage(
-                        -IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
-                intake));
-    oi.getIntakeRetractButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
-
-    oi.getToggleIntakeRollerButton()
-        .toggleOnTrue(
-            Commands.either(
-                Commands.runOnce(intake::stopRoller, intake),
-                Commands.runOnce(intake::enableRoller, intake),
-                intake::isRollerSpinning));
-
-    oi.getPositionIntakeToPushCubeCone()
-        .onTrue(new SetIntakeState(intake, IntakeConstants.Position.PUSH_CONE_CUBE));
-
-    // FIXME: delete after testing intake positions
-    oi.getMoveToGridButton().onTrue(new SetIntakeState(intake));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {
@@ -1082,9 +954,42 @@ public class RobotContainer {
     }
   }
 
-  private void configureElevatorCommands() {
+  private void configureDrivetrainCommands() {
+    // field-relative toggle
+    oi.getFieldRelativeButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(drivetrain::disableFieldRelative, drivetrain),
+                Commands.runOnce(drivetrain::enableFieldRelative, drivetrain),
+                drivetrain::getFieldRelative));
 
-    // FIXME: add LED subsystem methods to this command
+    // slow-mode toggle
+    oi.getTranslationSlowModeButton()
+        .onTrue(Commands.runOnce(drivetrain::enableTranslationSlowMode, drivetrain));
+    oi.getTranslationSlowModeButton()
+        .onFalse(Commands.runOnce(drivetrain::disableTranslationSlowMode, drivetrain));
+    oi.getRotationSlowModeButton()
+        .onTrue(Commands.runOnce(drivetrain::enableRotationSlowMode, drivetrain));
+    oi.getRotationSlowModeButton()
+        .onFalse(Commands.runOnce(drivetrain::disableRotationSlowMode, drivetrain));
+
+    // reset gyro to 0 degrees
+    oi.getResetGyroButton().onTrue(Commands.runOnce(drivetrain::zeroGyroscope, drivetrain));
+
+    // reset pose based on vision
+    oi.getResetPoseToVisionButton()
+        .onTrue(Commands.runOnce(() -> drivetrain.resetPoseToVision(() -> vision.getRobotPose())));
+
+    // x-stance
+    oi.getXStanceButton().onTrue(Commands.runOnce(drivetrain::enableXstance, drivetrain));
+    oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
+
+    // turbo
+    oi.getTurboButton().onTrue(Commands.runOnce(drivetrain::enableTurbo, drivetrain));
+    oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
+  }
+
+  private void configureElevatorCommands() {
     oi.getConeCubeLEDTriggerButton()
         .toggleOnTrue(
             Commands.either(
@@ -1119,11 +1024,13 @@ public class RobotContainer {
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HIGH_LEVEL)
                 .unless(() -> !elevator.isManualPresetEnabled()));
 
+    // enable/disable manual elevator control
     oi.getEnableManualElevatorControlButton()
         .onTrue(Commands.runOnce(elevator::enableManualControl, elevator));
     oi.getDisableManualElevatorControlButton()
         .onTrue(Commands.runOnce(elevator::disableManualControl, elevator));
 
+    // enable/disable manual elevator preset control
     oi.getEnableManualElevatorPresetButton()
         .onTrue(Commands.runOnce(elevator::enableManualPreset, elevator));
     oi.getDisableManualElevatorPresetButton()
@@ -1152,6 +1059,109 @@ public class RobotContainer {
     //                 new ReleaseGamePiece(manipulator),
     //                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
     //             manipulator::isOpened));
+  }
+
+  private void configureManipulatorCommands() {
+    // toggle manipulator open/close
+    oi.getToggleManipulatorOpenCloseButton()
+        .toggleOnTrue(
+            Commands.either(
+                new GrabGamePiece(manipulator),
+                new ReleaseGamePiece(manipulator),
+                manipulator::isOpened));
+
+    // toggle manipulator sensor enable/disable
+    oi.getToggleManipulatorSensorButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator),
+                Commands.runOnce(() -> manipulator.enableManipulatorSensor(true)),
+                manipulator::isManipulatorSensorEnabled));
+  }
+
+  private void configureIntakeButtons() {
+    oi.getIntakeDeployButton()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intake.setRotationMotorPercentage(
+                        IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
+                intake));
+    oi.getIntakeDeployButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
+
+    oi.getIntakeRetractButton()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intake.setRotationMotorPercentage(
+                        -IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
+                intake));
+    oi.getIntakeRetractButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
+
+    oi.getToggleIntakeRollerButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(intake::stopRoller, intake),
+                Commands.runOnce(intake::enableRoller, intake),
+                intake::isRollerSpinning));
+
+    oi.getPositionIntakeToPushCubeCone()
+        .onTrue(new SetIntakeState(intake, IntakeConstants.Position.PUSH_CONE_CUBE));
+
+    // FIXME: delete after testing intake positions
+    oi.getMoveToGridButton().onTrue(new SetIntakeState(intake));
+  }
+
+  private void configureAutomatedSequenceCommands() {
+    // move to grid / loading zone
+    oi.getIntakeShelfRightButton()
+        .onTrue(
+            Commands.sequence(
+                new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_LOWER),
+                new DriveToPose(
+                    drivetrain,
+                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_LOWER).endPoseSupplier()),
+                new StallAgainstElement(
+                    drivetrain,
+                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_LOWER).endPoseSupplier())));
+    oi.getIntakeShelfLeftButton()
+        .onTrue(
+            Commands.sequence(
+                new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_UPPER),
+                new DriveToPose(
+                    drivetrain,
+                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_UPPER).endPoseSupplier()),
+                new StallAgainstElement(
+                    drivetrain,
+                    new MoveToLoadingZone(drivetrain, DOUBLE_SUBSTATION_UPPER).endPoseSupplier())));
+    oi.getIntakeChuteButton()
+        .onTrue(
+            Commands.sequence(
+                new MoveToLoadingZone(drivetrain, SINGLE_SUBSTATION),
+                new DriveToPose(
+                    drivetrain,
+                    new MoveToLoadingZone(drivetrain, SINGLE_SUBSTATION).endPoseSupplier()),
+                new StallAgainstElement(
+                    drivetrain,
+                    new MoveToLoadingZone(drivetrain, SINGLE_SUBSTATION).endPoseSupplier())));
+
+    // move to grid
+    MoveToGrid moveToGridCommand = new MoveToGrid(drivetrain);
+    // FIXME: uncomment after testing intake and elevator
+    // oi.getMoveToGridButton()
+    //     .onTrue(
+    //         Commands.sequence(
+    //             Commands.runOnce(led::enableAutoLED),
+    //             moveToGridCommand,
+    //             new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
+    //             new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier()),
+    //             Commands.runOnce(led::enableTeleopLED)));
+
+    // enable/disable move to grid
+    oi.getMoveToGridEnabledSwitch()
+        .onTrue(Commands.runOnce(() -> drivetrain.enableMoveToGrid(true)));
+    oi.getMoveToGridEnabledSwitch()
+        .onFalse(Commands.runOnce(() -> drivetrain.enableMoveToGrid(false), drivetrain));
   }
 
   /**

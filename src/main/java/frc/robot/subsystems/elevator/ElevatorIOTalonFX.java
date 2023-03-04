@@ -193,6 +193,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       stallCount++;
       if (stallCount > EXTENSION_MAX_STALL_DURATION_CYCLES) {
         extensionMotor.setSelectedSensorPosition(0);
+        setExtensionMotorPercentage(0.0);
         Logger.getInstance().recordOutput("Elevator/extensionReZero", true);
       }
     } else {

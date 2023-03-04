@@ -115,11 +115,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             EXTENSION_GEAR_RATIO);
     extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMagicMotionSCurveStrength.get();
 
+    extensionConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
+    extensionConfig.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = 9;
 
     rotationConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     rotationConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
+    rotationConfig.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = 9;
 
     extensionMotor =
         TalonFXFactory.createTalon(EXTENSION_ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);

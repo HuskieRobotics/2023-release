@@ -18,6 +18,7 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 import java.util.*;
@@ -30,7 +31,7 @@ public class LEDs extends SubsystemBase {
   private final CANdle candle;
   private boolean[] errors;
   private final int ledCount =
-      RobotConfig.getInstance().getLedCount(); // that is how many are there for testing
+      RobotConfig.getInstance().getLEDCount(); // that is how many are there for testing
 
   // enumerated type of the different types of AnimationTypes
   // not all of these will be used or are that important but it is just good to have a
@@ -196,11 +197,14 @@ public class LEDs extends SubsystemBase {
     auto = false;
   }
 
-  public boolean autoEnabled() {
-    return auto;
-  }
-
   public void configureAutoTeleopLEDs() {
+
+    if (DriverStation.isAutonomousEnabled()) {
+      enableAutoLED();
+    } else if (DriverStation.isTeleopEnabled()) {
+      enableTeleopLED();
+    }
+
     if (auto) {
       this.changeAutoTeleopStateColors(DriveInfoStates.AUTO);
     } else {

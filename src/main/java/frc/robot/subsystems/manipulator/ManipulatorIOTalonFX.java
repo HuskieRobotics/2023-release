@@ -17,7 +17,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private final DigitalInput manipulatorSensor;
   private boolean isSensorEnabled = true;
   private int stallCount = 0;
-  private CANDeviceFinder can;
 
   private final TunableNumber manipulatorKP =
       new TunableNumber("manipulator/Kp", ManipulatorConstants.MANIPULATOR_KP);
@@ -27,7 +26,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new TunableNumber("manipulator/Kd", ManipulatorConstants.MANIPULATOR_KD);
 
   public ManipulatorIOTalonFX() {
-    this.can = new CANDeviceFinder();
+    CANDeviceFinder can = new CANDeviceFinder();
     can.isDevicePresent(
         CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
 

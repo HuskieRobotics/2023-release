@@ -178,6 +178,21 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.extensionCurrentAmps = new double[] {extensionMotor.getStatorCurrent()};
     inputs.extensionTempCelsius = new double[] {extensionMotor.getTemperature()};
 
+    // FIXME: delete after testing
+    Logger.getInstance()
+        .recordOutput("Elevator/extensionSetpointNative", extensionMotor.getClosedLoopTarget());
+    Logger.getInstance()
+        .recordOutput(
+            "Elevator/extensionPositionNative",
+            extensionMotor.getSelectedSensorPosition(SLOT_INDEX));
+    Logger.getInstance()
+        .recordOutput(
+            "Elevator/extensionVelocityNative",
+            extensionMotor.getSelectedSensorVelocity(SLOT_INDEX));
+    Logger.getInstance()
+        .recordOutput(
+            "Elevator/extensionErrorNative", extensionMotor.getClosedLoopError(SLOT_INDEX));
+
     inputs.rotationSetpointRadians = pigeonToRadians(rotationMotor.getClosedLoopTarget(SLOT_INDEX));
     inputs.rotationPositionRadians =
         pigeonToRadians(rotationMotor.getSelectedSensorPosition(SLOT_INDEX));

@@ -18,8 +18,4 @@ public interface ManipulatorIO {
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
   public default void setPower(double percentage) {}
-
-  public default boolean isCanDevicePresent() {
-    return false;
-  }
 }

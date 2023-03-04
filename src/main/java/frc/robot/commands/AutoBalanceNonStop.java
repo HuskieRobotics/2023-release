@@ -28,14 +28,14 @@ public class AutoBalanceNonStop extends CommandBase {
 
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", true);
+
     drivetrain.disableFieldRelative();
     drivetrain.disableXstance();
   }
 
   @Override
   public void execute() {
-
-    Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", true);
 
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < MAX_ANGLE_DEG
         && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -MAX_ANGLE_DEG) {

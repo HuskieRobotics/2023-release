@@ -1,6 +1,6 @@
 package frc.robot.subsystems.manipulator;
 
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.OPEN_THRESHOLD_ITERATIONS;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -42,9 +42,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.appliedPercentage = manipulatorMotor.getMotorOutputVoltage();
     inputs.statorCurrentAmps = new double[] {manipulatorMotor.getStatorCurrent()};
     inputs.isBlocked = !manipulatorSensor.get() || !isSensorEnabled;
-    inputs.isCanDevicePresent =
-        can.isDevicePresent(
-            CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
 
     inputs.isClosed =
         inputs.appliedPercentage > 0

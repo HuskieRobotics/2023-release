@@ -68,6 +68,7 @@
     "Vandermonde",
     "VBAT",
     "WPILOG",
-    "Xstance"
+    "Xstance",
+    "YUYV"
   ]  
 }

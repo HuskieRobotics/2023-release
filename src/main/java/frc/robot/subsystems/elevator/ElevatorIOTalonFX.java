@@ -51,17 +51,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final TunableNumber extensionConMotorAcceleration =
       new TunableNumber(
           "extensionConMotorAcceleration",
-          Conversions.mpsToFalcon(
-              EXTENSION_ELEVATOR_ACCELERATION,
-              EXTENSION_PULLEY_CIRCUMFERENCE,
-              EXTENSION_GEAR_RATIO));
+          EXTENSION_ELEVATOR_ACCELERATION_METERS_PER_SECOND_PER_SECOND);
   private final TunableNumber extensionConMotorVelocity =
       new TunableNumber(
-          "extensionConMotorVelocity",
-          Conversions.mpsToFalcon(
-              EXTENSION_MAX_ELEVATOR_VELOCITY,
-              EXTENSION_PULLEY_CIRCUMFERENCE,
-              EXTENSION_GEAR_RATIO));
+          "extensionConMotorVelocity", EXTENSION_MAX_ELEVATOR_VELOCITY_METERS_PER_SECOND);
   private final TunableNumber extensionMotionCurveStrength =
       new TunableNumber("extensionMotionCurveStrength", EXTENSION_SCURVE_STRENGTH);
   private final TunableNumber rotationMotionAcceleration =
@@ -104,9 +97,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
     rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
 
-    extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 10;
-    rotationConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 10;
-
     rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
     rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;
     rotationConfig.SENSOR_PHASE = true;
@@ -126,13 +116,22 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 MIN_EXTENSION_POSITION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
     extensionConfig.ENABLE_SOFT_LIMIT = true;
 
-    extensionConfig.MOTION_ACCELERATION = extensionConMotorAcceleration.get();
-    extensionConfig.MOTION_CRUISE_VELOCITY = extensionConMotorVelocity.get();
+    extensionConfig.MOTION_ACCELERATION =
+        mpsToFalconMotionMagicUnits(
+            extensionConMotorAcceleration.get(),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO);
+    extensionConfig.MOTION_CRUISE_VELOCITY =
+        mpsToFalconMotionMagicUnits(
+            extensionConMotorVelocity.get(), EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
     extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMotionCurveStrength.get();
 
     rotationConfig.MOTION_ACCELERATION = rotationMotionAcceleration.get();
     rotationConfig.MOTION_CRUISE_VELOCITY = rotationMotionVelocity.get();
     rotationConfig.MOTION_CURVE_STRENGTH = (int) rotationMotionCurveStrength.get();
+
+    extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 9;
+    extensionConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
 
     rotationConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     rotationConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
@@ -233,6 +232,22 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       this.extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());
     }
 
+    if (extensionConMotorVelocity.hasChanged()
+        || extensionConMotorAcceleration.hasChanged()
+        || extensionMotionCurveStrength.hasChanged()) {
+      this.extensionMotor.configMotionCruiseVelocity(
+          mpsToFalconMotionMagicUnits(
+              extensionConMotorVelocity.get(),
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
+      this.extensionMotor.configMotionAcceleration(
+          mpsToFalconMotionMagicUnits(
+              extensionConMotorAcceleration.get(),
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
+      this.extensionMotor.configMotionSCurveStrength((int) (extensionMotionCurveStrength.get()));
+    }
+
     // FIXME: if we pursue Motion Magic check the TunableNubmers to see if they have changed and
     // update the configuration
   }
@@ -259,10 +274,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
     this.extensionSetpoint = position;
     extensionMotor.set(
-        TalonFXControlMode.Position,
-        Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
-        DemandType.ArbitraryFeedForward,
-        arbitraryFeedForward);
+        TalonFXControlMode.MotionMagic,
+        Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO));
   }
 
   @Override
@@ -272,5 +285,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         radiansToPigeon(position),
         DemandType.ArbitraryFeedForward,
         arbitraryFeedForward);
+  }
+
+  private static double mpsToFalconMotionMagicUnits(
+      double mps, double circumference, double gearRatio) {
+    double pulleyRotationsPerSecond = mps / circumference;
+    double motorRotationsPerSecond = pulleyRotationsPerSecond * gearRatio;
+    double ticksPerSecond = motorRotationsPerSecond * 2048.0;
+    return ticksPerSecond / 10.0; // per 100 ms
   }
 }

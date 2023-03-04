@@ -40,12 +40,12 @@ public abstract class MoveToPose extends CommandBase {
    * @param subsystem the drivetrain subsystem required by this command
    */
 
-  // FIXME: potentially get rid of completely
-  public MoveToPose(Drivetrain subsystem) {
+  // FIXME: potentially get rid of completely if we need to account for path traversal times
+  protected MoveToPose(Drivetrain subsystem) {
     this(subsystem, 0);
   }
 
-  public MoveToPose(Drivetrain subsystem, double minPathTraversalTime) {
+  protected MoveToPose(Drivetrain subsystem, double minPathTraversalTime) {
     this.drivetrain = subsystem;
     this.minPathTraversalTime = minPathTraversalTime;
 
@@ -77,7 +77,7 @@ public abstract class MoveToPose extends CommandBase {
 
     double distance = endPose.minus(this.drivetrain.getPose()).getTranslation().getNorm();
     double maxVelocity = RobotConfig.getInstance().getAutoMaxSpeed();
-    // FIXME: add elevator movement time
+    // FIXME: add elevator movement time (isn't this already accounted for?)
     if (minPathTraversalTime != 0) {
       maxVelocity = distance / minPathTraversalTime;
     }
@@ -87,7 +87,7 @@ public abstract class MoveToPose extends CommandBase {
         Field2d.getInstance()
             .makePath(
                 startingPose,
-                Field2d.getInstance().mapPoseToCurrentAlliance(endPose),
+                endPose,
                 new PathConstraints(
                     maxVelocity, RobotConfig.getInstance().getAutoMaxAcceleration()),
                 this.drivetrain);
@@ -119,7 +119,9 @@ public abstract class MoveToPose extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return this.trajectory == null || ppSwerveControllerCommand.isFinished();
+    return !drivetrain.isMoveToGridEnabled()
+        || this.trajectory == null
+        || ppSwerveControllerCommand.isFinished();
   }
 
   @Override

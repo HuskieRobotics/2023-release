@@ -22,14 +22,16 @@ import frc.lib.team6328.util.Alert.AlertType;
  */
 public final class Constants {
 
+  // FIXME: set to false after testing
   public static final boolean TUNING_MODE = true;
 
-  private static final RobotType ROBOT = RobotType.ROBOT_SIMBOT;
+  private static final RobotType ROBOT = RobotType.ROBOT_2023_NOVA;
 
   private static final Alert invalidRobotAlert =
       new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR);
 
   public enum RobotType {
+    ROBOT_2023_NOVA,
     ROBOT_2022_SIERRA,
     ROBOT_2023_MK4I,
     ROBOT_DEFAULT,
@@ -41,7 +43,7 @@ public final class Constants {
     if (RobotBase.isReal()) {
       if (ROBOT == RobotType.ROBOT_SIMBOT) { // Invalid robot selected
         invalidRobotAlert.set(true);
-        return RobotType.ROBOT_2023_MK4I;
+        return RobotType.ROBOT_2023_NOVA;
       } else {
         return ROBOT;
       }
@@ -53,6 +55,7 @@ public final class Constants {
   public static Mode getMode() {
     switch (getRobot()) {
       case ROBOT_DEFAULT:
+      case ROBOT_2023_NOVA:
       case ROBOT_2022_SIERRA:
       case ROBOT_2023_MK4I:
       case TEST_BOARD:

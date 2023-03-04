@@ -102,13 +102,17 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setElevatorExtension(double extension) {
-    this.extensionSetpoint = extension;
-    io.setExtensionPosition(
-        extension,
-        calculateExtensionFeedForward(
-            Units.metersToInches(inputs.extensionPositionMeters),
-            inputs.rotationPositionRadians,
-            (extension > inputs.extensionPositionMeters)));
+    // only set the extension position if it has changed
+    if (extension != this.extensionSetpoint) {
+      this.extensionSetpoint = extension;
+      // FIXME: add check against previous value to avoid multiple calls
+      io.setExtensionPosition(
+          extension,
+          calculateExtensionFeedForward(
+              Units.metersToInches(inputs.extensionPositionMeters),
+              inputs.rotationPositionRadians,
+              (extension > inputs.extensionPositionMeters)));
+    }
   }
 
   public void setElevatorRotation(Double rotation) {
@@ -177,7 +181,6 @@ public class Elevator extends SubsystemBase {
      * We can't call atRotationSetpoint or atExtensionSetpoint because we haven't set
      * the new setpoint values yet. Instead, we will compare the current position to the eventual position.
      */
-
     if (extensionIsIncreasing && !rotationIsIncreasing) {
       // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
       // positions

@@ -54,7 +54,7 @@ public class Field2d {
           new Translation2d(
               pose.getTranslation().getX(),
               FieldConstants.fieldWidth - pose.getTranslation().getY()),
-          pose.getRotation());
+          new Rotation2d(pose.getRotation().getCos(), -pose.getRotation().getSin()));
     } else {
       return pose;
     }

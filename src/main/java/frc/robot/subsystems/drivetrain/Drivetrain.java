@@ -29,9 +29,12 @@ import frc.lib.team3061.gyro.GyroIO;
 import frc.lib.team3061.gyro.GyroIOInputsAutoLogged;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team6328.util.Alert;
+import frc.lib.team6328.util.Alert.AlertType;
 import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.commands.AutoBalanceNonStop;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -56,10 +59,6 @@ public class Drivetrain extends SubsystemBase {
       new TunableNumber("AutoDrive/TurnKi", RobotConfig.getInstance().getAutoTurnKI());
   private final TunableNumber autoTurnKd =
       new TunableNumber("AutoDrive/TurnKd", RobotConfig.getInstance().getAutoTurnKD());
-  private final TunableNumber tunableMaxDriveAcceleration =
-      new TunableNumber(
-          "TeleopSwerve/maxDriveAcceleration",
-          RobotConfig.getInstance().getRobotMaxDriveAcceleration());
 
   private final PIDController autoXController =
       new PIDController(autoDriveKp.get(), autoDriveKi.get(), autoDriveKd.get());
@@ -114,9 +113,15 @@ public class Drivetrain extends SubsystemBase {
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
 
+  private boolean isTurbo;
   private boolean hasCrossedToRedSide = false;
   private boolean hasCrossedToBlueSide = true;
   private double maxDriveAcceleration;
+
+  private boolean isMoveToGridEnabled;
+
+  private Alert noPoseAlert =
+      new Alert("Attempted to reset pose from vision, but no pose was found.", AlertType.WARNING);
 
   /** Constructs a new DrivetrainSubsystem object. */
   public Drivetrain(
@@ -145,7 +150,9 @@ public class Drivetrain extends SubsystemBase {
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
 
-    this.maxDriveAcceleration = RobotConfig.getInstance().getRobotMaxDriveAcceleration();
+    this.isTurbo = false;
+
+    this.isMoveToGridEnabled = true;
 
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
@@ -174,15 +181,15 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void enableTurbo() {
-    maxDriveAcceleration = 999;
+    isTurbo = true;
   }
 
   public void disableTurbo() {
-    maxDriveAcceleration = tunableMaxDriveAcceleration.get();
+    isTurbo = false;
   }
 
-  public double getMaxDriveAcceleration() {
-    return maxDriveAcceleration;
+  public boolean getTurbo() {
+    return isTurbo;
   }
 
   /**
@@ -291,6 +298,19 @@ public class Drivetrain extends SubsystemBase {
         swerveModulePositions,
         new Pose2d(this.getPose().getTranslation(), this.getRotation()));
   }
+
+  public void resetPoseToVision(Supplier<Pose3d> poseSupplier) {
+    Pose3d pose = poseSupplier.get();
+    if (pose != null) {
+      noPoseAlert.set(false);
+      poseEstimator.resetPosition(
+          this.getRotation(),
+          swerveModulePositions,
+          new Pose2d(new Translation2d(pose.getX(), pose.getY()), this.getRotation()));
+    } else {
+      noPoseAlert.set(true);
+    }
+  }
   /**
    * Controls the drivetrain to move the robot with the desired velocities in the x, y, and
    * rotational directions. The velocities may be specified from either the robot's frame of
@@ -319,15 +339,15 @@ public class Drivetrain extends SubsystemBase {
 
     switch (driveMode) {
       case NORMAL:
-        // get the slowmode multiplier from the config
+        // get the slow-mode multiplier from the config
         double slowModeMultiplier = RobotConfig.getInstance().getRobotSlowModeMultiplier();
         // if translation or rotation is in slow mode, multiply the x and y velocities by the
-        // slowmode multiplier
+        // slow-mode multiplier
         if (isTranslationSlowMode) {
           xVelocity *= slowModeMultiplier;
           yVelocity *= slowModeMultiplier;
         }
-        // if rotation is in slow mode, multiply the rotational velocity by the slowmode multiplier
+        // if rotation is in slow mode, multiply the rotational velocity by the slow-mode multiplier
         if (isRotationSlowMode) {
           rotationalVelocity *= slowModeMultiplier;
         }
@@ -632,6 +652,14 @@ public class Drivetrain extends SubsystemBase {
     return chassisSpeeds.vyMetersPerSecond;
   }
 
+  public double getAverageDriveCurrent() {
+    double totalCurrent = 0.0;
+    for (SwerveModule module : swerveModules) {
+      totalCurrent += module.getDriveCurrent();
+    }
+    return totalCurrent / swerveModules.length;
+  }
+
   /**
    * Puts the drivetrain into the x-stance orientation. In this orientation the wheels are aligned
    * to make an 'X'. This makes it more difficult for other robots to push the robot, which is
@@ -699,6 +727,14 @@ public class Drivetrain extends SubsystemBase {
       driveVelocityAverage += swerveModule.getState().speedMetersPerSecond;
     }
     return driveVelocityAverage / 4.0;
+  }
+
+  public void enableMoveToGrid(boolean state) {
+    this.isMoveToGridEnabled = state;
+  }
+
+  public boolean isMoveToGridEnabled() {
+    return this.isMoveToGridEnabled;
   }
 
   private enum DriveMode {

@@ -20,58 +20,52 @@ public final class FieldRegionConstants {
   }
 
   // Points making up the Community Zone (not including Charging Station)
-  public static final Translation2d COMMUNITY_POINT_1 =
-      FieldConstants.Community.regionCorners[0]; // (0, 0)
-  public static final Translation2d COMMUNITY_POINT_2 =
-      FieldConstants.Community.regionCorners[1]; // (0, 5.49)
+  public static final Translation2d COMMUNITY_POINT_1 = FieldConstants.Community.regionCorners[0];
+  public static final Translation2d COMMUNITY_POINT_2 = FieldConstants.Community.regionCorners[1];
   public static final Translation2d COMMUNITY_POINT_3 =
       new Translation2d(
-          FieldConstants.Community.chargingStationInnerX,
-          FieldConstants.Community.leftY); // (3, 5.49)
+          FieldConstants.Community.chargingStationInnerX, FieldConstants.Community.leftY);
   public static final Translation2d COMMUNITY_POINT_4 =
       new Translation2d(
-          FieldConstants.Community.chargingStationOuterX,
-          FieldConstants.Community.leftY); // (4.91, 5.49)
+          FieldConstants.Community.chargingStationOuterX, FieldConstants.Community.leftY);
   public static final Translation2d COMMUNITY_POINT_5 =
       new Translation2d(
           FieldConstants.Community.chargingStationOuterX,
-          FieldConstants.Community.chargingStationLeftY); // (4.91, 3.98)
+          FieldConstants.Community.chargingStationLeftY);
   public static final Translation2d COMMUNITY_POINT_6 =
       new Translation2d(
           FieldConstants.Community.chargingStationInnerX,
-          FieldConstants.Community.chargingStationLeftY); // (3, 3.98)
+          FieldConstants.Community.chargingStationLeftY);
   public static final Translation2d COMMUNITY_POINT_7 =
       new Translation2d(
           FieldConstants.Community.chargingStationInnerX,
-          FieldConstants.Community.chargingStationRightY); // (3, 1.51)
+          FieldConstants.Community.chargingStationRightY);
   public static final Translation2d COMMUNITY_POINT_8 =
       new Translation2d(
           FieldConstants.Community.chargingStationOuterX,
-          FieldConstants.Community.chargingStationRightY); // (4.91, 1.51)
+          FieldConstants.Community.chargingStationRightY);
   public static final Translation2d COMMUNITY_POINT_9 =
       new Translation2d(
-          FieldConstants.Community.chargingStationOuterX,
-          FieldConstants.Community.rightY); // (4.91, 0)
+          FieldConstants.Community.chargingStationOuterX, FieldConstants.Community.rightY);
   public static final Translation2d COMMUNITY_POINT_10 =
       new Translation2d(
-          FieldConstants.Community.chargingStationInnerX,
-          FieldConstants.Community.rightY); // (3, 0)
+          FieldConstants.Community.chargingStationInnerX, FieldConstants.Community.rightY);
 
   // Points making up the Loading Zone
   public static final Translation2d LOADING_ZONE_POINT_1 =
-      FieldConstants.LoadingZone.regionCorners[0]; // (13.18, 5.49);
+      FieldConstants.LoadingZone.regionCorners[0];
   public static final Translation2d LOADING_ZONE_POINT_2 =
-      FieldConstants.LoadingZone.regionCorners[1]; // (13.18, mid);
+      FieldConstants.LoadingZone.regionCorners[1];
   public static final Translation2d LOADING_ZONE_POINT_3 =
-      FieldConstants.LoadingZone.regionCorners[2]; // (9.83, mid)
+      FieldConstants.LoadingZone.regionCorners[2];
   public static final Translation2d LOADING_ZONE_POINT_4 =
-      FieldConstants.LoadingZone.regionCorners[3]; // (9.83, 8.02);
+      FieldConstants.LoadingZone.regionCorners[3];
   public static final Translation2d LOADING_ZONE_POINT_5 =
       new Translation2d(FieldConstants.LoadingZone.midX, FieldConstants.LoadingZone.leftY);
   public static final Translation2d LOADING_ZONE_POINT_6 =
-      FieldConstants.LoadingZone.regionCorners[4]; // (16.54, 8.02);
+      FieldConstants.LoadingZone.regionCorners[4];
   public static final Translation2d LOADING_ZONE_POINT_7 =
-      FieldConstants.LoadingZone.regionCorners[5]; // (16.54, 5.49);
+      FieldConstants.LoadingZone.regionCorners[5];
 
   // Points making up the rest of the Game Field (not including opposite Alliance zones)
   public static final Translation2d FIELD_POINT_1 =
@@ -84,127 +78,219 @@ public final class FieldRegionConstants {
   public static final Translation2d FIELD_POINT_3 =
       new Translation2d(
           FieldConstants.fieldLength - FieldConstants.Community.chargingStationOuterX,
-          FieldConstants.Community.leftY);
+          (FieldConstants.Community.leftY + FieldConstants.Community.rightY) / 2.0);
   public static final Translation2d FIELD_POINT_4 =
-      new Translation2d(FieldConstants.LoadingZone.midX, FieldConstants.Community.leftY);
+      new Translation2d(
+          FieldConstants.fieldLength - FieldConstants.Community.chargingStationOuterX,
+          FieldConstants.Community.leftY);
   public static final Translation2d FIELD_POINT_5 =
-      new Translation2d(FieldConstants.LoadingZone.midX, FieldConstants.LoadingZone.midY);
+      new Translation2d(FieldConstants.LoadingZone.midX, FieldConstants.Community.leftY);
   public static final Translation2d FIELD_POINT_6 =
+      new Translation2d(FieldConstants.LoadingZone.midX, FieldConstants.LoadingZone.midY);
+  public static final Translation2d FIELD_POINT_7 =
       new Translation2d(
           FieldConstants.fieldLength - FieldConstants.Community.chargingStationOuterX,
           FieldConstants.LoadingZone.midY);
-  public static final Translation2d FIELD_POINT_7 =
-      new Translation2d(FieldConstants.LoadingZone.outerX, FieldConstants.Community.midY);
   public static final Translation2d FIELD_POINT_8 =
-      new Translation2d(FieldConstants.LoadingZone.outerX, FieldConstants.LoadingZone.leftY);
+      new Translation2d(FieldConstants.LoadingZone.outerX, FieldConstants.LoadingZone.midY);
   public static final Translation2d FIELD_POINT_9 =
-      new Translation2d(
-          FieldConstants.fieldLength - FieldConstants.LoadingZone.outerX,
-          FieldConstants.LoadingZone.leftY);
+      new Translation2d(FieldConstants.LoadingZone.outerX, FieldConstants.LoadingZone.leftY);
   public static final Translation2d FIELD_POINT_10 =
       new Translation2d(
           FieldConstants.fieldLength - FieldConstants.LoadingZone.outerX,
-          FieldConstants.LoadingZone.midY);
+          FieldConstants.LoadingZone.leftY);
   public static final Translation2d FIELD_POINT_11 =
       new Translation2d(
+          FieldConstants.fieldLength - FieldConstants.LoadingZone.outerX,
+          FieldConstants.LoadingZone.midY);
+  public static final Translation2d FIELD_POINT_12 =
+      new Translation2d(
           FieldConstants.Community.chargingStationOuterX, FieldConstants.LoadingZone.midY);
+  public static final Translation2d FIELD_POINT_13 =
+      new Translation2d(
+          FieldConstants.Community.chargingStationOuterX,
+          (FieldConstants.Community.leftY + FieldConstants.Community.rightY) / 2.0);
 
-  public static final Translation2d[] COMMUNITY_REGION_POINTS_1 =
+  protected static final Translation2d[] COMMUNITY_REGION_POINTS_1 =
       new Translation2d[] {
         COMMUNITY_POINT_1, COMMUNITY_POINT_2, COMMUNITY_POINT_3, COMMUNITY_POINT_10
       };
-  public static final Translation2d[] COMMUNITY_REGION_POINTS_2 =
+  protected static final Translation2d[] COMMUNITY_REGION_POINTS_2 =
       new Translation2d[] {
         COMMUNITY_POINT_6, COMMUNITY_POINT_3, COMMUNITY_POINT_4, COMMUNITY_POINT_5
       };
-  public static final Translation2d[] COMMUNITY_REGION_POINTS_3 =
+  protected static final Translation2d[] COMMUNITY_REGION_POINTS_3 =
       new Translation2d[] {
         COMMUNITY_POINT_10, COMMUNITY_POINT_7, COMMUNITY_POINT_8, COMMUNITY_POINT_9
       };
 
-  public static final Translation2d[] LOADING_ZONE_REGION_POINTS_1 =
+  protected static final Translation2d[] LOADING_ZONE_REGION_POINTS_1 =
       new Translation2d[] {
         LOADING_ZONE_POINT_1, LOADING_ZONE_POINT_7, LOADING_ZONE_POINT_6, LOADING_ZONE_POINT_5
       };
-  public static final Translation2d[] LOADING_ZONE_REGION_POINTS_2 =
+  protected static final Translation2d[] LOADING_ZONE_REGION_POINTS_2 =
       new Translation2d[] {
         LOADING_ZONE_POINT_3, LOADING_ZONE_POINT_2, LOADING_ZONE_POINT_5, LOADING_ZONE_POINT_4
       };
 
-  public static final Translation2d[] FIELD_ZONE_REGION_POINTS_1 =
-      new Translation2d[] {FIELD_POINT_1, FIELD_POINT_2, FIELD_POINT_6, FIELD_POINT_11};
-  public static final Translation2d[] FIELD_ZONE_REGION_POINTS_2 =
-      new Translation2d[] {FIELD_POINT_3, FIELD_POINT_4, FIELD_POINT_5, FIELD_POINT_6};
-  public static final Translation2d[] FIELD_ZONE_REGION_POINTS_3 =
-      new Translation2d[] {FIELD_POINT_7, FIELD_POINT_8, FIELD_POINT_9, FIELD_POINT_10};
+  protected static final Translation2d[] FIELD_ZONE_REGION_POINTS_1 =
+      new Translation2d[] {FIELD_POINT_13, FIELD_POINT_3, FIELD_POINT_7, FIELD_POINT_12};
+  protected static final Translation2d[] FIELD_ZONE_REGION_POINTS_2 =
+      new Translation2d[] {FIELD_POINT_1, FIELD_POINT_2, FIELD_POINT_3, FIELD_POINT_13};
+  protected static final Translation2d[] FIELD_ZONE_REGION_POINTS_3 =
+      new Translation2d[] {FIELD_POINT_4, FIELD_POINT_5, FIELD_POINT_6, FIELD_POINT_7};
+  protected static final Translation2d[] FIELD_ZONE_REGION_POINTS_4 =
+      new Translation2d[] {FIELD_POINT_8, FIELD_POINT_9, FIELD_POINT_10, FIELD_POINT_11};
 
   public static final Region2d COMMUNITY_REGION_1 = new Region2d(COMMUNITY_REGION_POINTS_1);
   public static final Region2d COMMUNITY_REGION_2 = new Region2d(COMMUNITY_REGION_POINTS_2);
   public static final Region2d COMMUNITY_REGION_3 = new Region2d(COMMUNITY_REGION_POINTS_3);
-
   public static final Region2d LOADING_ZONE_REGION_1 = new Region2d(LOADING_ZONE_REGION_POINTS_1);
   public static final Region2d LOADING_ZONE_REGION_2 = new Region2d(LOADING_ZONE_REGION_POINTS_2);
-
   public static final Region2d FIELD_ZONE_REGION_1 = new Region2d(FIELD_ZONE_REGION_POINTS_1);
   public static final Region2d FIELD_ZONE_REGION_2 = new Region2d(FIELD_ZONE_REGION_POINTS_2);
   public static final Region2d FIELD_ZONE_REGION_3 = new Region2d(FIELD_ZONE_REGION_POINTS_3);
+  public static final Region2d FIELD_ZONE_REGION_4 = new Region2d(FIELD_ZONE_REGION_POINTS_4);
 
+  // Points setting the transition points between each region
   public static final Translation2d COMMUNITY_REGION_1_2_TRANSITION_POINT =
-      new Translation2d(3.5, (5.49 + 3.98) / 2.0);
+      new Translation2d(
+          FieldConstants.Community.chargingStationInnerX,
+          (FieldConstants.Community.leftY + FieldConstants.Community.chargingStationLeftY) / 2.0);
   public static final Translation2d COMMUNITY_REGION_2_1_TRANSITION_POINT =
-      new Translation2d(2.5, (5.49 + 3.98) / 2.0);
+      new Translation2d(
+          FieldConstants.Community.chargingStationInnerX - 0.5,
+          (FieldConstants.Community.leftY + FieldConstants.Community.chargingStationLeftY) / 2.0);
   public static final Translation2d COMMUNITY_REGION_1_3_TRANSITION_POINT =
-      new Translation2d(3.5, (1.51 / 2.0));
+      new Translation2d(
+          FieldConstants.Community.chargingStationInnerX,
+          FieldConstants.Community.chargingStationRightY / 2.0);
   public static final Translation2d COMMUNITY_REGION_3_1_TRANSITION_POINT =
-      new Translation2d(2.5, (1.51 / 2.0));
+      new Translation2d(
+          FieldConstants.Community.chargingStationInnerX - 0.5,
+          FieldConstants.Community.chargingStationRightY / 2.0);
 
   public static final Translation2d LOADING_ZONE_REGION_1_2_TRANSITION_POINT =
-      new Translation2d(12.75, (8.02 + 5.49) / 2.0);
+      new Translation2d(
+          FieldConstants.LoadingZone.midX - 0.5,
+          (FieldConstants.LoadingZone.leftY + FieldConstants.LoadingZone.midY) / 2.0);
   public static final Translation2d LOADING_ZONE_REGION_2_1_TRANSITION_POINT =
-      new Translation2d(13.5, (8.02 + 5.49) / 2.0);
+      new Translation2d(
+          FieldConstants.LoadingZone.midX + 0.5,
+          (FieldConstants.LoadingZone.leftY + FieldConstants.LoadingZone.midY) / 2.0);
 
-  // TODO: Add transition points between regions
-  public static final Translation2d FIELD_ZONE_REGION_1_2_TRANSITION_POINT = new Translation2d();
-  public static final Translation2d FIELD_ZONE_REGION_1_3_TRANSITION_POINT = new Translation2d();
-  public static final Translation2d FIELD_ZONE_REGION_2_1_TRANSITION_POINT = new Translation2d();
-  public static final Translation2d FIELD_ZONE_REGION_3_1_TRANSITION_POINT = new Translation2d();
+  public static final Translation2d FIELD_ZONE_REGION_1_2_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.fieldLength / 2.0,
+          (FieldConstants.Community.leftY + FieldConstants.Community.rightY) / 2.0 - 0.5);
+  public static final Translation2d FIELD_ZONE_REGION_2_1_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.fieldLength / 2.0,
+          (FieldConstants.Community.leftY + FieldConstants.Community.rightY) / 2.0 + 0.5);
+  public static final Translation2d FIELD_ZONE_REGION_1_3_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.LoadingZone.midX - 0.5,
+          (FieldConstants.LoadingZone.midY + FieldConstants.LoadingZone.rightY) / 2.0);
+  public static final Translation2d FIELD_ZONE_REGION_3_1_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.fieldLength - FieldConstants.Community.chargingStationOuterX - 0.5,
+          (FieldConstants.LoadingZone.midY + FieldConstants.LoadingZone.rightY) / 2.0);
+  public static final Translation2d FIELD_ZONE_REGION_1_4_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.LoadingZone.outerX / 2.0,
+          (FieldConstants.LoadingZone.leftY + FieldConstants.LoadingZone.midY) / 2.0);
+  public static final Translation2d FIELD_ZONE_REGION_4_1_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.fieldLength / 2.0 - 0.5,
+          (FieldConstants.LoadingZone.midY + FieldConstants.LoadingZone.rightY) / 2.0);
 
-  public static final Translation2d COMMUNITY_2_TO_FIELD_1_TRANSITION_POINT = new Translation2d();
-  public static final Translation2d COMMUNITY_3_TO_FIELD_1_TRANSITION_POINT = new Translation2d();
+  public static final Translation2d COMMUNITY_2_TO_FIELD_1_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.Community.chargingStationOuterX + 0.5,
+          (FieldConstants.LoadingZone.midY + FieldConstants.Community.chargingStationLeftY) / 2.0);
+  public static final Translation2d COMMUNITY_3_TO_FIELD_2_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.Community.chargingStationOuterX + 0.5,
+          FieldConstants.Community.chargingStationRightY / 2.0);
 
-  public static final Translation2d FIELD_1_TO_COMMUNITY_2_TRANSITION_POINT = new Translation2d();
-  public static final Translation2d FIELD_1_TO_COMMUNITY_3_TRANSITION_POINT = new Translation2d();
-  public static final Translation2d FIELD_2_TO_LOADING_1_TRANSITION_POINT = new Translation2d();
-  public static final Translation2d FIELD_2_TO_LOADING_2_TRANSITION_POINT = new Translation2d();
+  public static final Translation2d FIELD_1_TO_COMMUNITY_2_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.Community.chargingStationOuterX - 0.5,
+          (FieldConstants.Community.leftY + FieldConstants.Community.chargingStationLeftY) / 2.0);
+  public static final Translation2d FIELD_2_TO_COMMUNITY_3_TRANSITION_POINT =
+      new Translation2d(
+          FieldConstants.Community.chargingStationOuterX - 0.5,
+          FieldConstants.Community.chargingStationRightY / 2.0);
+  public static final Translation2d FIELD_3_TO_LOADING_1_TRANSITION_POINT =
+      new Translation2d(FieldConstants.LoadingZone.midX + 0.5, FieldConstants.LoadingZone.midY);
+  public static final Translation2d FIELD_4_TO_LOADING_2_TRANSITION_POINT =
+      new Translation2d(FieldConstants.LoadingZone.outerX + 0.5, FieldConstants.LoadingZone.midY);
 
-  public static final Translation2d LOADING_1_TO_FIELD_3_TRANSITION_POINT = new Translation2d();
+  public static final Translation2d LOADING_2_TO_FIELD_4_TRANSITION_POINT =
+      new Translation2d(FieldConstants.LoadingZone.outerX - 0.5, FieldConstants.LoadingZone.midY);
 
-  // Grid Length: ~ 1.38m
-  public static final Pose2d GRID_1_NODE_1 = new Pose2d(1.38, 0.51, Rotation2d.fromDegrees(180));
-  public static final Pose2d GRID_1_NODE_2 = new Pose2d(1.38, 1.05, Rotation2d.fromDegrees(180));
-  public static final Pose2d GRID_1_NODE_3 = new Pose2d(1.38, 1.63, Rotation2d.fromDegrees(180));
+  // Points setting the node locations
+  public static final Pose2d GRID_1_NODE_1 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY,
+          Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_1_NODE_2 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY,
+          Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_1_NODE_3 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 2,
+          Rotation2d.fromDegrees(180));
 
-  public static final Pose2d GRID_2_NODE_1 = new Pose2d(1.38, 2.19, Rotation2d.fromDegrees(180));
-  public static final Pose2d GRID_2_NODE_2 = new Pose2d(1.38, 2.75, Rotation2d.fromDegrees(180));
-  public static final Pose2d GRID_2_NODE_3 = new Pose2d(1.38, 3.31, Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_2_NODE_1 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 3,
+          Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_2_NODE_2 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 4,
+          Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_2_NODE_3 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 5,
+          Rotation2d.fromDegrees(180));
 
-  public static final Pose2d GRID_3_NODE_1 = new Pose2d(1.38, 3.87, Rotation2d.fromDegrees(180));
-  public static final Pose2d GRID_3_NODE_2 = new Pose2d(1.38, 4.42, Rotation2d.fromDegrees(180));
-  public static final Pose2d GRID_3_NODE_3 = new Pose2d(1.38, 4.98, Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_3_NODE_1 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 6,
+          Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_3_NODE_2 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 7,
+          Rotation2d.fromDegrees(180));
+  public static final Pose2d GRID_3_NODE_3 =
+      new Pose2d(
+          FieldConstants.Grids.outerX,
+          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 8,
+          Rotation2d.fromDegrees(180));
 
-  // FIXME: DOUBLE CHECK SUBSTATIONS
+  // Points setting the substation locations
   public static final Pose2d SINGLE_SUBSTATION =
       new Pose2d(
           FieldConstants.LoadingZone.singleSubstationTranslation, Rotation2d.fromDegrees(90));
   public static final Pose2d DOUBLE_SUBSTATION_UPPER =
       new Pose2d(
           FieldConstants.LoadingZone.doubleSubstationX,
-          FieldConstants.LoadingZone.leftY
-              - (3 * FieldConstants.LoadingZone.doubleSubstationWidth / 4),
+          FieldConstants.LoadingZone.leftY - (FieldConstants.LoadingZone.doubleSubstationWidth / 4),
           Rotation2d.fromDegrees(0));
   public static final Pose2d DOUBLE_SUBSTATION_LOWER =
       new Pose2d(
           FieldConstants.LoadingZone.doubleSubstationX,
-          FieldConstants.LoadingZone.leftY - (FieldConstants.LoadingZone.doubleSubstationWidth / 4),
+          FieldConstants.LoadingZone.leftY
+              - (3 * FieldConstants.LoadingZone.doubleSubstationWidth / 4),
           Rotation2d.fromDegrees(0));
 }

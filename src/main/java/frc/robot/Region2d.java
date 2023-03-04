@@ -1,12 +1,14 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.team6328.util.FieldConstants;
 import java.awt.geom.*;
 import java.util.HashMap;
 import java.util.Set;
+import org.littletonrobotics.junction.Logger;
 
 public class Region2d {
   private Path2D shape;
@@ -28,6 +30,39 @@ public class Region2d {
     }
 
     this.shape.closePath();
+  }
+
+  public void logPoints() {
+
+    // assume all regions are rectangular
+    Rectangle2D rect = this.shape.getBounds2D();
+    Logger.getInstance()
+        .recordOutput("Region2d/point0", new Pose2d(rect.getX(), rect.getY(), new Rotation2d()));
+    Logger.getInstance()
+        .recordOutput(
+            "Region2d/point1",
+            new Pose2d(rect.getX() + rect.getWidth(), rect.getY(), new Rotation2d()));
+    Logger.getInstance()
+        .recordOutput(
+            "Region2d/point2",
+            new Pose2d(rect.getX(), rect.getY() + rect.getHeight(), new Rotation2d()));
+    Logger.getInstance()
+        .recordOutput(
+            "Region2d/point3",
+            new Pose2d(
+                rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight(), new Rotation2d()));
+
+    for (int i = 0; i < 4; i++) {
+      Logger.getInstance().recordOutput("Region2d/transition" + i, new Pose2d());
+    }
+    int i = 0;
+    for (Region2d region : transitionMap.keySet()) {
+      Translation2d point = transitionMap.get(region);
+      Logger.getInstance()
+          .recordOutput(
+              "Region2d/transition" + i, new Pose2d(point.getX(), point.getY(), new Rotation2d()));
+      i++;
+    }
   }
 
   /**

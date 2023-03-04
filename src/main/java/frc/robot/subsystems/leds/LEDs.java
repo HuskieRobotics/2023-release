@@ -337,10 +337,10 @@ public class LEDs extends SubsystemBase {
         candle.setLEDs(0, 191, 255, 0, 148, 16);
         break;
       case AUTO:
-        candle.setLEDs(255, 165, 0, 0, 0, 24);
-        candle.setLEDs(255, 165, 0, 0, 40, 16);
-        candle.setLEDs(255, 165, 0, 0, 116, 16);
-        candle.setLEDs(255, 165, 0, 0, 148, 16);
+        candle.setLEDs(255, 80, 0, 0, 0, 24);
+        candle.setLEDs(255, 80, 0, 0, 40, 16);
+        candle.setLEDs(255, 80, 0, 0, 116, 16);
+        candle.setLEDs(255, 80, 0, 0, 148, 16);
         break;
       default:
         break;

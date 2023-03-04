@@ -34,11 +34,13 @@ public class FullOperatorConsoleOI implements OperatorInterface {
     // to null
     this.translateJoystickButtons = new Trigger[13];
     this.rotateJoystickButtons = new Trigger[13];
-    this.operatorPanelButtons = new Trigger[13];
+    this.operatorPanelButtons = new Trigger[14];
 
     for (int i = 1; i < translateJoystickButtons.length; i++) {
       translateJoystickButtons[i] = translateJoystick.button(i);
       rotateJoystickButtons[i] = rotateJoystick.button(i);
+    }
+    for (int i = 1; i < operatorPanelButtons.length; i++) {
       operatorPanelButtons[i] = operatorPanel.button(i);
     }
   }
@@ -258,6 +260,11 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   @Override
   public Trigger getToggleManipulatorOpenCloseButton() {
     return new Trigger(operatorController::getRightStickButton);
+  }
+
+  @Override
+  public boolean getManualManipulatorClose() {
+    return operatorController.getBackButtonPressed();
   }
 
   @Override

@@ -91,8 +91,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.SLOT0_KI = rkI.get();
     rotationConfig.SLOT0_KD = rkD.get();
 
-    extensionConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
-    rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
+    extensionConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
+    rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
 
     rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
     rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;

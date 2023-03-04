@@ -47,7 +47,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
             && Math.abs(inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1])
                 > ManipulatorConstants.CLOSE_THRESHOLD_CURRENT;
 
-    inputs.isOpen = false;
     if (inputs.appliedPercentage < 0
         && Math.abs(inputs.statorCurrentAmps[0]) > ManipulatorConstants.OPEN_THRESHOLD_CURRENT) {
       stallCount++;
@@ -55,6 +54,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         inputs.isOpen = true;
         this.setPower(0.0);
       }
+    } else if(inputs.appliedPercentage > 0) {
+      stallCount = 0;
+      inputs.isOpen = false;
     } else {
       stallCount = 0;
     }

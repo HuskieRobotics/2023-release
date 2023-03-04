@@ -30,6 +30,7 @@ import frc.lib.team3061.pneumatics.PneumaticsIORev;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.swerve.SwerveModuleIO;
 import frc.lib.team3061.swerve.SwerveModuleIOSim;
+import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
@@ -128,64 +129,51 @@ public class RobotContainer {
             int[] steerMotorCANDIDs = config.getSwerveSteerMotorCANIDs();
             int[] steerEncoderCANDIDs = config.getSwerveSteerEncoderCANIDs();
             double[] steerOffsets = config.getSwerveSteerOffsets();
-            // SwerveModule flModule =
-            //     new SwerveModule(
-            //         new SwerveModuleIOTalonFX(
-            //             0,
-            //             driveMotorCANIDs[0],
-            //             steerMotorCANDIDs[0],
-            //             steerEncoderCANDIDs[0],
-            //             steerOffsets[0]),
-            //         0,
-            //         config.getRobotMaxVelocity());
-
-            // SwerveModule frModule =
-            //     new SwerveModule(
-            //         new SwerveModuleIOTalonFX(
-            //             1,
-            //             driveMotorCANIDs[1],
-            //             steerMotorCANDIDs[1],
-            //             steerEncoderCANDIDs[1],
-            //             steerOffsets[1]),
-            //         1,
-            //         config.getRobotMaxVelocity());
-
-            // SwerveModule blModule =
-            //     new SwerveModule(
-            //         new SwerveModuleIOTalonFX(
-            //             2,
-            //             driveMotorCANIDs[2],
-            //             steerMotorCANDIDs[2],
-            //             steerEncoderCANDIDs[2],
-            //             steerOffsets[2]),
-            //         2,
-            //         config.getRobotMaxVelocity());
-
-            // SwerveModule brModule =
-            //     new SwerveModule(
-            //         new SwerveModuleIOTalonFX(
-            //             3,
-            //             driveMotorCANIDs[3],
-            //             steerMotorCANDIDs[3],
-            //             steerEncoderCANDIDs[3],
-            //             steerOffsets[3]),
-            //         3,
-            //         config.getRobotMaxVelocity());
-
-            // drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
-
             SwerveModule flModule =
-                new SwerveModule(new SwerveModuleIOSim(), 0, config.getRobotMaxVelocity());
+                new SwerveModule(
+                    new SwerveModuleIOTalonFX(
+                        0,
+                        driveMotorCANIDs[0],
+                        steerMotorCANDIDs[0],
+                        steerEncoderCANDIDs[0],
+                        steerOffsets[0]),
+                    0,
+                    config.getRobotMaxVelocity());
 
             SwerveModule frModule =
-                new SwerveModule(new SwerveModuleIOSim(), 1, config.getRobotMaxVelocity());
+                new SwerveModule(
+                    new SwerveModuleIOTalonFX(
+                        1,
+                        driveMotorCANIDs[1],
+                        steerMotorCANDIDs[1],
+                        steerEncoderCANDIDs[1],
+                        steerOffsets[1]),
+                    1,
+                    config.getRobotMaxVelocity());
 
             SwerveModule blModule =
-                new SwerveModule(new SwerveModuleIOSim(), 2, config.getRobotMaxVelocity());
+                new SwerveModule(
+                    new SwerveModuleIOTalonFX(
+                        2,
+                        driveMotorCANIDs[2],
+                        steerMotorCANDIDs[2],
+                        steerEncoderCANDIDs[2],
+                        steerOffsets[2]),
+                    2,
+                    config.getRobotMaxVelocity());
 
             SwerveModule brModule =
-                new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
-            drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
+                new SwerveModule(
+                    new SwerveModuleIOTalonFX(
+                        3,
+                        driveMotorCANIDs[3],
+                        steerMotorCANDIDs[3],
+                        steerEncoderCANDIDs[3],
+                        steerOffsets[3]),
+                    3,
+                    config.getRobotMaxVelocity());
+
+            drivetrain = new Drivetrain(gyro, flModule, frModule, blModule, brModule);
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
@@ -216,6 +204,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
+            led = new LEDs();
             break;
           }
         case ROBOT_SIMBOT:
@@ -237,6 +226,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOSim());
+            led = new LEDs();
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;
             try {
@@ -414,13 +404,6 @@ public class RobotContainer {
 
     configureElevatorCommands();
 
-    // move to grid / loading zone
-    oi.getMoveToGridButton()
-        .onTrue(
-            Commands.sequence(
-                Commands.runOnce(led::enableAutoLED),
-                new MoveToGrid(drivetrain),
-                Commands.runOnce(led::enableTeleopLED)));
     // FIXME: do we want to use Drive to Pose and Stall Against Element???
     // move to grid / loading zone
     oi.getIntakeShelfRightButton()
@@ -468,9 +451,11 @@ public class RobotContainer {
     oi.getMoveToGridButton()
         .onTrue(
             Commands.sequence(
+                Commands.runOnce(led::enableAutoLED),
                 moveToGridCommand,
                 new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
-                new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier())));
+                new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier()),
+                Commands.runOnce(led::enableTeleopLED)));
 
     // enable/disable move to grid
     oi.getMoveToGridEnabledSwitch()
@@ -600,8 +585,6 @@ public class RobotContainer {
     PathPlannerTrajectory startPointPath =
         PathPlanner.loadPath(
             "StartPoint", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
-    PathPlannerTrajectory blueTestPath =
-        PathPlanner.loadPath("BlueTest", config.getAutoMaxSpeed(), config.getAutoMaxAcceleration());
     Command startPoint =
         Commands.runOnce(
             () -> drivetrain.resetOdometry(startPointPath.getInitialState()), drivetrain);
@@ -1141,10 +1124,6 @@ public class RobotContainer {
     }
   }
 
-  public LEDs getLEDs() {
-    return led;
-  }
-  
   public static Pose2d adjustPoseForRobot(Pose2d pose) {
     return new Pose2d(
         pose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,

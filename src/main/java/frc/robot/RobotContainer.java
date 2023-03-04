@@ -30,6 +30,7 @@ import frc.lib.team3061.pneumatics.PneumaticsIORev;
 import frc.lib.team3061.swerve.SwerveModule;
 import frc.lib.team3061.swerve.SwerveModuleIO;
 import frc.lib.team3061.swerve.SwerveModuleIOSim;
+import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
@@ -431,7 +432,7 @@ public class RobotContainer {
                     new MoveToLoadingZone(drivetrain, SINGLE_SUBSTATION).endPoseSupplier())));
 
     // toggle manipulator open/close
-    oi.toggleManipulatorOpenCloseButton()
+    oi.getToggleManipulatorOpenCloseButton()
         .toggleOnTrue(
             Commands.either(
                 new GrabGamePiece(manipulator),
@@ -465,6 +466,13 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.runOnce(() -> vision.enable(false)),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
+
+    oi.getToggleManipulatorSensorButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator),
+                Commands.runOnce(() -> manipulator.enableManipulatorSensor(true), manipulator),
+                manipulator::isManipulatorSensorEnabled));
   }
 
   private Command moveAndScoreGamePiece(int replaceWithEnumeratedValueForElevatorPosition) {

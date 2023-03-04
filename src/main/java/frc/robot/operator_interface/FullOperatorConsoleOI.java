@@ -100,12 +100,12 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getMoveArmToMidButton() {
-    return new Trigger(operatorController::getYButton);
+    return new Trigger(operatorController::getXButton);
   }
 
   @Override
   public Trigger getMoveArmToHighButton() {
-    return new Trigger(operatorController::getXButton);
+    return new Trigger(operatorController::getYButton);
   }
 
   @Override
@@ -245,8 +245,13 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger toggleManipulatorOpenCloseButton() {
+  public Trigger getToggleManipulatorOpenCloseButton() {
     return new Trigger(operatorController::getRightStickButton);
+  }
+
+  @Override
+  public Trigger getToggleManipulatorSensorButton() {
+    return operatorPanelButtons[13];
   }
 
   @Override

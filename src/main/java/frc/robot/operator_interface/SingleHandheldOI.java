@@ -135,7 +135,7 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger toggleManipulatorOpenCloseButton() {
+  public Trigger getToggleManipulatorOpenCloseButton() {
     return new Trigger(controller::getRightStickButton);
   }
 }

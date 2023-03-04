@@ -3,7 +3,6 @@ package frc.robot.subsystems.manipulator;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.ReleaseGamePiece;
 import org.littletonrobotics.junction.Logger;
 
@@ -11,16 +10,18 @@ public class Manipulator extends SubsystemBase {
 
   private static final boolean TESTING = false;
   private final ManipulatorIO io;
+  private boolean isManipulatorSensorEnabled;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
 
   public Manipulator(ManipulatorIO io) {
     this.io = io;
     ShuffleboardTab tab = Shuffleboard.getTab("Manipulator");
     tab.addBoolean("isBlocked", this::isBlocked);
+    isManipulatorSensorEnabled = true;
 
     if (TESTING) {
       tab.add("Open Manipulator", new ReleaseGamePiece(this));
-      tab.add("Close Manipulator", new GrabGamePiece(this));
+      // tab.add("Close Manipulator", new GrabGamePiece(this, null));
     }
   }
 
@@ -52,6 +53,14 @@ public class Manipulator extends SubsystemBase {
 
   public boolean isBlocked() {
     return inputs.isBlocked;
+  }
+
+  public void enableManipulatorSensor(boolean enable) {
+    this.isManipulatorSensorEnabled = enable;
+  }
+
+  public boolean isManipulatorSensorEnabled() {
+    return this.isManipulatorSensorEnabled;
   }
 
   public void stop() {

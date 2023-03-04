@@ -11,7 +11,7 @@ public class AutoBalanceNonStop extends CommandBase {
   private static final double KP = 0.04;
   private static final double KI = 0.0;
   private static final double KD = 0.0;
-  private static final double MAX_ANGLE_DEG = 9.0;
+  private static final double MAX_ANGLE_DEG = 7.5;
 
   private PIDController frontBack;
   private PIDController leftRight;
@@ -47,7 +47,7 @@ public class AutoBalanceNonStop extends CommandBase {
       Rotation2d yaw = drivetrain.getRotation();
       double feedforwardX = Math.sin(yaw.getRadians()) * feedforward;
       double feedforwardY = Math.cos(yaw.getRadians()) * feedforward;
-      double frontBackOutput = frontBack.calculate(roll, 0);
+      double frontBackOutput = -frontBack.calculate(roll, 0);
       double leftRightOutput = leftRight.calculate(pitch, 0);
       drivetrain.drive(
           frontBackOutput + feedforwardX, leftRightOutput + feedforwardY, 0, true, false);

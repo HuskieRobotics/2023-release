@@ -299,6 +299,6 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getAutoBalanceButton() {
-    return operatorPanelButtons[12];
+    return operatorPanelButtons[2];
   }
 }

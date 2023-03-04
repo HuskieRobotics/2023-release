@@ -69,7 +69,7 @@ public class NovaRobotConfig extends RobotConfig {
 
   // FIXME: tune these
   private static final double MAX_DRIVE_ACCELERATION_METERS_PER_SECOND_SQUARED = 10.0;
-  private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 8.0 * Math.PI;
+  private static final double MAX_TURN_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 4.0 * Math.PI;
 
   private static final String CAN_BUS_NAME = "canbus1";
 
@@ -82,9 +82,9 @@ public class NovaRobotConfig extends RobotConfig {
       new Transform3d(
           new Translation3d(
               Units.inchesToMeters(-11.251),
-              Units.inchesToMeters(-7.003),
+              Units.inchesToMeters(7.003),
               Units.inchesToMeters(49.528)),
-          new Rotation3d(0, Units.degreesToRadians(65), 0));
+          new Rotation3d(0, Units.degreesToRadians(25), 0));
 
   // FIXME: specify maximum velocity and acceleration and tune PID values for auto paths
 

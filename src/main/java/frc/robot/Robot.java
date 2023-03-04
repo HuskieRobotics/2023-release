@@ -10,11 +10,9 @@ import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
-import frc.robot.subsystems.leds.LEDs;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -31,7 +29,6 @@ public class Robot extends LoggedRobot {
 
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private LEDs led;
 
   private final Alert logReceiverQueueAlert =
       new Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.ERROR);
@@ -167,7 +164,6 @@ public class Robot extends LoggedRobot {
     // schedule the autonomous command
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
-      Commands.runOnce(() -> robotContainer.getLEDs().enableAutoLED()).schedule();
     }
   }
 
@@ -181,12 +177,11 @@ public class Robot extends LoggedRobot {
      */
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
-      Commands.runOnce(() -> robotContainer.getLEDs().enableTeleopLED()).schedule();
     }
 
     robotContainer.checkAllianceColor();
   }
-  
+
   /** This method is invoked at the start of the test period. */
   @Override
   public void testInit() {

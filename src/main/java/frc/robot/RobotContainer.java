@@ -60,6 +60,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
@@ -84,6 +85,7 @@ public class RobotContainer {
   private Alliance lastAlliance = DriverStation.Alliance.Invalid;
   private Manipulator manipulator;
   private Vision vision;
+  private LEDs led;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -177,6 +179,8 @@ public class RobotContainer {
 
             vision = new Vision(new VisionIOPhotonVision(config.getCameraName()));
 
+            led = new LEDs();
+
             if (Constants.getRobot() == Constants.RobotType.ROBOT_2022_SIERRA) {
               new Pneumatics(new PneumaticsIORev());
             }
@@ -200,6 +204,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
+            led = new LEDs();
             break;
           }
         case ROBOT_SIMBOT:
@@ -221,6 +226,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOSim());
+            led = new LEDs();
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;
             try {
@@ -440,14 +446,15 @@ public class RobotContainer {
                 manipulator::isOpened));
 
     // move to grid
-    // FIXME: restore oi.getMoveToGridButton().onTrue(new MoveToGrid(drivetrain));
     MoveToGrid moveToGridCommand = new MoveToGrid(drivetrain);
     oi.getMoveToGridButton()
         .onTrue(
             Commands.sequence(
+                Commands.runOnce(led::enableAutoLED),
                 moveToGridCommand,
                 new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
-                new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier())));
+                new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier()),
+                Commands.runOnce(led::enableTeleopLED)));
 
     // enable/disable move to grid
     oi.getMoveToGridEnabledSwitch()
@@ -1033,8 +1040,10 @@ public class RobotContainer {
     oi.getConeCubeLEDTriggerButton()
         .toggleOnTrue(
             Commands.either(
-                Commands.parallel(Commands.runOnce(elevator::toggleToCube)),
-                Commands.parallel(Commands.runOnce(elevator::toggleToCone)),
+                Commands.parallel(
+                    Commands.runOnce(elevator::toggleToCube), Commands.runOnce(led::enableCubeLED)),
+                Commands.parallel(
+                    Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
                 elevator::getToggledToCone));
 
     oi.getMoveArmToChuteButton()

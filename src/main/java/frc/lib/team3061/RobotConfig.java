@@ -527,4 +527,8 @@ public abstract class RobotConfig {
   public double getSquaringDuration() {
     return 0.0;
   }
+
+  public int getLEDCount() {
+    return 0;
+  }
 }

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.operator_interface.OperatorInterface.GridRow;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import java.util.function.Supplier;
@@ -173,5 +174,18 @@ public class SetElevatorPosition extends CommandBase {
   @Override
   public boolean isFinished() {
     return elevator.atSetpoint();
+  }
+
+  public static Position convertGridRowToPosition(GridRow row) {
+    switch (row) {
+      case BOTTOM:
+        return Position.CONE_HYBRID_LEVEL;
+      case MIDDLE:
+        return Position.CONE_MID_LEVEL;
+      case TOP:
+        return Position.CONE_HIGH_LEVEL;
+      default:
+        return Position.CONE_HYBRID_LEVEL;
+    }
   }
 }

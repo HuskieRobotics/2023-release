@@ -196,6 +196,17 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public GridRow getGridRow() {
+    if (this.getScoringGridSwitchValue() == -1) {
+      return GridRow.BOTTOM;
+    } else if (this.getScoringGridSwitchValue() == 0) {
+      return GridRow.MIDDLE;
+    } else {
+      return GridRow.TOP;
+    }
+  }
+
+  @Override
   public Node getNode() {
     if (this.getScoringGridSwitchValue() == -1) {
       if (this.getScoringColumnSwitchValue() == -1) {

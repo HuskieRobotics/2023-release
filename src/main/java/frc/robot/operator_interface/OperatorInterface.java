@@ -25,6 +25,12 @@ public interface OperatorInterface {
     NODE_9
   }
 
+  public enum GridRow {
+    BOTTOM,
+    MIDDLE,
+    TOP
+  }
+
   public default double getTranslateX() {
     return 0.0;
   }
@@ -119,6 +125,10 @@ public interface OperatorInterface {
 
   public default Trigger getMoveToGridButton() {
     return new Trigger(() -> false);
+  }
+
+  public default GridRow getGridRow() {
+    return GridRow.BOTTOM;
   }
 
   public default Node getNode() {

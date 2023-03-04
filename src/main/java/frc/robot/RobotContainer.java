@@ -407,8 +407,8 @@ public class RobotContainer {
     // optimize when it starts moving the robot and to ensure that the held game piece is not
     // smashed into a field element because the elevator isn't in the final position.
     Command setElevatorPositionCommand =
-        Commands.sequence(
-            Commands.print("replace with elevator SetPosition command"), Commands.waitSeconds(2.0));
+        new SetElevatorPosition(
+            elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()));
     MoveToGrid moveToGridCommand =
         new MoveToGrid(drivetrain); // , 2.0), // replace 2.0 with the time to position the elevator
     // (e.g., setElevatorPosition.getTimeToPosition())

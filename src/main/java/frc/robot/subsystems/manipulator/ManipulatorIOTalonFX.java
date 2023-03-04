@@ -44,15 +44,16 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.isClosed =
         inputs.appliedPercentage > 0
-            && inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1]
+            && Math.abs(inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1])
                 > ManipulatorConstants.CLOSE_THRESHOLD_CURRENT;
 
     inputs.isOpen = false;
     if (inputs.appliedPercentage < 0
-        && inputs.statorCurrentAmps[0] > ManipulatorConstants.OPEN_THRESHOLD_CURRENT) {
+        && Math.abs(inputs.statorCurrentAmps[0]) > ManipulatorConstants.OPEN_THRESHOLD_CURRENT) {
       stallCount++;
       if (stallCount > OPEN_THRESHOLD_ITERATIONS) {
         inputs.isOpen = true;
+        this.setPower(0.0);
       }
     } else {
       stallCount = 0;

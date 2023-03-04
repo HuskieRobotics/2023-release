@@ -115,11 +115,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             EXTENSION_GEAR_RATIO);
     extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMagicMotionSCurveStrength.get();
 
+    extensionConfig.NEUTRAL_DEADBAND = 0.001;
+
+    extensionConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
+    extensionConfig.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = 9;
+    extensionConfig.BRUSHLESS_CURRENT_STATUS_FRAME_RATE_MS = 19;
 
     rotationConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     rotationConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
+    rotationConfig.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = 9;
 
     extensionMotor =
         TalonFXFactory.createTalon(EXTENSION_ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
@@ -193,6 +199,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       stallCount++;
       if (stallCount > EXTENSION_MAX_STALL_DURATION_CYCLES) {
         extensionMotor.setSelectedSensorPosition(0);
+        setExtensionMotorPercentage(0.0);
         Logger.getInstance().recordOutput("Elevator/extensionReZero", true);
       }
     } else {

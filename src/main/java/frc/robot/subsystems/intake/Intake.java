@@ -105,7 +105,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isRotationMotorPastCurrentLimit() {
-    return inputs.rotationCurrentAmps[inputs.rotationCurrentAmps.length - 1]
+    return Math.abs(inputs.rotationCurrentAmps[inputs.rotationCurrentAmps.length - 1])
         > INTAKE_ROTATION_CURRENT_THRESHOLD;
   }
 

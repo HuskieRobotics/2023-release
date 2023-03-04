@@ -301,4 +301,14 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   public Trigger getAutoBalanceButton() {
     return operatorPanelButtons[2];
   }
+
+  @Override
+  public Trigger getIntakeGroundConeButton(){
+    return operatorPanelButtons[8];
+  }
+
+  @Override
+  public Trigger getInterruptAll() {
+    return translateJoystickButtons[3];
+  }
 }

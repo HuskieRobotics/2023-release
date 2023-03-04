@@ -53,6 +53,7 @@ public class Elevator extends SubsystemBase {
 
     Logger.getInstance().recordOutput("Elevator/rotationAtSetpoint", atRotationSetpoint());
     Logger.getInstance().recordOutput("Elevator/extentionAtSetpoint", atExtensionSetpoint());
+    Logger.getInstance().recordOutput("Elevator/toggledToCone", getToggledToCone());
 
     // FIXME: update feedforward to call methods once elevator is assembled
     if (TESTING) {

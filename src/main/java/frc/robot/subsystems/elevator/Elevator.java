@@ -111,8 +111,7 @@ public class Elevator extends SubsystemBase {
           extension,
           calculateExtensionFeedForward(
               Units.metersToInches(inputs.extensionPositionMeters),
-              inputs.rotationPositionRadians,
-              (extension > inputs.extensionPositionMeters)));
+              inputs.rotationPositionRadians));
     }
   }
 
@@ -121,9 +120,7 @@ public class Elevator extends SubsystemBase {
     io.setRotationPosition(
         rotation,
         calculateRotationFeedForward(
-            Units.metersToInches(inputs.extensionPositionMeters),
-            inputs.rotationPositionRadians,
-            (rotation > inputs.rotationPositionRadians)));
+            Units.metersToInches(inputs.extensionPositionMeters), inputs.rotationPositionRadians));
   }
 
   public boolean atExtensionSetpoint() {
@@ -293,9 +290,7 @@ public class Elevator extends SubsystemBase {
   private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_11_DEG =
       0.05; // FIXME: tune
 
-  private static double calculateRotationFeedForward(
-      double extension, double rotation, boolean increasing) {
-    double negation = increasing ? 1.0 : -1.0;
+  private static double calculateRotationFeedForward(double extension, double rotation) {
     double r =
         Math.sqrt(
             Math.pow((D2 - D1 * Math.sin(rotation)), 2)
@@ -319,17 +314,13 @@ public class Elevator extends SubsystemBase {
     Logger.getInstance().recordOutput("Elevator/rotationFeedForwardF3", F3);
 
     double feedForward =
-        negation
-            * (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_11_DEG
-                / F_COLLAPSED_ELEVATOR_AT_11_DEG)
+        (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_11_DEG / F_COLLAPSED_ELEVATOR_AT_11_DEG)
             * F3;
     Logger.getInstance().recordOutput("Elevator/rotationFeedForward", feedForward);
     return feedForward;
   }
 
-  private static double calculateExtensionFeedForward(
-      double extension, double rotation, boolean increasing) {
-    double negation = increasing ? 1.0 : -1.0;
+  private static double calculateExtensionFeedForward(double extension, double rotation) {
     double mass;
     if (extension <= MAX_EXTENSION_BEFORE_MOVING_STAGE_ENGAGEMENT) {
       mass = CARRIAGE_MASS;
@@ -340,7 +331,7 @@ public class Elevator extends SubsystemBase {
     double f = mass * Math.sin(rotation);
 
     double feedForward =
-        negation * (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG / (CARRIAGE_MASS * 0.866)) * f;
+        (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG / (CARRIAGE_MASS * 0.866)) * f;
     Logger.getInstance().recordOutput("Elevator/extensionFeedForward", feedForward);
     return feedForward;
   }

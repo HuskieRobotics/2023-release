@@ -655,7 +655,7 @@ public class Drivetrain extends SubsystemBase {
   public double getAverageDriveCurrent() {
     double totalCurrent = 0.0;
     for (SwerveModule module : swerveModules) {
-      totalCurrent += module.getDriveCurrent();
+      totalCurrent += Math.abs(module.getDriveCurrent());
     }
     return totalCurrent / swerveModules.length;
   }

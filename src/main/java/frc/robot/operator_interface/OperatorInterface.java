@@ -186,4 +186,12 @@ public interface OperatorInterface {
   public default Trigger getAutoBalanceButton() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getIntakeGroundConeButton(){
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getInterruptAll(){
+    return new Trigger(() -> false);
+  }
 }

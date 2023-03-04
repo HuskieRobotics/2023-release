@@ -115,6 +115,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             EXTENSION_GEAR_RATIO);
     extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMagicMotionSCurveStrength.get();
 
+    extensionConfig.NEUTRAL_DEADBAND = 0.001;
+
     extensionConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;

@@ -66,8 +66,4 @@ public class Manipulator extends SubsystemBase {
   public void stop() {
     io.setPower(0);
   }
-
-  public boolean isCanDevicePresent() {
-    return io.isCanDevicePresent();
-  }
 }

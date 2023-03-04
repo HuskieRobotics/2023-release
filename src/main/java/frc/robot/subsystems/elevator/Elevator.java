@@ -23,6 +23,8 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
   private double rotationSetpoint = 0.0;
   private double extensionSetpoint = 0.0;
+  private boolean extensionIsIncreasing;
+  private boolean rotationIsIncreasing;
   private boolean toggledToCone = true;
   private boolean manualControlEnabled = false;
   private boolean manualPresetEnabled = false;
@@ -169,13 +171,12 @@ public class Elevator extends SubsystemBase {
     return this.inputs.rotationPositionRadians;
   }
 
+  public void initializePosition(double rotation, double extension) {
+    this.extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
+    this.rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();
+  }
+
   public void setPosition(double rotation, double extension, boolean intakeStored) {
-    boolean extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
-    boolean rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();
-
-    // this.setElevatorRotation(rotation);
-    // this.setElevatorExtension(extension);
-
     /*
      * We can't call atRotationSetpoint or atExtensionSetpoint because we haven't set
      * the new setpoint values yet. Instead, we will compare the current position to the eventual position.

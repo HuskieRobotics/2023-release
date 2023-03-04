@@ -20,6 +20,7 @@ import frc.lib.team3061.swerve.Conversions;
 import frc.lib.team3061.util.CANDeviceFinder;
 import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
@@ -192,9 +193,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       stallCount++;
       if (stallCount > EXTENSION_MAX_STALL_DURATION_CYCLES) {
         extensionMotor.setSelectedSensorPosition(0);
+        Logger.getInstance().recordOutput("Elevator/extensionReZero", true);
       }
     } else {
       stallCount = 0;
+      Logger.getInstance().recordOutput("Elevator/extensionReZero", false);
     }
 
     // update tunables

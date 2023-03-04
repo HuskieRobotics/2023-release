@@ -12,6 +12,7 @@ public class IntakeConstants {
     SCORING
   }
 
+  // FIXME: tune all of these
   public static final boolean DEBUGGING = true;
 
   public static final boolean TESTING = true;

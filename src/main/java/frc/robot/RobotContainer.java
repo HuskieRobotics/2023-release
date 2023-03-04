@@ -1083,23 +1083,12 @@ public class RobotContainer {
   }
 
   private void configureIntakeButtons() {
-    oi.getIntakeDeployButton()
-        .onTrue(
+    intake.setDefaultCommand(
+        Commands.sequence(
             Commands.runOnce(
-                () ->
-                    intake.setRotationMotorPercentage(
-                        IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
-                intake));
-    oi.getIntakeDeployButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
-
-    oi.getIntakeRetractButton()
-        .onTrue(
+                () -> intake.setRotationMotorPercentage(oi.getIntakeDeployPower()), intake),
             Commands.runOnce(
-                () ->
-                    intake.setRotationMotorPercentage(
-                        -IntakeConstants.INTAKE_ROTATION_MANUAL_CONTROL_POWER),
-                intake));
-    oi.getIntakeRetractButton().onFalse(Commands.runOnce(intake::stopRotation, intake));
+                () -> intake.setRotationMotorPercentage(oi.getIntakeRetractPower()), intake)));
 
     oi.getToggleIntakeRollerButton()
         .toggleOnTrue(

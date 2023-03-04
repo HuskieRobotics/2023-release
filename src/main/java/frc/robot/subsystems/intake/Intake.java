@@ -79,7 +79,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void setRotationMotorPercentage(double power) {
-    io.setRotationMotorPercentage(power);
+    io.setRotationMotorPercentage(power * INTAKE_ROTATION_MANUAL_CONTROL_POWER);
   }
 
   public void setRollerMotorPercentage(double power) {

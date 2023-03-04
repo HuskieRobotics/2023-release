@@ -163,12 +163,12 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getIntakeDeployButton() {
-    return new Trigger(() -> false);
+  public default double getIntakeDeployPower() {
+    return 0.0;
   }
 
-  public default Trigger getIntakeRetractButton() {
-    return new Trigger(() -> false);
+  public default double getIntakeRetractPower() {
+    return 0.0;
   }
 
   public default Trigger getToggleIntakeRollerButton() {

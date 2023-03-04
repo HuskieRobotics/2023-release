@@ -261,13 +261,13 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getIntakeDeployButton() {
-    return new Trigger(() -> operatorController.getLeftTriggerAxis() > 0.5);
+  public double getIntakeDeployPower() {
+    return operatorController.getLeftTriggerAxis();
   }
 
   @Override
-  public Trigger getIntakeRetractButton() {
-    return new Trigger(() -> operatorController.getRightTriggerAxis() > 0.5);
+  public double getIntakeRetractPower() {
+    return operatorController.getRightTriggerAxis();
   }
 
   @Override

@@ -4,6 +4,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -21,13 +22,17 @@ public class SetElevatorPosition extends CommandBase {
   private Elevator elevator;
   private double rotation;
   private double extension;
-  private Position position;
+  private Supplier<Position> positionSupplier;
   private LoggedDashboardChooser<Position> armChooser;
 
-  public SetElevatorPosition(Elevator subsystem, Position targetPostion) {
+  public SetElevatorPosition(Elevator subsystem, Position targetPosition) {
+    this(subsystem, () -> targetPosition);
+  }
+
+  public SetElevatorPosition(Elevator subsystem, Supplier<Position> targetPositionSupplier) {
     this.elevator = subsystem;
     this.armChooser = null;
-    this.position = targetPostion;
+    this.positionSupplier = targetPositionSupplier;
 
     addRequirements(elevator);
   }
@@ -41,7 +46,7 @@ public class SetElevatorPosition extends CommandBase {
   public SetElevatorPosition(Elevator subsystem, LoggedDashboardChooser<Position> armChooser) {
     this.elevator = subsystem;
     this.armChooser = armChooser;
-    this.position = Position.INVALID;
+    this.positionSupplier = () -> Position.INVALID;
 
     addRequirements(elevator);
   }
@@ -57,25 +62,27 @@ public class SetElevatorPosition extends CommandBase {
 
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", true);
 
+    Position position = positionSupplier.get();
+
     if (armChooser != null) {
-      this.position = armChooser.get();
+      position = armChooser.get();
     }
 
     // check if we are toggled for cones or cubes; if cubes, adjust the position
-    switch (this.position) {
+    switch (position) {
       case CONE_HYBRID_LEVEL:
         if (!this.elevator.getToggledToCone()) {
-          this.position = Position.CUBE_HYBRID_LEVEL;
+          position = Position.CUBE_HYBRID_LEVEL;
         }
         break;
       case CONE_MID_LEVEL:
         if (!this.elevator.getToggledToCone()) {
-          this.position = Position.CUBE_MID_LEVEL;
+          position = Position.CUBE_MID_LEVEL;
         }
         break;
       case CONE_HIGH_LEVEL:
         if (!this.elevator.getToggledToCone()) {
-          this.position = Position.CUBE_HIGH_LEVEL;
+          position = Position.CUBE_HIGH_LEVEL;
         }
         break;
       default:

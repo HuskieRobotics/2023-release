@@ -168,4 +168,8 @@ public interface OperatorInterface {
   public default Trigger getPositionIntakeToPushCubeCone() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getAutoBalanceButton() {
+    return new Trigger(() -> false);
+  }
 }

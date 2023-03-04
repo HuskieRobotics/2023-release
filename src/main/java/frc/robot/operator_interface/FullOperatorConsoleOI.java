@@ -251,12 +251,12 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getIntakeDeployButton() {
-    return new Trigger(operatorController::getLeftBumper);
+    return new Trigger(() -> operatorController.getLeftTriggerAxis() > 0.5);
   }
 
   @Override
   public Trigger getIntakeRetractButton() {
-    return new Trigger(operatorController::getRightBumper);
+    return new Trigger(() -> operatorController.getRightTriggerAxis() > 0.5);
   }
 
   @Override
@@ -277,5 +277,10 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   @Override
   public Trigger getMoveToGridEnabledSwitch() {
     return operatorPanelButtons[11];
+  }
+
+  @Override
+  public Trigger getAutoBalanceButton() {
+    return operatorPanelButtons[12];
   }
 }

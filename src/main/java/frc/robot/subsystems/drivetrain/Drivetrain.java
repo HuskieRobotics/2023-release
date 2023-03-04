@@ -449,7 +449,7 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
 
-    if (!DriverStation.isDSAttached()) {
+    if (!DriverStation.isFMSAttached()) {
       if (poseEstimator.getEstimatedPosition().getX() > FieldConstants.fieldLength * (2.0 / 3)
           && !hasCrossedToRedSide) {
         hasCrossedToRedSide = true;

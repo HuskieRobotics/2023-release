@@ -68,7 +68,7 @@ public class IntakeConstants {
   public static final boolean INTAKE_ROTATION_MOTOR_INVERTED = false;
 
   // FIXME - change to 20 after testing if limit works
-  public static final int INTAKE_ROLLER_CURRENT_LIMIT = 5;
+  public static final int INTAKE_ROLLER_CURRENT_LIMIT = 20;
   public static final double INTAKE_ROTATION_CURRENT_THRESHOLD = 29.5;
 
   public static final StatorCurrentLimitConfiguration INTAKE_ROTATION_CURRENT_LIMIT =

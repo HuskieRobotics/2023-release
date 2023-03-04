@@ -119,6 +119,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = 9;
+    extensionConfig.BRUSHLESS_CURRENT_STATUS_FRAME_RATE_MS = 19;
 
     rotationConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     rotationConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;

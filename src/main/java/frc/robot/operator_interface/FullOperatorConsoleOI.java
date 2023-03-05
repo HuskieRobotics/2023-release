@@ -34,6 +34,7 @@ public class FullOperatorConsoleOI implements OperatorInterface {
     // to null
     this.translateJoystickButtons = new Trigger[13];
     this.rotateJoystickButtons = new Trigger[13];
+    //FIXME: only 12 buttons on operator panel
     this.operatorPanelButtons = new Trigger[14];
 
     for (int i = 1; i < translateJoystickButtons.length; i++) {
@@ -289,7 +290,9 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getToggleManipulatorSensorButton() {
+    //FIXME: there are only 12 buttons on the operator panel(change to 12)?
     return operatorPanelButtons[13];
+
   }
 
   @Override

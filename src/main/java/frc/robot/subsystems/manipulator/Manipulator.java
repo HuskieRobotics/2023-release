@@ -29,6 +29,8 @@ public class Manipulator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.getInstance().processInputs("Manipulator", inputs);
+    Logger.getInstance()
+        .recordOutput("Manipulator/isManipulatorSensorEnabled", this.isManipulatorSensorEnabled);
   }
 
   public void setManipulatorPower(double speed) {

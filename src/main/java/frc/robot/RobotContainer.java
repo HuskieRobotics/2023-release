@@ -848,14 +848,14 @@ public class RobotContainer {
         hybridConeCenterPositionMobilityEngageCommand);
 
     // "auto" path for 1 Cone + Engage (Center, Left) path
-    List<PathPlannerTrajectory> oneConeEngageCenterLeftPath =
-        PathPlanner.loadPathGroup(
-            "1 Cone + Engage (Center, Left)", overCableConnector, engageSpeed);
+    PathPlannerTrajectory oneConeEngageCenterLeftPath =
+        PathPlanner.loadPath("1 Cone + Engage (Center, Left)", overCableConnector);
+    PathPlannerTrajectory centerEngagePath = PathPlanner.loadPath("centerEngagePath", engageSpeed);
     Command oneConeEngageCenterLeftCommand =
         Commands.sequence(
             scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new SetElevatorPosition(elevator, Position.CONE_STORAGE),
-            new FollowPath(oneConeEngageCenterLeftPath.get(0), drivetrain, true, true),
+            new FollowPath(oneConeEngageCenterLeftPath, drivetrain, true, true),
             new DriveToPose(
                 drivetrain,
                 () ->
@@ -863,7 +863,7 @@ public class RobotContainer {
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(0.0))),
-            new FollowPath(oneConeEngageCenterLeftPath.get(1), drivetrain, false, true),
+            new FollowPath(centerEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
 
@@ -1134,7 +1134,8 @@ public class RobotContainer {
     Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
     Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
 
-    return Commands.sequence(stallOnGamePieceAuto,setElevatorPositionToScoreAuto, dropGamePieceAuto);
+    return Commands.sequence(
+        stallOnGamePieceAuto, setElevatorPositionToScoreAuto, dropGamePieceAuto);
   }
 
   private Command collectGamePieceAuto() {

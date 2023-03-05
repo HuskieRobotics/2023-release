@@ -157,6 +157,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     robotContainer.checkAllianceColor();
+    robotContainer.autonomousInit();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command
@@ -178,6 +179,7 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.checkAllianceColor();
+    robotContainer.teleopInit();
   }
 
   /** This method is invoked at the start of the test period. */

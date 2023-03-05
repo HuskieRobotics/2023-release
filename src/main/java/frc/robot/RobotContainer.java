@@ -1148,6 +1148,14 @@ public class RobotContainer {
     }
   }
 
+  public void autonomousInit() {
+    led.enableAutoLED();
+  }
+
+  public void teleopInit() {
+    led.enableTeleopLED();
+  }
+
   public static Pose2d adjustPoseForRobot(Pose2d pose) {
     return new Pose2d(
         pose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,

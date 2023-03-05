@@ -18,7 +18,6 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 import java.util.*;
@@ -125,11 +124,11 @@ public class LEDs extends SubsystemBase {
       this.changeTopStateColor(RobotStateColors.YELLOW);
     } else if (currentError == 3) { // manipulator sensor disabled
       this.changeTopStateColor(RobotStateColors.GREEN);
-    } else if (currentError == 4) { // vision failure, we dont have a camera
+    } else if (currentError == 4) { // vision failure, we don't have a camera
       this.changeTopStateColor(RobotStateColors.BLUE);
     } else if (currentError == 5) { // auto drive disabled
       this.changeTopStateColor(RobotStateColors.PURPLE);
-    } else { // nothing is wrong, deafult to white
+    } else { // nothing is wrong, default to white
       this.changeTopStateColor(RobotStateColors.WHITE);
     }
 
@@ -198,12 +197,6 @@ public class LEDs extends SubsystemBase {
   }
 
   public void configureAutoTeleopLEDs() {
-
-    if (DriverStation.isAutonomousEnabled()) {
-      enableAutoLED();
-    } else if (DriverStation.isTeleopEnabled()) {
-      enableTeleopLED();
-    }
 
     if (auto) {
       this.changeAutoTeleopStateColors(DriveInfoStates.AUTO);

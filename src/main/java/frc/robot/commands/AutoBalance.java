@@ -10,7 +10,7 @@ public class AutoBalance extends CommandBase {
   private static final double KP = 0.04;
   private static final double KI = 0.0;
   private static final double KD = 0.0;
-  private static final double MAX_ANGLE_DEG = 7.5;
+  private static final double MAX_ANGLE_DEG = 7.0;
 
   private PIDController frontBack;
   private PIDController leftRight;
@@ -27,12 +27,13 @@ public class AutoBalance extends CommandBase {
     this.frontBack = new PIDController(KP, KI, KD);
     this.leftRight = new PIDController(KP, KI, KD);
     this.finishWhenBalanced = finishWhenBalanced;
-    this.maxVelocity = 1;
+    this.maxVelocity = .5;
   }
 
   @Override
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", true);
+    this.balanced = false;
 
     drivetrain.disableFieldRelative();
     drivetrain.disableXstance();

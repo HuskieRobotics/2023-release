@@ -414,10 +414,12 @@ public class RobotContainer {
   private void configureAutoCommands() {
     autoEventMap.put("event1", Commands.print("passed marker 1"));
     autoEventMap.put("event2", Commands.print("passed marker 2"));
-    autoEventMap.put("Prepare To Intake Cone", Commands.print("preparing to intake cone"));
-    autoEventMap.put("intake cone", Commands.print("cone intake"));
-    autoEventMap.put("Raise Elevator", Commands.print("raising elevator"));
-    autoEventMap.put("Bring in Elevator", Commands.print("brining in collector"));
+    autoEventMap.put("bring in elevator", new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
+    autoEventMap.put("prepare to intake cone", collectGamePieceAuto());
+    autoEventMap.put(
+        "set elevator auto position", new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
+    autoEventMap.put("collect game piece", collectGamePieceAuto());
+
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
     // creates 2 Path Constraints to be used in auto paths
@@ -480,7 +482,7 @@ public class RobotContainer {
     // "auto" path for Blue-CableSide 2 Cone + Engage
     List<PathPlannerTrajectory> blueCableSide2ConeEngagePath =
         PathPlanner.loadPathGroup(
-            "Blue-CableSide 2 Cone + Engage",
+            "Blue-CableSide 2 Cone",
             overCableConnector,
             overCableConnector,
             regularSpeed,
@@ -488,35 +490,44 @@ public class RobotContainer {
             overCableConnector,
             regularSpeed,
             overCableConnector);
-    PathPlannerTrajectory cableSideEngagePath = PathPlanner.loadPath("CableSideEngage", 2.0, 2.0);
+    List<PathPlannerTrajectory> cableSideEngagePath =
+        PathPlanner.loadPathGroup("CableSideEngage", 2.0, 2.0);
     Command blueCableSide2ConeEngageCommand =
         Commands.sequence(
-            // hold for cone place code
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true, true),
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConeEngagePath.get(1), drivetrain, false, true),
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConeEngagePath.get(2), drivetrain, false, true),
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false, true),
-            new FollowPath(blueCableSide2ConeEngagePath.get(4), drivetrain, false, true),
-            new FollowPath(blueCableSide2ConeEngagePath.get(5), drivetrain, false, true),
-            new DriveToPose(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(
-                            adjustPoseForRobot(FieldRegionConstants.GRID_1_NODE_3))),
-            new StallAgainstElement(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(FieldRegionConstants.GRID_1_NODE_3)),
-            Commands.runOnce(drivetrain::enableXstance, drivetrain),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(drivetrain::disableXstance, drivetrain),
-            new FollowPath(cableSideEngagePath, drivetrain, false, true),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            // new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true, true),
+                blueCableSide2ConeEngagePath.get(0).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConeEngagePath.get(1), drivetrain, false, true),
+                blueCableSide2ConeEngagePath.get(1).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConeEngagePath.get(2), drivetrain, false, true),
+                blueCableSide2ConeEngagePath.get(2).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false, true),
+                blueCableSide2ConeEngagePath.get(3).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConeEngagePath.get(4), drivetrain, false, true),
+                blueCableSide2ConeEngagePath.get(4).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConeEngagePath.get(5), drivetrain, false, true),
+                blueCableSide2ConeEngagePath.get(5).getMarkers(),
+                autoEventMap),
+            Commands.parallel(
+                driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new ReleaseGamePiece(manipulator),
+            Commands.parallel(
+                new FollowPath(cableSideEngagePath.get(0), drivetrain, false, true),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+            new FollowPath(cableSideEngagePath.get(1), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
@@ -531,34 +542,40 @@ public class RobotContainer {
             regularSpeed);
     Command blueCableSide2ConeCommand =
         Commands.sequence(
-            // hold for cone place code
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConePath.get(0), drivetrain, true, true),
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConePath.get(1), drivetrain, false, true),
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConePath.get(2), drivetrain, false, true),
-            Commands.waitSeconds(0),
-            new FollowPath(blueCableSide2ConePath.get(3), drivetrain, false, true),
-            new FollowPath(blueCableSide2ConePath.get(4), drivetrain, false, true),
-            new FollowPath(blueCableSide2ConePath.get(5), drivetrain, false, true),
-            new DriveToPose(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(
-                            adjustPoseForRobot(FieldRegionConstants.GRID_1_NODE_3))),
-            new StallAgainstElement(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(FieldRegionConstants.GRID_1_NODE_3)),
-            Commands.runOnce(drivetrain::enableXstance, drivetrain),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(drivetrain::disableXstance, drivetrain));
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            // new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConePath.get(0), drivetrain, true, true),
+                blueCableSide2ConePath.get(0).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConePath.get(1), drivetrain, false, true),
+                blueCableSide2ConePath.get(1).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConePath.get(2), drivetrain, false, true),
+                blueCableSide2ConePath.get(2).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConePath.get(3), drivetrain, false, true),
+                blueCableSide2ConePath.get(3).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConePath.get(4), drivetrain, false, true),
+                blueCableSide2ConePath.get(4).getMarkers(),
+                autoEventMap),
+            new FollowPathWithEvents(
+                new FollowPath(blueCableSide2ConePath.get(5), drivetrain, false, true),
+                blueCableSide2ConePath.get(5).getMarkers(),
+                autoEventMap),
+            Commands.parallel(
+                driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new ReleaseGamePiece(manipulator));
     autoChooser.addOption("Blue-CableSide 2 Cone", blueCableSide2ConeCommand);
 
     // "auto" path for Blue-CableSide 3 Cone
+    // not updated for elevator
     List<PathPlannerTrajectory> blueCableSide3ConePath =
         PathPlanner.loadPathGroup(
             "Blue-CableSide 3 Cone",
@@ -626,6 +643,7 @@ public class RobotContainer {
         */
 
     // "auto" path for Blue-CenterLoad 2 Cone + Engage
+    // not updated for elevator
     List<PathPlannerTrajectory> blueCenterLoad2ConeEngagePath =
         PathPlanner.loadPathGroup("Blue-CenterLoad 2 Cone + Engage", 2.0, 2.0);
     Command blueCenterLoad2ConeEngageCommand =
@@ -657,54 +675,45 @@ public class RobotContainer {
     // "auto" path for Blue-LoadingSide 2 Cone + Engage
     List<PathPlannerTrajectory> blueLoadingSide2ConePath =
         PathPlanner.loadPathGroup("Blue-LoadingSide 2 Cone", 2.0, 2.0);
-    PathPlannerTrajectory loadingSideEngagePath =
-        PathPlanner.loadPath("LoadingSideEngage", 2.0, 2.0);
+    List<PathPlannerTrajectory> loadingSideEngagePath =
+        PathPlanner.loadPathGroup("LoadingSideEngage", 2.0, 2.0);
     Command blueLoadingSide2ConeEngageCommand =
         Commands.sequence(
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new FollowPathWithEvents(
                 new FollowPath(blueLoadingSide2ConePath.get(0), drivetrain, true, true),
                 blueLoadingSide2ConePath.get(0).getMarkers(),
                 autoEventMap),
-            new DriveToPose(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(
-                            adjustPoseForRobot(FieldRegionConstants.GRID_3_NODE_1))),
-            new StallAgainstElement(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(FieldRegionConstants.GRID_3_NODE_1)),
-            Commands.runOnce(drivetrain::enableXstance, drivetrain),
-            Commands.waitSeconds(1.0),
-            Commands.runOnce(drivetrain::disableXstance, drivetrain),
-            new FollowPath(loadingSideEngagePath, drivetrain, false, true),
+            Commands.parallel(
+                driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new ReleaseGamePiece(manipulator),
+            Commands.parallel(
+                new FollowPath(loadingSideEngagePath.get(0), drivetrain, false, true),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+            new FollowPath(loadingSideEngagePath.get(1), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path", blueLoadingSide2ConeEngageCommand);
 
+    // FIXME: create event marker to move elevator into auto safe position
+    // verify there is an event marker to move to cone floor collection
+    // verify there is an event marker to grab the game piece
+    // verify there is an event marker to move to the high cone position
+    // check on FollowPathWithEvents; when does it finish?
+
     // "auto" path for Blue-LoadingSide 2 Cone
     Command blueLoadingSide2ConeCommand =
         Commands.sequence(
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new FollowPathWithEvents(
                 new FollowPath(blueLoadingSide2ConePath.get(0), drivetrain, true, true),
                 blueLoadingSide2ConePath.get(0).getMarkers(),
                 autoEventMap),
-            new DriveToPose(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(
-                            adjustPoseForRobot(FieldRegionConstants.GRID_3_NODE_1))),
-            new StallAgainstElement(
-                drivetrain,
-                () ->
-                    Field2d.getInstance()
-                        .mapPoseToCurrentAlliance(FieldRegionConstants.GRID_3_NODE_1)),
-            Commands.runOnce(drivetrain::enableXstance, drivetrain),
-            Commands.waitSeconds(1.0),
-            Commands.runOnce(drivetrain::disableXstance, drivetrain));
+            Commands.parallel(
+                driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new ReleaseGamePiece(manipulator));
     autoChooser.addOption("Blue Loading Side 2 Cone", blueLoadingSide2ConeCommand);
 
     // "auto" path for Blue-LoadingGetOutTheWay
@@ -831,6 +840,8 @@ public class RobotContainer {
             "1 Cone + Engage (Center, Left)", overCableConnector, engageSpeed);
     Command oneConeEngageCenterLeftCommand =
         Commands.sequence(
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageCenterLeftPath.get(0), drivetrain, true, true),
             new FollowPath(oneConeEngageCenterLeftPath.get(1), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
@@ -842,6 +853,8 @@ public class RobotContainer {
             "1 Cone + Engage (Center, Right)", overCableConnector, engageSpeed);
     Command oneConeEngageCenterRightCommand =
         Commands.sequence(
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageCenterRightPath.get(0), drivetrain, true, true),
             new FollowPath(oneConeEngageCenterRightPath.get(1), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
@@ -857,6 +870,8 @@ public class RobotContainer {
             engageSpeed);
     Command oneConeEngageMobilityCenterLeftCommand =
         Commands.sequence(
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(0), drivetrain, true, true),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(1), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(2), drivetrain, false, true),
@@ -875,7 +890,10 @@ public class RobotContainer {
             engageSpeed);
     Command oneConeEngageMobilityCenterRightCommand =
         Commands.sequence(
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(0), drivetrain, true, true),
+            new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(1), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(2), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(3), drivetrain, false, true),
@@ -1082,6 +1100,31 @@ public class RobotContainer {
         Commands.runOnce(led::enableTeleopLED));
   }
 
+  private Command driveAndStallCommand(Pose2d moveToGridPosition) {
+    return Commands.sequence(
+        new DriveToPose(
+            drivetrain,
+            () ->
+                Field2d.getInstance()
+                    .mapPoseToCurrentAlliance(adjustPoseForRobot(moveToGridPosition))),
+        new StallAgainstElement(
+            drivetrain, () -> Field2d.getInstance().mapPoseToCurrentAlliance(moveToGridPosition)));
+  }
+
+  private Command scoreGamePieceAuto(Position elevatorPosition) {
+    Command setElevatorPositionToScoreAuto = new SetElevatorPosition(elevator, elevatorPosition);
+    Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
+
+    return Commands.sequence(setElevatorPositionToScoreAuto, dropGamePieceAuto);
+  }
+
+  private Command collectGamePieceAuto() {
+    return Commands.sequence(
+        new SetElevatorPosition(elevator, Position.CONE_INTAKE_FLOOR),
+        new GrabGamePiece(manipulator),
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
+  }
+  
   private Command moveAndGrabGamePiece(Position elevatorPosition, Pose2d moveToGridPosition) {
     // Other commands will need to query how long the move to grid command will take (e.g., we want
     // to signal the human player x seconds before the robot reaching the game piece); so, we need

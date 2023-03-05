@@ -55,14 +55,14 @@
         "y": 5.0244069208517566
       },
       "prevControl": {
-        "x": 5.733518274246473,
-        "y": 5.026135024884381
+        "x": 5.290023159907432,
+        "y": 5.0323694102249314
       },
       "nextControl": {
-        "x": 5.374176737352084,
-        "y": 5.022678816819132
+        "x": 5.733444806192379,
+        "y": 5.018986490106456
       },
-      "holonomicAngle": 0,
+      "holonomicAngle": 0.01,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -154,21 +154,15 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 2.400000000000162,
+      "position": 0.6214488636363642,
       "names": [
-        "Prepare to intake cone"
+        "set elevatro auto position"
       ]
     },
     {
-      "position": 2.024147727272732,
+      "position": 2.2924360795454573,
       "names": [
-        "intake cone"
-      ]
-    },
-    {
-      "position": 2.4302556818181844,
-      "names": [
-        "Raise Elevator"
+        "collect game piece"
       ]
     }
   ]

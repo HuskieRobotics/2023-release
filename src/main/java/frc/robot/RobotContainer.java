@@ -851,7 +851,7 @@ public class RobotContainer {
     // "auto" path for 1 Cone + Engage (Center, Left) path
     PathPlannerTrajectory oneConeEngageCenterLeftPath =
         PathPlanner.loadPath("1 Cone + Engage (Center, Left)", overCableConnector);
-    PathPlannerTrajectory centerEngagePath = PathPlanner.loadPath("centerEngagePath", engageSpeed);
+    PathPlannerTrajectory centerEngagePath = PathPlanner.loadPath("Center Engage", engageSpeed);
     Command oneConeEngageCenterLeftCommand =
         Commands.sequence(
             scoreGamePieceAuto(Position.CONE_MID_LEVEL),

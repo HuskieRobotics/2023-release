@@ -29,19 +29,19 @@ public class RotateToAngle extends CommandBase {
   private boolean running = false;
 
   private static final TunableNumber thetaKp =
-      new TunableNumber("RotateToAngle/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
+      new TunableNumber("RotateToAngle/ThetaKp", 2);
   private static final TunableNumber thetaKd =
-      new TunableNumber("RotateToAngle/ThetaKd", RobotConfig.getInstance().getDriveToPoseThetaKD());
+      new TunableNumber("RotateToAngle/ThetaKd", 0.1);
   private static final TunableNumber thetaKi =
       new TunableNumber("RotateToAngle/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
   private static final TunableNumber thetaMaxVelocity =
       new TunableNumber(
           "RotateToAngle/ThetaMaxVelocity",
-          RobotConfig.getInstance().getDriveToPoseTurnMaxVelocity());
+          8);
   private static final TunableNumber thetaMaxAcceleration =
       new TunableNumber(
           "RotateToAngle/ThetaMaxAcceleration",
-          RobotConfig.getInstance().getDriveToPoseTurnMaxAcceleration());
+          100);
   private static final TunableNumber thetaTolerance =
       new TunableNumber(
           "RotateToAngle/ThetaTolerance", RobotConfig.getInstance().getDriveToPoseThetaTolerance());

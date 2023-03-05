@@ -49,6 +49,7 @@ public class StallAgainstElement extends CommandBase {
 
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/StallAgainstElement", true);
     this.targetPose = poseSupplier.get();
     if (targetPose.equals(
             Field2d.getInstance()

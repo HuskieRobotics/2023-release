@@ -98,7 +98,7 @@ public class SetElevatorPosition extends CommandBase {
       case CONE_STORAGE:
       case CUBE_STORAGE:
         this.extension = 0.0;
-        this.rotation = Units.degreesToRadians(90.0 - 20.0);
+        this.rotation = Units.degreesToRadians(90.0 - 24.173);
         break;
       case AUTO_STORAGE:
         this.extension = Units.inchesToMeters(34);

@@ -1132,8 +1132,9 @@ public class RobotContainer {
   private Command scoreGamePieceAuto(Position elevatorPosition) {
     Command setElevatorPositionToScoreAuto = new SetElevatorPosition(elevator, elevatorPosition);
     Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
+    Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
 
-    return Commands.sequence(setElevatorPositionToScoreAuto, dropGamePieceAuto);
+    return Commands.sequence(stallOnGamePieceAuto,setElevatorPositionToScoreAuto, dropGamePieceAuto);
   }
 
   private Command collectGamePieceAuto() {

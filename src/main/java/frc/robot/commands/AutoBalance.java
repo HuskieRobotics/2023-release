@@ -59,8 +59,10 @@ public class AutoBalance extends CommandBase {
       // maxVelocity);
       double frontBackOutput = -frontBack.calculate(roll, 0);
       double leftRightOutput = leftRight.calculate(pitch, 0);
-      if (Math.abs(frontBackOutput) < maxVelocity) frontBackOutput = maxVelocity;
-      if (Math.abs(leftRightOutput) < maxVelocity) leftRightOutput = maxVelocity;
+      if (Math.abs(frontBackOutput) > maxVelocity)
+        frontBackOutput = Math.copySign(maxVelocity, frontBackOutput);
+      if (Math.abs(leftRightOutput) > maxVelocity)
+        leftRightOutput = Math.copySign(maxVelocity, leftRightOutput);
 
       drivetrain.drive(
           frontBackOutput /*+ feedforwardX*/, leftRightOutput /*+ feedforwardY*/, 0, true, false);

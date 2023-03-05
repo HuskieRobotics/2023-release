@@ -24,6 +24,31 @@
     },
     {
       "anchorPoint": {
+        "x": 2.4262156574125187,
+        "y": 0.8445698319968078
+      },
+      "prevControl": {
+        "x": 2.2311495716814504,
+        "y": 0.8536920401236433
+      },
+      "nextControl": {
+        "x": 2.5863147558062045,
+        "y": 0.837082844748397
+      },
+      "holonomicAngle": 179.55387947557807,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
         "x": 3.257585161786865,
         "y": 0.7935892563514463
       },
@@ -153,8 +178,8 @@
         "y": 1.6273602472016984
       },
       "prevControl": {
-        "x": 2.139794560419402,
-        "y": 0.6453117873782821
+        "x": 2.190257839162296,
+        "y": 0.8435809846243761
       },
       "nextControl": null,
       "holonomicAngle": -180.0,
@@ -170,5 +195,18 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.10738636363636367,
+      "names": [
+        "bring in elevator"
+      ]
+    },
+    {
+      "position": 3.23426846590909,
+      "names": [
+        "prepare to intake cone"
+      ]
+    }
+  ]
 }

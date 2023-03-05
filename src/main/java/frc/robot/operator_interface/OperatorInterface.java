@@ -183,11 +183,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getIntakeGroundConeButton(){
+  public default Trigger getIntakeGroundConeButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getInterruptAll(){
+  public default Trigger getInterruptAll() {
     return new Trigger(() -> false);
   }
 }

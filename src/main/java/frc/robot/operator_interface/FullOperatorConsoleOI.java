@@ -296,7 +296,7 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getIntakeGroundConeButton(){
+  public Trigger getIntakeGroundConeButton() {
     return operatorPanelButtons[8];
   }
 

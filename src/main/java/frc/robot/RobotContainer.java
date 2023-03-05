@@ -47,6 +47,7 @@ import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
+import frc.robot.commands.RotateToAngle;
 import frc.robot.commands.SetElevatorPosition;
 import frc.robot.commands.SetIntakeState;
 import frc.robot.commands.StallAgainstElement;
@@ -833,7 +834,7 @@ public class RobotContainer {
                 hybridConeCenterPositionMobilityEngagePath.get(0), drivetrain, true, true),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(1), drivetrain, false, true),
-            new DriveToPose(
+            new RotateToAngle(
                 drivetrain,
                 () ->
                     new Pose2d(
@@ -856,7 +857,7 @@ public class RobotContainer {
             scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageCenterLeftPath, drivetrain, true, true),
-            new DriveToPose(
+            new RotateToAngle(
                 drivetrain,
                 () ->
                     new Pose2d(

@@ -33,7 +33,7 @@ import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
 import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
-import frc.robot.commands.AutoBalanceNonStop;
+import frc.robot.commands.AutoBalance;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -176,8 +176,8 @@ public class Drivetrain extends SubsystemBase {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("Enable XStance", new InstantCommand(this::enableXstance));
       tab.add("Disable XStance", new InstantCommand(this::disableXstance));
-      tab.add("NonStop", new AutoBalanceNonStop(this, false));
-      tab.add("AutoBalanceWithStop", new AutoBalanceNonStop(this, true));
+      tab.add("NonStop", new AutoBalance(this, false));
+      tab.add("AutoBalanceWithStop", new AutoBalance(this, true));
     }
   }
 

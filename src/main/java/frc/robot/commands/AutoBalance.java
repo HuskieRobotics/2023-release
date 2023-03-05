@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import org.littletonrobotics.junction.Logger;
 
-public class AutoBalanceNonStop extends CommandBase {
+public class AutoBalance extends CommandBase {
 
   private static final double KP = 0.04;
   private static final double KI = 0.0;
@@ -20,7 +20,7 @@ public class AutoBalanceNonStop extends CommandBase {
   private boolean finishWhenBalanced;
   private boolean balanced;
 
-  public AutoBalanceNonStop(Drivetrain drivetrain, boolean finishWhenBalanced) {
+  public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     // this.feedforward = 0;

@@ -14,6 +14,7 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -822,13 +823,25 @@ public class RobotContainer {
     // "auto" path for Hybrid Cone Center Position + Mobility + Engage
     List<PathPlannerTrajectory> hybridConeCenterPositionMobilityEngagePath =
         PathPlanner.loadPathGroup(
-            "Hybrid Cone Center Position + Mobility + Engage", hybridConeSpeed, engageSpeed);
+            "Hybrid Cone Center Position + Mobility + Engage",
+            hybridConeSpeed,
+            engageSpeed,
+            engageSpeed);
     Command hybridConeCenterPositionMobilityEngageCommand =
         Commands.sequence(
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(0), drivetrain, true, true),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(1), drivetrain, false, true),
+            new DriveToPose(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(180))),
+            new FollowPath(
+                hybridConeCenterPositionMobilityEngagePath.get(2), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Mobility + Engage",
@@ -843,6 +856,13 @@ public class RobotContainer {
             scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageCenterLeftPath.get(0), drivetrain, true, true),
+            new DriveToPose(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(0.0))),
             new FollowPath(oneConeEngageCenterLeftPath.get(1), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
@@ -1021,11 +1041,9 @@ public class RobotContainer {
 
     // toggle manipulator sensor enable/disable
     oi.getToggleManipulatorSensorButton()
-        .onTrue(
-                Commands.runOnce(() -> manipulator.enableManipulatorSensor(true)));
-                oi.getToggleManipulatorSensorButton()
-        .onFalse(
-                Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator));
+        .onTrue(Commands.runOnce(() -> manipulator.enableManipulatorSensor(true)));
+    oi.getToggleManipulatorSensorButton()
+        .onFalse(Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator));
   }
 
   private void configureIntakeButtons() {
@@ -1124,7 +1142,7 @@ public class RobotContainer {
         new GrabGamePiece(manipulator),
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
   }
-  
+
   private Command moveAndGrabGamePiece(Position elevatorPosition, Pose2d moveToGridPosition) {
     // Other commands will need to query how long the move to grid command will take (e.g., we want
     // to signal the human player x seconds before the robot reaching the game piece); so, we need

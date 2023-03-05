@@ -135,12 +135,12 @@ public class SetElevatorPosition extends CommandBase {
         this.rotation = Units.degreesToRadians(90.0 - 43.0);
         break;
       case CUBE_HYBRID_LEVEL:
-        this.extension = Units.inchesToMeters(17);
-        this.rotation = Units.degreesToRadians(90.0 - 65.0);
+        this.extension = Units.inchesToMeters(20.98);
+        this.rotation = Units.degreesToRadians(90.0 - 53.88);
         break;
       case CUBE_MID_LEVEL:
-        this.extension = Units.inchesToMeters(36);
-        this.rotation = Units.degreesToRadians(90.0 - 53.0);
+        this.extension = Units.inchesToMeters(40.63);
+        this.rotation = Units.degreesToRadians(90.0 -51.55);
         break;
       case CUBE_HIGH_LEVEL:
         this.extension = Units.inchesToMeters(58);

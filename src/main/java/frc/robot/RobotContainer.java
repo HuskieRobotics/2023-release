@@ -47,6 +47,7 @@ import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
+import frc.robot.commands.RotateToAngle;
 import frc.robot.commands.SetElevatorPosition;
 import frc.robot.commands.SetIntakeState;
 import frc.robot.commands.StallAgainstElement;
@@ -415,10 +416,10 @@ public class RobotContainer {
   private void configureAutoCommands() {
     autoEventMap.put("event1", Commands.print("passed marker 1"));
     autoEventMap.put("event2", Commands.print("passed marker 2"));
-    autoEventMap.put("bring in elevator", new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
+    autoEventMap.put("bring in elevator", new SetElevatorPosition(elevator, Position.CONE_STORAGE));
     autoEventMap.put("prepare to intake cone", collectGamePieceAuto());
     autoEventMap.put(
-        "set elevator auto position", new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
+        "set elevator auto position", new SetElevatorPosition(elevator, Position.CONE_STORAGE));
     autoEventMap.put("collect game piece", collectGamePieceAuto());
 
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
@@ -833,13 +834,13 @@ public class RobotContainer {
                 hybridConeCenterPositionMobilityEngagePath.get(0), drivetrain, true, true),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(1), drivetrain, false, true),
-            new DriveToPose(
+            new RotateToAngle(
                 drivetrain,
                 () ->
                     new Pose2d(
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180))),
+                        Rotation2d.fromDegrees(0.0))),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(2), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
@@ -856,7 +857,7 @@ public class RobotContainer {
             scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageCenterLeftPath, drivetrain, true, true),
-            new DriveToPose(
+            new RotateToAngle(
                 drivetrain,
                 () ->
                     new Pose2d(
@@ -955,7 +956,15 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(drivetrain::disableRotationSlowMode, drivetrain));
 
     // reset gyro to 0 degrees
-    oi.getResetGyroButton().onTrue(Commands.runOnce(drivetrain::zeroGyroscope, drivetrain));
+    oi.getResetGyroButton()
+        .onTrue(
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(0.0))));
 
     // reset pose based on vision
     oi.getResetPoseToVisionButton()

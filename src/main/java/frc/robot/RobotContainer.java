@@ -869,15 +869,21 @@ public class RobotContainer {
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
 
     // "auto" path for 1 Cone + Engage (Center, Right) path
-    List<PathPlannerTrajectory> oneConeEngageCenterRightPath =
-        PathPlanner.loadPathGroup(
-            "1 Cone + Engage (Center, Right)", overCableConnector, engageSpeed);
+    PathPlannerTrajectory oneConeEngageCenterRightPath =
+        PathPlanner.loadPath("1 Cone + Engage (Center, Right)", overCableConnector);
     Command oneConeEngageCenterRightCommand =
         Commands.sequence(
             scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new SetElevatorPosition(elevator, Position.CONE_STORAGE),
-            new FollowPath(oneConeEngageCenterRightPath.get(0), drivetrain, true, true),
-            new FollowPath(oneConeEngageCenterRightPath.get(1), drivetrain, false, true),
+            new FollowPath(oneConeEngageCenterRightPath, drivetrain, true, true),
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(0.0))),
+            new FollowPath(centerEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption("1 Cone + Engage (Center, Right)", oneConeEngageCenterRightCommand);
 

@@ -37,7 +37,7 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.AutoBalanceNonStop;
+import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
@@ -517,7 +517,7 @@ public class RobotContainer {
             Commands.waitSeconds(0.5),
             Commands.runOnce(drivetrain::disableXstance, drivetrain),
             new FollowPath(cableSideEngagePath, drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
     List<PathPlannerTrajectory> blueCableSide2ConePath =
@@ -680,7 +680,7 @@ public class RobotContainer {
             Commands.waitSeconds(1.0),
             Commands.runOnce(drivetrain::disableXstance, drivetrain),
             new FollowPath(loadingSideEngagePath, drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path", blueLoadingSide2ConeEngageCommand);
 
@@ -795,7 +795,7 @@ public class RobotContainer {
     Command blueCenterLoad1ConeEngageCommand =
         Commands.sequence(
             new FollowPath(blueCenterLoad1ConeEngagePath, drivetrain, true, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption("Blue CenterLoad 1 Cone and Engage", blueCenterLoad1ConeEngageCommand);
 
     // "auto" path for Hybrid Cone Center Position + Engage
@@ -806,7 +806,7 @@ public class RobotContainer {
         Commands.sequence(
             new FollowPath(hybridConeCenterPositionEngagePath.get(0), drivetrain, true, true),
             new FollowPath(hybridConeCenterPositionEngagePath.get(1), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Engage", hybridConeCenterPositionEngageCommand);
 
@@ -820,7 +820,7 @@ public class RobotContainer {
                 hybridConeCenterPositionMobilityEngagePath.get(0), drivetrain, true, true),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(1), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Mobility + Engage",
         hybridConeCenterPositionMobilityEngageCommand);
@@ -833,7 +833,7 @@ public class RobotContainer {
         Commands.sequence(
             new FollowPath(oneConeEngageCenterLeftPath.get(0), drivetrain, true, true),
             new FollowPath(oneConeEngageCenterLeftPath.get(1), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
 
     // "auto" path for 1 Cone + Engage (Center, Right) path
@@ -844,7 +844,7 @@ public class RobotContainer {
         Commands.sequence(
             new FollowPath(oneConeEngageCenterRightPath.get(0), drivetrain, true, true),
             new FollowPath(oneConeEngageCenterRightPath.get(1), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption("1 Cone + Engage (Center, Right)", oneConeEngageCenterRightCommand);
 
     // "auto" path for 1 Cone + Engage + Mobility(Center, Left, High) path
@@ -861,7 +861,7 @@ public class RobotContainer {
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(1), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(2), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(3), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Left, High)", oneConeEngageMobilityCenterLeftCommand);
 
@@ -879,7 +879,7 @@ public class RobotContainer {
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(1), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(2), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(3), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Right, High)", oneConeEngageMobilityCenterRightCommand);
 
@@ -932,7 +932,7 @@ public class RobotContainer {
     oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
 
     // auto balance
-    oi.getAutoBalanceButton().onTrue(new AutoBalanceNonStop(drivetrain));
+    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, false));
   }
 
   private void configureElevatorCommands() {

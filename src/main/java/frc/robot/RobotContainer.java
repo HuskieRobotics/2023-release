@@ -401,13 +401,13 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.runOnce(() -> vision.enable(false), vision),
                 Commands.runOnce(drivetrain::resetPoseRotationToGyro)));
-    oi.getInterruptAll().onTrue(
-        Commands.parallel(
-            Commands.runOnce(manipulator::stop),
-            Commands.runOnce(elevator::stopElevator),
-            Commands.runOnce(intake::stopIntake),
-            new TeleopSwerve(
-                    drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
+    oi.getInterruptAll()
+        .onTrue(
+            Commands.parallel(
+                Commands.runOnce(manipulator::stop),
+                Commands.runOnce(elevator::stopElevator),
+                Commands.runOnce(intake::stopIntake),
+                new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
   /** Use this method to define your commands for autonomous mode. */

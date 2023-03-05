@@ -124,7 +124,7 @@ public class SetElevatorPosition extends CommandBase {
         break;
       case CONE_MID_LEVEL:
         this.extension = Units.inchesToMeters(44);
-        this.rotation = Units.degreesToRadians(90.0 - 44.0); //48.0
+        this.rotation = Units.degreesToRadians(90.0 - 44.0); // 48.0
         break;
       case CONE_HIGH_LEVEL:
         this.extension = Units.inchesToMeters(65);

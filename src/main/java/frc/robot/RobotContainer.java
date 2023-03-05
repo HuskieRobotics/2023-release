@@ -1059,23 +1059,29 @@ public class RobotContainer {
         new MoveToGrid(drivetrain); // , 2.0), // replace 2.0 with the time to position the elevator
     // (e.g., setElevatorPosition.getTimeToPosition())
 
+    /*
+     * If move-to-grid is disabled, this command will never finish since TeleopSwerve never finishes.
+     * In this case, the operator will have to manually drop the game piece, which will interrupt this command.
+     */
+
     return Commands.sequence(
         Commands.parallel(
-            Commands.runOnce(led::enableAutoLED),
+            Commands.either(
+                Commands.runOnce(led::enableAutoLED),
+                Commands.runOnce(led::enableTeleopLED),
+                () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()),
             setElevatorPositionCommand,
-            Commands.sequence(
-                moveToGridCommand,
-                new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
-                new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier()))),
+            Commands.either(
+                Commands.sequence(
+                    moveToGridCommand,
+                    new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
+                    new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier())),
+                new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+                () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
         new ReleaseGamePiece(manipulator),
         Commands.runOnce(led::enableTeleopLED));
   }
 
-  /*
-   * Stuff to consider:
-   *
-   * Should we back away after grabbing the game piece to reduce the chance the driver smashes the elevator into a field element?
-   */
   private Command moveAndGrabGamePiece(Position elevatorPosition, Pose2d moveToGridPosition) {
     // Other commands will need to query how long the move to grid command will take (e.g., we want
     // to signal the human player x seconds before the robot reaching the game piece); so, we need
@@ -1083,39 +1089,46 @@ public class RobotContainer {
     // FIXME: pass the time to position the elevator
     Command setElevatorPositionCommandCollection =
         new SetElevatorPosition(elevator, elevatorPosition);
-    Command setElevatorPositionCommandTransit =
-        new SetElevatorPosition(elevator, Position.CONE_STORAGE);
     MoveToLoadingZone moveToLoadingZoneCommand =
         new MoveToLoadingZone(drivetrain, moveToGridPosition);
 
     return Commands.sequence(
-        // First step in the sequence is to automatically move the robot to the specified
-        // substation location. This command group will complete as soon as the manipulator grabs a
-        // game piece, which should occur while the move to grid (or the squaring command) is still
-        // executing. If a game piece is never required, the driver has to reset and interrupt this
-        // entire command group.
+        /*
+         * If move-to-grid is enabled, automatically move the robot to the specified
+         * substation location. This command group will complete as soon as the manipulator grabs a
+         * game piece, which should occur while the move to grid (or the squaring command) is still
+         * executing. If a game piece is never required, the driver has to reset and interrupt this
+         * entire command group.
+         *
+         * If move-to-grid is disabled, automatically position the elevator while the driver
+         * positions the robot to grab a game piece. This command group will still complete as soon as the
+         * manipulator grabs a game piece, which should occur while the driver is positioning the robot.
+         */
+
         Commands.deadline(
             new GrabGamePiece(manipulator),
-            Commands.runOnce(led::enableAutoLED),
+            Commands.either(
+                Commands.runOnce(led::enableAutoLED),
+                Commands.runOnce(led::enableTeleopLED),
+                () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()),
             Commands.sequence(
                 Commands.parallel(
                     Commands.print(
                         "replace with command to set LED color after delay and pass reference to move to grid command from which the time can be queried"),
+                    setElevatorPositionCommandCollection,
+                    Commands.either(
+                        moveToLoadingZoneCommand,
+                        new TeleopSwerve(
+                            drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+                        () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
+                Commands.either(
                     Commands.sequence(
-                        setElevatorPositionCommandCollection,
-                        Commands.waitSeconds(2.0)), // simulate delay of SetPosition
-                    moveToLoadingZoneCommand),
-                new DriveToPose(drivetrain, moveToLoadingZoneCommand.endPoseSupplier()),
-                new StallAgainstElement(drivetrain, moveToLoadingZoneCommand.endPoseSupplier()))),
-
-        // Third step in the sequence is to move the elevator into the transit position. While the
-        // elevator is moving, allow the driver to start to drive the robot.
-        Commands.deadline(
-            Commands.sequence(
-                setElevatorPositionCommandTransit,
-                Commands.runOnce(led::enableTeleopLED),
-                new TeleopSwerve(
-                    drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))));
+                        new DriveToPose(drivetrain, moveToLoadingZoneCommand.endPoseSupplier()),
+                        new StallAgainstElement(
+                            drivetrain, moveToLoadingZoneCommand.endPoseSupplier())),
+                    Commands.none(),
+                    () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()))),
+        Commands.runOnce(led::enableTeleopLED));
   }
 
   /**

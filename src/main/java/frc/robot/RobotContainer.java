@@ -1003,11 +1003,11 @@ public class RobotContainer {
 
     // toggle manipulator sensor enable/disable
     oi.getToggleManipulatorSensorButton()
-        .toggleOnTrue(
-            Commands.either(
-                Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator),
-                Commands.runOnce(() -> manipulator.enableManipulatorSensor(true)),
-                manipulator::isManipulatorSensorEnabled));
+        .onTrue(
+                Commands.runOnce(() -> manipulator.enableManipulatorSensor(true)));
+                oi.getToggleManipulatorSensorButton()
+        .onFalse(
+                Commands.runOnce(() -> manipulator.enableManipulatorSensor(false), manipulator));
   }
 
   private void configureIntakeButtons() {

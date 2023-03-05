@@ -494,23 +494,20 @@ public class RobotContainer {
         PathPlanner.loadPathGroup("CableSideEngage", 2.0, 2.0);
     Command blueCableSide2ConeEngageCommand =
         Commands.sequence(
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
-            Commands.waitSeconds(0),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            // new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConeEngagePath.get(0), drivetrain, true, true),
                 blueCableSide2ConeEngagePath.get(0).getMarkers(),
                 autoEventMap),
-            Commands.waitSeconds(0),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConeEngagePath.get(1), drivetrain, false, true),
                 blueCableSide2ConeEngagePath.get(1).getMarkers(),
                 autoEventMap),
-            Commands.waitSeconds(0),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConeEngagePath.get(2), drivetrain, false, true),
                 blueCableSide2ConeEngagePath.get(2).getMarkers(),
                 autoEventMap),
-            Commands.waitSeconds(0),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConeEngagePath.get(3), drivetrain, false, true),
                 blueCableSide2ConeEngagePath.get(3).getMarkers(),
@@ -525,10 +522,11 @@ public class RobotContainer {
                 autoEventMap),
             Commands.parallel(
                 driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-                new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL)),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
             new ReleaseGamePiece(manipulator),
-            new FollowPath(cableSideEngagePath.get(0), drivetrain, false, true),
-            new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+            Commands.parallel(
+                new FollowPath(cableSideEngagePath.get(0), drivetrain, false, true),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
             new FollowPath(cableSideEngagePath.get(1), drivetrain, false, true),
             new AutoBalanceNonStop(drivetrain)); // update with autobalance not nonstop
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
@@ -544,23 +542,20 @@ public class RobotContainer {
             regularSpeed);
     Command blueCableSide2ConeCommand =
         Commands.sequence(
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
-            Commands.waitSeconds(0),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            // new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConePath.get(0), drivetrain, true, true),
                 blueCableSide2ConePath.get(0).getMarkers(),
                 autoEventMap),
-            Commands.waitSeconds(0),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConePath.get(1), drivetrain, false, true),
                 blueCableSide2ConePath.get(1).getMarkers(),
                 autoEventMap),
-            Commands.waitSeconds(0),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConePath.get(2), drivetrain, false, true),
                 blueCableSide2ConePath.get(2).getMarkers(),
                 autoEventMap),
-            Commands.waitSeconds(0),
             new FollowPathWithEvents(
                 new FollowPath(blueCableSide2ConePath.get(3), drivetrain, false, true),
                 blueCableSide2ConePath.get(3).getMarkers(),
@@ -575,7 +570,7 @@ public class RobotContainer {
                 autoEventMap),
             Commands.parallel(
                 driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-                new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL)),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
             new ReleaseGamePiece(manipulator));
     autoChooser.addOption("Blue-CableSide 2 Cone", blueCableSide2ConeCommand);
 
@@ -684,17 +679,18 @@ public class RobotContainer {
         PathPlanner.loadPathGroup("LoadingSideEngage", 2.0, 2.0);
     Command blueLoadingSide2ConeEngageCommand =
         Commands.sequence(
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new FollowPathWithEvents(
                 new FollowPath(blueLoadingSide2ConePath.get(0), drivetrain, true, true),
                 blueLoadingSide2ConePath.get(0).getMarkers(),
                 autoEventMap),
-            driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            Commands.runOnce(drivetrain::enableXstance, drivetrain),
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
-            Commands.runOnce(drivetrain::disableXstance, drivetrain),
-            new FollowPath(loadingSideEngagePath.get(0), drivetrain, false, true),
-            new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+            Commands.parallel(
+                driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new ReleaseGamePiece(manipulator),
+            Commands.parallel(
+                new FollowPath(loadingSideEngagePath.get(0), drivetrain, false, true),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
             new FollowPath(loadingSideEngagePath.get(1), drivetrain, false, true),
             new AutoBalanceNonStop(drivetrain));
     autoChooser.addOption(
@@ -709,18 +705,15 @@ public class RobotContainer {
     // "auto" path for Blue-LoadingSide 2 Cone
     Command blueLoadingSide2ConeCommand =
         Commands.sequence(
-            // call method that sequences set position followed by release game piece // done
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
             new FollowPathWithEvents(
                 new FollowPath(blueLoadingSide2ConePath.get(0), drivetrain, true, true),
                 blueLoadingSide2ConePath.get(0).getMarkers(),
                 autoEventMap),
-            // combine the following two commands into a method that takes a parameter of the pose
-            // // done
-            // driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1) // done
-            driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            Commands.runOnce(drivetrain::enableXstance, drivetrain),
-            new ReleaseGamePiece(manipulator),
-            Commands.runOnce(drivetrain::disableXstance, drivetrain));
+            Commands.parallel(
+                driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
+                new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new ReleaseGamePiece(manipulator));
     autoChooser.addOption("Blue Loading Side 2 Cone", blueLoadingSide2ConeCommand);
 
     // "auto" path for Blue-LoadingGetOutTheWay
@@ -847,9 +840,9 @@ public class RobotContainer {
             "1 Cone + Engage (Center, Left)", overCableConnector, engageSpeed);
     Command oneConeEngageCenterLeftCommand =
         Commands.sequence(
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageCenterLeftPath.get(0), drivetrain, true, true),
-            new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
             new FollowPath(oneConeEngageCenterLeftPath.get(1), drivetrain, false, true),
             new AutoBalanceNonStop(drivetrain));
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
@@ -860,9 +853,9 @@ public class RobotContainer {
             "1 Cone + Engage (Center, Right)", overCableConnector, engageSpeed);
     Command oneConeEngageCenterRightCommand =
         Commands.sequence(
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageCenterRightPath.get(0), drivetrain, true, true),
-            new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
             new FollowPath(oneConeEngageCenterRightPath.get(1), drivetrain, false, true),
             new AutoBalanceNonStop(drivetrain));
     autoChooser.addOption("1 Cone + Engage (Center, Right)", oneConeEngageCenterRightCommand);
@@ -877,9 +870,9 @@ public class RobotContainer {
             engageSpeed);
     Command oneConeEngageMobilityCenterLeftCommand =
         Commands.sequence(
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(0), drivetrain, true, true),
-            new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(1), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(2), drivetrain, false, true),
             new FollowPath(oneConeEngageMobilityCenterLeftPath.get(3), drivetrain, false, true),
@@ -897,7 +890,8 @@ public class RobotContainer {
             engageSpeed);
     Command oneConeEngageMobilityCenterRightCommand =
         Commands.sequence(
-            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(0), drivetrain, true, true),
             new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
             new FollowPath(oneConeEngageMobilityCenterRightPath.get(1), drivetrain, false, true),

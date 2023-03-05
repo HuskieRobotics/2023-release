@@ -56,6 +56,8 @@ public class AutoBalanceNonStop extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
+    drivetrain.disableXstance();
+    drivetrain.enableFieldRelative();
     Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", false);
   }
 

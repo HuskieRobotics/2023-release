@@ -840,7 +840,7 @@ public class RobotContainer {
                     new Pose2d(
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180))),
+                        Rotation2d.fromDegrees(0.0))),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(2), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
@@ -956,7 +956,15 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(drivetrain::disableRotationSlowMode, drivetrain));
 
     // reset gyro to 0 degrees
-    oi.getResetGyroButton().onTrue(Commands.runOnce(drivetrain::zeroGyroscope, drivetrain));
+    oi.getResetGyroButton()
+        .onTrue(
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(0.0))));
 
     // reset pose based on vision
     oi.getResetPoseToVisionButton()

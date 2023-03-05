@@ -189,7 +189,8 @@ public class Elevator extends SubsystemBase {
         this.setElevatorExtension(Units.inchesToMeters(52.0));
       }
 
-      this.setElevatorRotation(rotation);
+      if(this.atExtension(extension)) {
+      this.setElevatorRotation(rotation);}
     } else if (!extensionIsIncreasing && rotationIsIncreasing) {
       // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
       // positions

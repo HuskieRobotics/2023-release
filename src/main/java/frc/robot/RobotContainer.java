@@ -528,7 +528,7 @@ public class RobotContainer {
                 new FollowPath(cableSideEngagePath.get(0), drivetrain, false, true),
                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
             new FollowPath(cableSideEngagePath.get(1), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain)); // update with autobalance not nonstop
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
     List<PathPlannerTrajectory> blueCableSide2ConePath =
@@ -692,7 +692,7 @@ public class RobotContainer {
                 new FollowPath(loadingSideEngagePath.get(0), drivetrain, false, true),
                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
             new FollowPath(loadingSideEngagePath.get(1), drivetrain, false, true),
-            new AutoBalanceNonStop(drivetrain));
+            new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone Engage Path", blueLoadingSide2ConeEngageCommand);
 

@@ -189,7 +189,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public boolean getTurbo() {
-    return isTurbo;
+    // based on testing, we can drive in turbo mode all the time
+    return true;
   }
 
   /**

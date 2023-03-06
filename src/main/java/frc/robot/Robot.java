@@ -115,6 +115,8 @@ public class Robot extends LoggedRobot {
     // Invoke the factory method to create the RobotContainer singleton.
     robotContainer = RobotContainer.getInstance();
 
+    robotContainer.robotInit();
+
     if (Constants.getRobot() != Constants.RobotType.ROBOT_SIMBOT) {
       UsbCamera driverCamera = CameraServer.startAutomaticCapture(0);
       driverCamera.setResolution(320, 240);

@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class SetElevatorPosition extends CommandBase {
   private Elevator elevator;
-  private double rotation;
+  protected double rotation;
   private double extension;
   private Supplier<Position> positionSupplier;
   private LoggedDashboardChooser<Position> armChooser;

@@ -92,9 +92,9 @@ public class SwerveModuleIOTalonFX implements SwerveModuleIO {
             RobotConfig.getInstance().getDriveKV() / 12,
             RobotConfig.getInstance().getDriveKA() / 12);
 
-    CANDeviceFinder can = new CANDeviceFinder();
-    can.isDevicePresent(CANDeviceType.TALON, driveMotorID, "Mod " + moduleNumber + "Drive");
-    can.isDevicePresent(CANDeviceType.TALON, angleMotorID, "Mod " + moduleNumber + "Angle");
+    // CANDeviceFinder can = new CANDeviceFinder();
+    // can.isDevicePresent(CANDeviceType.TALON, driveMotorID, "Mod " + moduleNumber + "Drive");
+    // can.isDevicePresent(CANDeviceType.TALON, angleMotorID, "Mod " + moduleNumber + "Angle");
     // check for the CANcoder on the CAN bus when supported by CANDeviceFinder
 
     configAngleEncoder(canCoderID);

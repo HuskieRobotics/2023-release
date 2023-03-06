@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
@@ -56,7 +57,8 @@ public class StallAgainstElement extends CommandBase {
                 .mapPoseToCurrentAlliance(
                     new Pose2d(
                         FieldRegionConstants.GRID_1_NODE_1.getX()
-                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2
+                            + Units.inchesToMeters(2),
                         FieldRegionConstants.GRID_1_NODE_1.getY(),
                         FieldRegionConstants.GRID_1_NODE_1.getRotation())))
         || targetPose.equals(
@@ -64,11 +66,11 @@ public class StallAgainstElement extends CommandBase {
                 .mapPoseToCurrentAlliance(
                     new Pose2d(
                         FieldRegionConstants.GRID_3_NODE_3.getX()
-                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2
+                            + Units.inchesToMeters(2),
                         FieldRegionConstants.GRID_3_NODE_3.getY(),
                         FieldRegionConstants.GRID_3_NODE_3.getRotation())))) {
       isEndNode = true;
-      Logger.getInstance().recordOutput("ActiveCommands/inIFSTATEMENT", isEndNode);
     }
     this.timer.restart();
   }

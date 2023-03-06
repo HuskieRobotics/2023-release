@@ -73,9 +73,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       new TunableNumber("ElevatorRotation/StuckCycles", 5);
 
   public ElevatorIOTalonFX() {
-    CANDeviceFinder can = new CANDeviceFinder();
-    can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
-    can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator Rotation");
+    // CANDeviceFinder can = new CANDeviceFinder();
+    // can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
+    // can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator Rotation");
 
     /* create and configure the Pigeon */
     this.pigeon = new Pigeon2(PIGEON_ID, RobotConfig.getInstance().getCANBusName());

@@ -458,14 +458,13 @@ public class RobotContainer {
 
     List<PathPlannerTrajectory> hybridConeCenterPositionMobilityEngagePath =
         PathPlanner.loadPathGroup(
-            "Hybrid Cone Center Position + Mobility + Engage",
-            hybridConeSpeed,
-            engageSpeed,
-            engageSpeed);
+            "Hybrid Cone Center Position + Mobility + Engage", hybridConeSpeed, engageSpeed);
+    PathPlannerTrajectory farSideEngagePath = PathPlanner.loadPath("Engage Far Side", engageSpeed);
     Command hybridConeCenterPositionMobilityEngageCommand =
         Commands.sequence(
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(0), drivetrain, true, true),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(1), drivetrain, false, true),
             new RotateToAngle(
@@ -474,10 +473,8 @@ public class RobotContainer {
                     new Pose2d(
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(0.0))),
-            new FollowPath(
-                hybridConeCenterPositionMobilityEngagePath.get(2), drivetrain, false, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
+                        Rotation2d.fromDegrees(180.0))),
+            new FollowPath(farSideEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Mobility + Engage",
@@ -512,7 +509,6 @@ public class RobotContainer {
 
     PathPlannerTrajectory centerMobilityPath =
         PathPlanner.loadPath("Mobility (Center)", engageSpeed);
-    PathPlannerTrajectory farSideEngagePath = PathPlanner.loadPath("Engage Far Side", engageSpeed);
     Command oneConeEngageMobilityCenterLeftCommand =
         Commands.sequence(
             newOneConeCenterLeftCommand(),

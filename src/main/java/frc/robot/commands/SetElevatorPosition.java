@@ -25,6 +25,7 @@ public class SetElevatorPosition extends CommandBase {
   protected double extension;
   private Supplier<Position> positionSupplier;
   private LoggedDashboardChooser<Position> armChooser;
+  private boolean finishImmediately;
 
   public SetElevatorPosition(Elevator subsystem, Position targetPosition) {
     this(subsystem, () -> targetPosition);
@@ -62,6 +63,8 @@ public class SetElevatorPosition extends CommandBase {
   public void initialize() {
 
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", true);
+
+    this.finishImmediately = false;
 
     Position position = positionSupplier.get();
 
@@ -103,6 +106,7 @@ public class SetElevatorPosition extends CommandBase {
       case AUTO_STORAGE:
         this.extension = Units.inchesToMeters(34);
         this.rotation = Units.degreesToRadians(90.0 - 24.173);
+        this.finishImmediately = true;
         break;
       case CONE_INTAKE_FLOOR:
         this.extension = Units.inchesToMeters(34);
@@ -175,7 +179,7 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public boolean isFinished() {
-    return elevator.atSetpoint();
+    return this.finishImmediately || elevator.atSetpoint();
   }
 
   public static Position convertGridRowToPosition(GridRow row) {

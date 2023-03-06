@@ -27,6 +27,7 @@ import org.littletonrobotics.junction.Logger;
 public class MoveToGrid extends MoveToPose {
   private OperatorInterface oi;
   private double marginOfError = Units.inchesToMeters(6);
+  private double marginOfErrorEndNodes = Units.inchesToMeters(2);
 
   /**
    * Constructs a new MoveToGrid command object.
@@ -81,7 +82,9 @@ public class MoveToGrid extends MoveToPose {
             Field2d.getInstance()
                 .mapPoseToCurrentAlliance(
                     new Pose2d(
-                        endPose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                        endPose.getX()
+                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2
+                            + marginOfErrorEndNodes,
                         endPose.getY(),
                         endPose.getRotation()));
         Logger.getInstance().recordOutput("MoveToGrid/endPose", endPose);
@@ -113,7 +116,9 @@ public class MoveToGrid extends MoveToPose {
             Field2d.getInstance()
                 .mapPoseToCurrentAlliance(
                     new Pose2d(
-                        endPose.getX() + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                        endPose.getX()
+                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2
+                            + marginOfErrorEndNodes,
                         endPose.getY(),
                         endPose.getRotation()));
         Logger.getInstance().recordOutput("MoveToGrid/endPose", endPose);

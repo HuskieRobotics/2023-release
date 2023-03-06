@@ -26,9 +26,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new TunableNumber("manipulator/Kd", ManipulatorConstants.MANIPULATOR_KD);
 
   public ManipulatorIOTalonFX() {
-    CANDeviceFinder can = new CANDeviceFinder();
-    can.isDevicePresent(
-        CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
+    // CANDeviceFinder can = new CANDeviceFinder();
+    // can.isDevicePresent(
+    //     CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
 
     this.manipulatorSensor = new DigitalInput(ManipulatorConstants.MANIPULATOR_SENSOR_ID);
 

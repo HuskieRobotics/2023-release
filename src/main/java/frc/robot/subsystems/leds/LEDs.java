@@ -52,6 +52,7 @@ public class LEDs extends SubsystemBase {
     BLUE,
     ORANGE,
     RED,
+    BLINKGREEN
   }
 
   public enum Errors {
@@ -60,7 +61,7 @@ public class LEDs extends SubsystemBase {
     LOW_VOLTAGE,
     MANIPULATOR_SENSOR_DISABLED,
     VISION_FAILURE_NO_CAMERA,
-    AUTO_DRIVE_DISABLED,
+    AUTO_DRIVE_DISABLED
   }
 
   public enum AnimationTypes {
@@ -317,6 +318,10 @@ public class LEDs extends SubsystemBase {
 
       case RED:
         candle.setLEDs(255, 0, 0, 0, 71, 29);
+        break;
+
+      case BLINKGREEN:
+        candle.animate(new StrobeAnimation(255, 69, 0, 0, 98.0 / 256.0, ledCount));
         break;
 
       default:

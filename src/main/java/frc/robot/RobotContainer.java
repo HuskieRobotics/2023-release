@@ -72,6 +72,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
@@ -1085,11 +1086,13 @@ public class RobotContainer {
                             drivetrain, moveToLoadingZoneCommand.endPoseSupplier())),
                     Commands.none(),
                     () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()))),
+        Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.BLINKGREEN)),
         Commands.parallel(
             Commands.sequence(
                 new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition),
                 new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
             Commands.runOnce(led::enableTeleopLED),
+            Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.WHITE)),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
@@ -1125,7 +1128,7 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    led.setBlueOrangeStaticLed();   
+    led.setBlueOrangeStaticLed();
   }
 
   public static Pose2d adjustPoseForRobot(Pose2d pose) {

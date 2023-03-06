@@ -72,7 +72,6 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.AnimationTypes;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
@@ -1122,7 +1121,11 @@ public class RobotContainer {
   }
 
   public void robotInit() {
-    led.changeAnimationTo(AnimationTypes.RAINBOW);
+    led.setBlueOrangeStaticLed();
+  }
+
+  public void disabledPeriodic() {
+    led.setBlueOrangeStaticLed();   
   }
 
   public static Pose2d adjustPoseForRobot(Pose2d pose) {

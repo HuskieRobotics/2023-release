@@ -82,7 +82,9 @@ public class LEDs extends SubsystemBase {
     ORANGE,
     RED,
     BALANCING,
-    BALANCED
+    BALANCED,
+    BLUEFLOW,
+    ORANGEFLOW
   }
 
   // animation to be set
@@ -438,6 +440,12 @@ public class LEDs extends SubsystemBase {
       case BALANCED:
         toAnimate = null;
         break;
+      case BLUEFLOW:
+        toAnimate = new ColorFlowAnimation(0, 0, 255, 125, 0.6, ledCount, Direction.Forward, 0);
+        break;
+      case ORANGEFLOW:
+        toAnimate = new ColorFlowAnimation(255, 69, 0, 125, 0.6, ledCount, Direction.Forward, 5);
+        break;
     }
     candle.animate(toAnimate);
   }
@@ -471,6 +479,15 @@ public class LEDs extends SubsystemBase {
       default:
         candle.setLEDs(255, 255, 255, 0, 0, ledCount);
         break;
+    }
+  }
+
+  public void setBlueOrangeStaticLed() {
+    for (int i = 0; i < ledCount; i += 6) {
+      candle.setLEDs(255, 172, 28, 0, i, 3);
+    }
+    for (int i = 3; i < ledCount; i += 6) {
+      candle.setLEDs(0, 0, 128, 0, i, 3);
     }
   }
 

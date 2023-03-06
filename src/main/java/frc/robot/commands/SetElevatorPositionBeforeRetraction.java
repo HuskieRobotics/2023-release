@@ -152,9 +152,6 @@ public class SetElevatorPositionBeforeRetraction extends CommandBase {
         this.extension = Units.inchesToMeters(58);
         this.rotation = Units.degreesToRadians(90.0 - 53.0);
         break;
-      case CONE_STORAGE_SHELF:
-        this.extension = Units.inchesToMeters(45);
-        this.rotation = Units.degreesToRadians(90.0 - 46.0);
     }
 
     this.rotation = this.rotation + Units.degreesToRadians(additionalExtenstion.get());

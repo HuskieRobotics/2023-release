@@ -52,7 +52,9 @@ public class LEDs extends SubsystemBase {
     BLUE,
     ORANGE,
     RED,
-    BLINKGREEN
+    PINK,
+    BLINKGREEN,
+    BLINKPINK
   }
 
   public enum Errors {
@@ -323,7 +325,12 @@ public class LEDs extends SubsystemBase {
       case BLINKGREEN:
         candle.animate(new StrobeAnimation(255, 69, 0, 0, 98.0 / 256.0, ledCount));
         break;
-
+      case BLINKPINK:
+        candle.animate(new StrobeAnimation(255, 192, 203, 0, 98.0 / 256.0, ledCount));
+        break;
+      case PINK:
+        candle.setLEDs(255, 192, 203, 0, 71, 29);
+        break;
       default:
         candle.setLEDs(255, 255, 255, 0, 71, 29);
         break;

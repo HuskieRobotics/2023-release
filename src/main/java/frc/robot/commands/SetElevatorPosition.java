@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.operator_interface.OperatorInterface.GridRow;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -26,15 +28,18 @@ public class SetElevatorPosition extends CommandBase {
   private Supplier<Position> positionSupplier;
   private LoggedDashboardChooser<Position> armChooser;
   private boolean finishImmediately;
+  private LEDs led;
 
-  public SetElevatorPosition(Elevator subsystem, Position targetPosition) {
-    this(subsystem, () -> targetPosition);
+  public SetElevatorPosition(Elevator subsystem, Position targetPosition, LEDs led) {
+    this(subsystem, () -> targetPosition, led);
   }
 
-  public SetElevatorPosition(Elevator subsystem, Supplier<Position> targetPositionSupplier) {
+  public SetElevatorPosition(
+      Elevator subsystem, Supplier<Position> targetPositionSupplier, LEDs led) {
     this.elevator = subsystem;
     this.armChooser = null;
     this.positionSupplier = targetPositionSupplier;
+    this.led = led;
 
     addRequirements(elevator);
   }
@@ -159,6 +164,7 @@ public class SetElevatorPosition extends CommandBase {
   public void execute() {
     // FIXME: need to query the intake subsystem to determine the position of the intake, replace
     // true with isIntakeEnabled()
+    led.changeTopStateColor(RobotStateColors.BLINKPINK);
     elevator.setPosition(this.rotation, this.extension, true);
   }
 
@@ -170,6 +176,7 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public void end(boolean interrupted) {
+    led.changeTopStateColor(RobotStateColors.PINK);
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", false);
   }
 

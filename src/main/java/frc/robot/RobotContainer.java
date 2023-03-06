@@ -426,10 +426,12 @@ public class RobotContainer {
   private void configureAutoCommands() {
     autoEventMap.put("event1", Commands.print("passed marker 1"));
     autoEventMap.put("event2", Commands.print("passed marker 2"));
-    autoEventMap.put("bring in elevator", new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
+    autoEventMap.put(
+        "bring in elevator", new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led));
     autoEventMap.put("prepare to intake cone", collectGamePieceAuto());
     autoEventMap.put(
-        "set elevator auto position", new SetElevatorPosition(elevator, Position.CONE_STORAGE));
+        "set elevator auto position",
+        new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
     autoEventMap.put("collect game piece", collectGamePieceAuto());
 
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
@@ -576,7 +578,7 @@ public class RobotContainer {
             newCableSide2ConeCommand(),
             Commands.parallel(
                 new FollowPath(cableSidePreRotatePath, drivetrain, false, true),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
             new RotateToAngle(
                 drivetrain,
                 () ->
@@ -598,7 +600,7 @@ public class RobotContainer {
             newCableSide2ConeRotateInPlaceCommand(),
             Commands.parallel(
                 new FollowPath(cableSidePreRotatePath, drivetrain, false, true),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
             new RotateToAngle(
                 drivetrain,
                 () ->
@@ -638,7 +640,7 @@ public class RobotContainer {
             newLoadingSide2ConeCommand(),
             Commands.parallel(
                 new FollowPath(loadingSidePreRotatePath, drivetrain, false, true),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
             new RotateToAngle(
                 drivetrain,
                 () ->
@@ -659,7 +661,7 @@ public class RobotContainer {
         Commands.sequence(
             newLoadingSide2ConeRotateInPlaceCommand(),
             Commands.parallel(
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
                 Commands.sequence(
                     new FollowPath(loadingSidePreRotatePath, drivetrain, false, true),
                     new RotateToAngle(
@@ -739,7 +741,7 @@ public class RobotContainer {
         PathPlanner.loadPath("1ConeEngageCenterLeft", overCableConnector);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        new SetElevatorPosition(elevator, Position.CONE_STORAGE),
+        new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
         new FollowPath(oneConeEngageCenterLeftPath, drivetrain, true, true),
         new RotateToAngle(
             drivetrain,
@@ -756,7 +758,7 @@ public class RobotContainer {
         PathPlanner.loadPath("1ConeEngageCenterRight", overCableConnector);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        new SetElevatorPosition(elevator, Position.CONE_STORAGE),
+        new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
         new FollowPath(oneConeEngageCenterRightPath, drivetrain, true, true),
         new RotateToAngle(
             drivetrain,
@@ -807,7 +809,7 @@ public class RobotContainer {
             autoEventMap),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -822,7 +824,7 @@ public class RobotContainer {
             autoEventMap),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -833,7 +835,7 @@ public class RobotContainer {
         PathPlanner.loadPath("LoadingSide2ConeRotateInPlace", regularSpeed);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
         Commands.sequence(
             new FollowPath(loadingSide2ConePreRotatePath, drivetrain, true, true),
             new RotateToAngle(
@@ -856,7 +858,7 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(180.0)))),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -867,7 +869,7 @@ public class RobotContainer {
         PathPlanner.loadPath("CableSide2ConeRotateInPlace", regularSpeed);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
         Commands.sequence(
             new FollowPath(cableSide2ConePreRotatePath, drivetrain, true, true),
             new RotateToAngle(
@@ -890,7 +892,7 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(180.0)))),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -944,30 +946,31 @@ public class RobotContainer {
 
     oi.getMoveArmToChuteButton()
         .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_CHUTE)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_CHUTE, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToShelfButton()
         .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_SHELF)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_SHELF, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToStorageButton()
         .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToLowButton()
         .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HYBRID_LEVEL)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HYBRID_LEVEL, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToMidButton()
         .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_MID_LEVEL)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_MID_LEVEL, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToHighButton()
         .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HIGH_LEVEL)
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HIGH_LEVEL, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getIntakeGroundConeButton()
-        .onTrue(new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_FLOOR));
+        .onTrue(
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_FLOOR, led));
 
     // enable/disable manual elevator control
     oi.getEnableManualElevatorControlButton()
@@ -1052,7 +1055,7 @@ public class RobotContainer {
     // smashed into a field element because the elevator isn't in the final position.
     Command setElevatorPositionCommand =
         new SetElevatorPosition(
-            elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()));
+            elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led);
     MoveToGrid moveToGridCommand =
         new MoveToGrid(drivetrain); // , 2.0), // replace 2.0 with the time to position the elevator
     // (e.g., setElevatorPosition.getTimeToPosition())
@@ -1092,7 +1095,8 @@ public class RobotContainer {
   }
 
   private Command scoreGamePieceAuto(Position elevatorPosition) {
-    Command setElevatorPositionToScoreAuto = new SetElevatorPosition(elevator, elevatorPosition);
+    Command setElevatorPositionToScoreAuto =
+        new SetElevatorPosition(elevator, elevatorPosition, led);
     Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
     Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
 
@@ -1102,9 +1106,9 @@ public class RobotContainer {
 
   private Command collectGamePieceAuto() {
     return Commands.sequence(
-        new SetElevatorPosition(elevator, Position.CONE_INTAKE_FLOOR),
+        new SetElevatorPosition(elevator, Position.CONE_INTAKE_FLOOR, led),
         new GrabGamePiece(manipulator),
-        new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led));
   }
 
   private Command moveAndGrabGamePiece(Position elevatorPosition, Pose2d moveToGridPosition) {
@@ -1113,7 +1117,7 @@ public class RobotContainer {
     // to store a reference to the command in a variable that can be passed along to other commands.
     // FIXME: pass the time to position the elevator
     Command setElevatorPositionCommandCollection =
-        new SetElevatorPosition(elevator, elevatorPosition);
+        new SetElevatorPosition(elevator, elevatorPosition, led);
     MoveToLoadingZone moveToLoadingZoneCommand =
         new MoveToLoadingZone(drivetrain, moveToGridPosition);
 
@@ -1156,8 +1160,8 @@ public class RobotContainer {
         Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.BLINKGREEN)),
         Commands.parallel(
             Commands.sequence(
-                new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+                new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition, led),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
             Commands.runOnce(led::enableTeleopLED),
             Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.WHITE)),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
@@ -1187,7 +1191,7 @@ public class RobotContainer {
   public void teleopInit() {
     led.enableTeleopLED();
     CommandScheduler.getInstance()
-        .schedule(new SetElevatorPosition(elevator, Position.CONE_STORAGE));
+        .schedule(new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
   }
 
   public void robotInit() {

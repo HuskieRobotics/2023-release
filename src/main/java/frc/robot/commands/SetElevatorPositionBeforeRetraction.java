@@ -4,6 +4,7 @@ import edu.wpi.first.math.util.Units;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.leds.LEDs;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,13 +23,14 @@ public class SetElevatorPositionBeforeRetraction extends SetElevatorPosition {
   private static final TunableNumber additionalRotation =
       new TunableNumber("SetElevatorPositionBeforeRetraction/additionalRotation", 5);
 
-  public SetElevatorPositionBeforeRetraction(Elevator subsystem, Position targetPosition) {
-    super(subsystem, targetPosition);
+  public SetElevatorPositionBeforeRetraction(
+      Elevator subsystem, Position targetPosition, LEDs led) {
+    super(subsystem, targetPosition, led);
   }
 
   public SetElevatorPositionBeforeRetraction(
-      Elevator subsystem, Supplier<Position> targetPositionSupplier) {
-    super(subsystem, targetPositionSupplier);
+      Elevator subsystem, Supplier<Position> targetPositionSupplier, LEDs led) {
+    super(subsystem, targetPositionSupplier, led);
   }
 
   /**

@@ -105,13 +105,19 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
 
+  private final Map<String, Command> autoEventMap = new HashMap<>();
+
+  private PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
+  private PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
+  private PathConstraints hybridConeSpeed = new PathConstraints(2.0, 2.0);
+  private PathConstraints engageSpeed = new PathConstraints(1.5, 2.0);
+
   // FIXME: delete after testing
   private final LoggedDashboardChooser<ElevatorConstants.Position> armChooser =
       new LoggedDashboardChooser<>("Arm Position");
 
   // RobotContainer singleton
   private static RobotContainer robotContainer = new RobotContainer();
-  private final Map<String, Command> autoEventMap = new HashMap<>();
 
   /** Create the container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -428,12 +434,6 @@ public class RobotContainer {
 
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
-    // creates 2 Path Constraints to be used in auto paths
-    PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
-    PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
-    PathConstraints hybridConeSpeed = new PathConstraints(2.0, 2.0);
-    PathConstraints engageSpeed = new PathConstraints(1.5, 2.0);
-
     // build auto path commands
 
     // add commands to the auto chooser
@@ -621,7 +621,8 @@ public class RobotContainer {
     // ************************* Blue-LoadingGetOutTheWay *****************
     // ********************************************************************
 
-    PathPlannerTrajectory getOutTheWay = PathPlanner.loadPath("LoadingSideGetOutTheWay", 1.0, 1.0);
+    PathPlannerTrajectory getOutTheWay =
+        PathPlanner.loadPath("LoadingSideGetOutTheWay", regularSpeed);
     Command blueLoadingGetOutTheWay =
         Commands.sequence(new FollowPath(getOutTheWay, drivetrain, true, true));
     autoChooser.addOption("Blue Loading Get Out The Way", blueLoadingGetOutTheWay);
@@ -676,7 +677,6 @@ public class RobotContainer {
   }
 
   private Command newOneConeCenterLeftCommand() {
-    PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
     PathPlannerTrajectory oneConeEngageCenterLeftPath =
         PathPlanner.loadPath("1 Cone + Engage (Center, Left)", overCableConnector);
     return Commands.sequence(
@@ -694,7 +694,6 @@ public class RobotContainer {
   }
 
   private Command newOneConeCenterRightCommand() {
-    PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
     PathPlannerTrajectory oneConeEngageCenterRightPath =
         PathPlanner.loadPath("1 Cone + Engage (Center, Right)", overCableConnector);
     return Commands.sequence(
@@ -712,8 +711,6 @@ public class RobotContainer {
   }
 
   private Command newBlueCableSide2ConeCommand() {
-    PathConstraints overCableConnector = new PathConstraints(0.5, 1.0);
-    PathConstraints regularSpeed = new PathConstraints(1.0, 2.0);
     List<PathPlannerTrajectory> blueCableSide2ConePath =
         PathPlanner.loadPathGroup(
             "Blue-CableSide 2 Cone",
@@ -758,7 +755,7 @@ public class RobotContainer {
 
   private Command newBlueLoadingSide2ConeCommand() {
     PathPlannerTrajectory blueLoadingSide2ConePath =
-        PathPlanner.loadPath("Blue-LoadingSide 2 Cone", 1.0, 1.0);
+        PathPlanner.loadPath("Blue-LoadingSide 2 Cone", regularSpeed);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
         new FollowPathWithEvents(

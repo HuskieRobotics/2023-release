@@ -6,9 +6,9 @@ import edu.wpi.first.math.util.*;
 public class ElevatorConstants {
 
   /** Make constants for each positions */
-  public static final boolean DEBUGGING = true;
+  public static final boolean DEBUGGING = false;
 
-  public static final boolean TESTING = true;
+  public static final boolean TESTING = false;
   public static final String SUBSYSTEM_NAME = "Elevator";
 
   public enum Position {

@@ -72,6 +72,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.leds.LEDs.AnimationTypes;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
@@ -450,7 +451,7 @@ public class RobotContainer {
             new FollowPath(hybridConeCenterPositionEngagePath.get(0), drivetrain, true, true),
             Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(hybridConeCenterPositionEngagePath.get(1), drivetrain, false, true),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Engage", hybridConeCenterPositionEngageCommand);
 
@@ -477,7 +478,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Mobility + Engage",
         hybridConeCenterPositionMobilityEngageCommand);
@@ -492,7 +493,7 @@ public class RobotContainer {
             newOneConeCenterLeftCommand(),
             Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(centerEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
 
     // ********************************************************************
@@ -504,7 +505,7 @@ public class RobotContainer {
             newOneConeCenterRightCommand(),
             Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(centerEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("1 Cone + Engage (Center, Right)", oneConeEngageCenterRightCommand);
 
     // ********************************************************************
@@ -526,7 +527,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Left, High)", oneConeEngageMobilityCenterLeftCommand);
 
@@ -547,7 +548,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Right, High)", oneConeEngageMobilityCenterRightCommand);
 
@@ -580,7 +581,7 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(cableSideEngagePath, drivetrain, false, true),
             Commands.runOnce(elevator::stopRotation, elevator),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
     // ********************************************************************
@@ -612,7 +613,7 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(loadingSideEngagePath, drivetrain, false, true),
             Commands.runOnce(elevator::stopRotation, elevator),
-            new AutoBalance(drivetrain, true));
+            new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone + Engage Path", blueLoadingSide2ConeEngageCommand);
 
@@ -805,7 +806,7 @@ public class RobotContainer {
     oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
 
     // auto balance
-    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, false));
+    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, false, led));
   }
 
   private void configureElevatorCommands() {
@@ -1058,6 +1059,10 @@ public class RobotContainer {
     led.enableTeleopLED();
     CommandScheduler.getInstance()
         .schedule(new SetElevatorPosition(elevator, Position.CONE_STORAGE));
+  }
+
+  public void robotInit(){
+    led.changeAnimationTo(AnimationTypes.RAINBOW);
   }
 
   public static Pose2d adjustPoseForRobot(Pose2d pose) {

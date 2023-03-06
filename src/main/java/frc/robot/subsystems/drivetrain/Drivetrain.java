@@ -176,8 +176,6 @@ public class Drivetrain extends SubsystemBase {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("Enable XStance", new InstantCommand(this::enableXstance));
       tab.add("Disable XStance", new InstantCommand(this::disableXstance));
-      tab.add("NonStop", new AutoBalance(this, false));
-      tab.add("AutoBalanceWithStop", new AutoBalance(this, true));
     }
   }
 

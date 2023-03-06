@@ -81,6 +81,8 @@ public class LEDs extends SubsystemBase {
     BLUE,
     ORANGE,
     RED,
+    BALANCING,
+    BALANCED
   }
 
   // animation to be set
@@ -427,12 +429,49 @@ public class LEDs extends SubsystemBase {
         toAnimate =
             new TwinkleOffAnimation(70, 90, 175, 0, 0.8, ledCount, TwinkleOffPercent.Percent100);
         break;
-
       case SETALL:
+        toAnimate = null;
+        break;
+      case BALANCING:
+        toAnimate = new StrobeAnimation(220, 88, 42, 0, 0.25, ledCount);
+        break;
+      case BALANCED:
         toAnimate = null;
         break;
     }
     candle.animate(toAnimate);
+  }
+
+  public void changeColorTo(RobotStateColors topColor) {
+    switch (topColor) {
+      case YELLOW:
+        candle.setLEDs(255, 255, 0, 0, 0, ledCount);
+        break;
+
+      case PURPLE:
+        candle.setLEDs(255, 0, 255, 0, 0, ledCount);
+        break;
+
+      case GREEN:
+        candle.setLEDs(0, 255, 0, 0, 0, ledCount);
+        break;
+
+      case BLUE:
+        candle.setLEDs(0, 0, 128, 0, 0, ledCount);
+        break;
+
+      case ORANGE:
+        candle.setLEDs(255, 172, 28, 0, 0, ledCount);
+        break;
+
+      case RED:
+        candle.setLEDs(255, 0, 0, 0, 0, ledCount);
+        break;
+
+      default:
+        candle.setLEDs(255, 255, 255, 0, 0, ledCount);
+        break;
+    }
   }
 
   // invoke this within the command that goes to the substation and pass in the elevator

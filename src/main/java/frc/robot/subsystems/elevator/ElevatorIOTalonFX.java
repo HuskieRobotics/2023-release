@@ -355,6 +355,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         arbitraryFeedForward);
   }
 
+  @Override
+  public void autoZeroExtension() {
+    this.setExtensionMotorPercentage(-MAX_MANUAL_POWER_ROTATION);
+    this.extensionSetpoint = 0.0;
+  }
+
   private static double mpsToFalconMotionMagicUnits(
       double mps, double circumference, double gearRatio) {
     double pulleyRotationsPerSecond = mps / circumference;

@@ -25,10 +25,9 @@ public class AutoBalance extends CommandBase {
   private boolean finishWhenBalanced;
   private boolean balanced;
   private int time;
-  //FIXME: Adjust this value for the timeout we determine
+  // FIXME: Adjust this value for the timeout we determine
   private double timeout;
-  private static final TunableNumber tuneTimeout =
-  new TunableNumber("AutoBalance/timeout", 40.0);
+  private static final TunableNumber tuneTimeout = new TunableNumber("AutoBalance/timeout", 40.0);
 
   public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
     this.drivetrain = drivetrain;
@@ -45,7 +44,7 @@ public class AutoBalance extends CommandBase {
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", true);
     this.time = 0;
-    if(this.finishWhenBalanced) {
+    if (this.finishWhenBalanced) {
       this.timeout = tuneTimeout.get();
     } else {
       this.timeout = 1000000;
@@ -57,7 +56,7 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public void execute() {
-    Logger.getInstance().recordOutput("AutoBalanceNonStop/time",this.time);
+    Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.time);
     this.time++;
     led.changeAnimationTo(AnimationTypes.BALANCING);
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < MAX_ANGLE_DEG

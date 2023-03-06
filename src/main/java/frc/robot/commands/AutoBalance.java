@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -24,11 +25,10 @@ public class AutoBalance extends CommandBase {
   private double maxVelocity;
   private boolean finishWhenBalanced;
   private boolean balanced;
-  private int time;
-  //FIXME: Adjust this value for the timeout we determine
+  private Timer timer;
   private double timeout;
-  private static final TunableNumber tuneTimeout =
-  new TunableNumber("AutoBalance/timeout", 40.0);
+  // FIXME: Adjust this value for the timeout we determine
+  private static final TunableNumber tuneTimeout = new TunableNumber("AutoBalance/timeout", 40.0);
 
   public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
     this.drivetrain = drivetrain;
@@ -44,21 +44,21 @@ public class AutoBalance extends CommandBase {
   @Override
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", true);
-    this.time = 0;
-    if(this.finishWhenBalanced) {
+    if (this.finishWhenBalanced) {
       this.timeout = tuneTimeout.get();
     } else {
-      this.timeout = 1000000;
+      this.timeout = 1000000.0;
     }
     this.balanced = false;
+    this.timer.restart();
     drivetrain.disableFieldRelative();
     drivetrain.disableXstance();
   }
 
   @Override
   public void execute() {
-    Logger.getInstance().recordOutput("AutoBalanceNonStop/time",this.time);
-    this.time++;
+    Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.timer.get());
+
     led.changeAnimationTo(AnimationTypes.BALANCING);
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < MAX_ANGLE_DEG
         && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -MAX_ANGLE_DEG) {
@@ -98,6 +98,6 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return (finishWhenBalanced && balanced) || (this.time >= this.timeout);
+    return (finishWhenBalanced && balanced) || (this.timer.hasElapsed(this.timeout));
   }
 }

@@ -150,6 +150,7 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     robotContainer.updateOI();
     robotContainer.checkAllianceColor();
+    robotContainer.disabledPeriodic();
   }
 
   /**

@@ -239,7 +239,7 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getIntakeShelfRightButton() {
-    return operatorPanelButtons[5];
+    return operatorPanelButtons[7];
   }
 
   @Override
@@ -249,7 +249,7 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public Trigger getIntakeChuteButton() {
-    return operatorPanelButtons[7];
+    return operatorPanelButtons[5];
   }
 
   @Override

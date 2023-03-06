@@ -106,7 +106,7 @@ public class SetElevatorPosition extends CommandBase {
         break;
       case CONE_INTAKE_FLOOR:
         this.extension = Units.inchesToMeters(34);
-        this.rotation = Units.degreesToRadians(90.0 - 82.0);
+        this.rotation = Units.degreesToRadians(90.0 - 77.0);
         break;
       case CONE_INTAKE_SHELF:
       case CUBE_INTAKE_SHELF:

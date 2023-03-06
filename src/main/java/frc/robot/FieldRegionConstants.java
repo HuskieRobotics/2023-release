@@ -291,6 +291,6 @@ public final class FieldRegionConstants {
       new Pose2d(
           FieldConstants.LoadingZone.doubleSubstationX,
           FieldConstants.LoadingZone.leftY
-              - (3 * FieldConstants.LoadingZone.doubleSubstationWidth / 4),
+              - ((3 * FieldConstants.LoadingZone.doubleSubstationWidth / 4) + 0.254),
           Rotation2d.fromDegrees(0));
 }

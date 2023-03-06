@@ -17,8 +17,6 @@ import edu.wpi.first.math.util.Units;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve.Conversions;
-import frc.lib.team3061.util.CANDeviceFinder;
-import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -74,8 +72,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public ElevatorIOTalonFX() {
     // CANDeviceFinder can = new CANDeviceFinder();
-    // can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
-    // can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator Rotation");
+    // can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator
+    // Extension");
+    // can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator
+    // Rotation");
 
     /* create and configure the Pigeon */
     this.pigeon = new Pigeon2(PIGEON_ID, RobotConfig.getInstance().getCANBusName());

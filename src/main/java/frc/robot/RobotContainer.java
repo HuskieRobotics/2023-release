@@ -591,6 +591,13 @@ public class RobotContainer {
     autoChooser.addOption("Blue Loading Side 2 Cone", newBlueLoadingSide2ConeCommand());
 
     // ********************************************************************
+    // ************ Blue-LoadingSide 2 Cone Rotate in Place ***************
+    // ********************************************************************
+
+    autoChooser.addOption(
+        "Blue Loading Side 2 Cone Rotate in Place", newBlueLoadingSide2ConeRotateInPlaceCommand());
+
+    // ********************************************************************
     // ***************** Blue-LoadingSide 2 Cone + Engage *****************
     // ********************************************************************
 
@@ -616,6 +623,31 @@ public class RobotContainer {
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone + Engage Path", blueLoadingSide2ConeEngageCommand);
+
+    // ********************************************************************
+    // ********** Blue-LoadingSide 2 Cone + Engage Rotate in Place ********
+    // ********************************************************************
+
+    Command blueLoadingSide2ConeEngageRotateInPlaceCommand =
+        Commands.sequence(
+            newBlueLoadingSide2ConeRotateInPlaceCommand(),
+            Commands.parallel(
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE),
+                Commands.sequence(
+                    new FollowPath(loadingSidePreRotatePath, drivetrain, false, true),
+                    new RotateToAngle(
+                        drivetrain,
+                        () ->
+                            new Pose2d(
+                                drivetrain.getPose().getX(),
+                                drivetrain.getPose().getY(),
+                                Rotation2d.fromDegrees(0.0))),
+                    new FollowPath(loadingSideEngagePath, drivetrain, false, true))),
+            Commands.runOnce(elevator::stopRotation, elevator),
+            new AutoBalance(drivetrain, true, led));
+    autoChooser.addOption(
+        "Blue Loading Side 2 Cone + Engage Rotate in Place Path",
+        blueLoadingSide2ConeEngageRotateInPlaceCommand);
 
     // ********************************************************************
     // ************************* Blue-LoadingGetOutTheWay *****************
@@ -762,6 +794,40 @@ public class RobotContainer {
             new FollowPath(blueLoadingSide2ConePath, drivetrain, true, true),
             blueLoadingSide2ConePath.getMarkers(),
             autoEventMap),
+        Commands.parallel(
+            driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+        new ReleaseGamePiece(manipulator));
+  }
+
+  private Command newBlueLoadingSide2ConeRotateInPlaceCommand() {
+    PathPlannerTrajectory blueLoadingSide2ConePreRotatePath =
+        PathPlanner.loadPath("LoadingSide2ConePreRotate", regularSpeed);
+    PathPlannerTrajectory blueLoadingSide2ConeRotateInPlacePath =
+        PathPlanner.loadPath("LoadingSide2ConeRotateInPlace", regularSpeed);
+    return Commands.sequence(
+        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+        Commands.sequence(
+            new FollowPath(blueLoadingSide2ConePreRotatePath, drivetrain, true, true),
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(0.0))),
+            new FollowPathWithEvents(
+                new FollowPath(blueLoadingSide2ConeRotateInPlacePath, drivetrain, false, true),
+                blueLoadingSide2ConeRotateInPlacePath.getMarkers(),
+                autoEventMap),
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(180.0)))),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
             new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),

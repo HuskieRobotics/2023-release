@@ -12,8 +12,6 @@ import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivers.SparkMAXFactory;
 import frc.lib.team3061.swerve.Conversions;
-import frc.lib.team3061.util.CANDeviceFinder;
-import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
 
 /*

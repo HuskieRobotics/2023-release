@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.RobotConfig;
@@ -447,6 +448,7 @@ public class RobotContainer {
     Command hybridConeCenterPositionEngageCommand =
         Commands.sequence(
             new FollowPath(hybridConeCenterPositionEngagePath.get(0), drivetrain, true, true),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(hybridConeCenterPositionEngagePath.get(1), drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
@@ -488,6 +490,7 @@ public class RobotContainer {
     Command oneConeEngageCenterLeftCommand =
         Commands.sequence(
             newOneConeCenterLeftCommand(),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(centerEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
@@ -499,6 +502,7 @@ public class RobotContainer {
     Command oneConeEngageCenterRightCommand =
         Commands.sequence(
             newOneConeCenterRightCommand(),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(centerEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption("1 Cone + Engage (Center, Right)", oneConeEngageCenterRightCommand);
@@ -512,6 +516,7 @@ public class RobotContainer {
     Command oneConeEngageMobilityCenterLeftCommand =
         Commands.sequence(
             newOneConeCenterLeftCommand(),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(centerMobilityPath, drivetrain, false, true),
             new RotateToAngle(
                 drivetrain,
@@ -521,7 +526,6 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Left, High)", oneConeEngageMobilityCenterLeftCommand);
@@ -533,6 +537,7 @@ public class RobotContainer {
     Command oneConeEngageMobilityCenterRightCommand =
         Commands.sequence(
             newOneConeCenterRightCommand(),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new FollowPath(centerMobilityPath, drivetrain, false, true),
             new RotateToAngle(
                 drivetrain,
@@ -542,7 +547,6 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Right, High)", oneConeEngageMobilityCenterRightCommand);
@@ -1052,6 +1056,8 @@ public class RobotContainer {
 
   public void teleopInit() {
     led.enableTeleopLED();
+    CommandScheduler.getInstance()
+        .schedule(new SetElevatorPosition(elevator, Position.CONE_STORAGE));
   }
 
   public static Pose2d adjustPoseForRobot(Pose2d pose) {

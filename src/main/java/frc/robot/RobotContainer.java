@@ -409,6 +409,7 @@ public class RobotContainer {
                 Commands.runOnce(manipulator::stop),
                 Commands.runOnce(elevator::stopElevator),
                 Commands.runOnce(intake::stopIntake),
+                Commands.runOnce(drivetrain::disableXstance),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
@@ -475,7 +476,7 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(2), drivetrain, false, true),
-                Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Mobility + Engage",
@@ -543,7 +544,7 @@ public class RobotContainer {
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
-            new FollowPath(farSideEngagePath, drivetrain, false, true), 
+            new FollowPath(farSideEngagePath, drivetrain, false, true),
             Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
@@ -705,7 +706,7 @@ public class RobotContainer {
                     drivetrain.getPose().getX(),
                     drivetrain.getPose().getY(),
                     Rotation2d.fromDegrees(0.0))),
-                    Commands.runOnce(elevator::stopRotation, elevator));
+        Commands.runOnce(elevator::stopRotation, elevator));
   }
 
   private Command newBlueCableSide2ConeCommand() {

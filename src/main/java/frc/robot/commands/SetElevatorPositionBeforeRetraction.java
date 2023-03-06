@@ -5,7 +5,6 @@ import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -46,6 +45,8 @@ public class SetElevatorPositionBeforeRetraction extends SetElevatorPosition {
     super.initialize();
 
     this.rotation = this.rotation + Units.degreesToRadians(additionalExtension.get());
+
+    elevator.initializePosition(this.rotation, this.extension);
   }
 
   @Override

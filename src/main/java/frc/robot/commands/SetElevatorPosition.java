@@ -20,9 +20,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * <p>At End: continues to hold the elevator at the specified positions
  */
 public class SetElevatorPosition extends CommandBase {
-  private Elevator elevator;
+  protected Elevator elevator;
   protected double rotation;
-  private double extension;
+  protected double extension;
   private Supplier<Position> positionSupplier;
   private LoggedDashboardChooser<Position> armChooser;
 

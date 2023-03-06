@@ -1061,7 +1061,7 @@ public class RobotContainer {
         .schedule(new SetElevatorPosition(elevator, Position.CONE_STORAGE));
   }
 
-  public void robotInit(){
+  public void robotInit() {
     led.changeAnimationTo(AnimationTypes.RAINBOW);
   }
 

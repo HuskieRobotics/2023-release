@@ -6,7 +6,6 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.AnimationTypes;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
-
 import org.littletonrobotics.junction.Logger;
 
 public class AutoBalance extends CommandBase {

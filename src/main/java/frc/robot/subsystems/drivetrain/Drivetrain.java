@@ -33,7 +33,6 @@ import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
 import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
-import frc.robot.commands.AutoBalance;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 

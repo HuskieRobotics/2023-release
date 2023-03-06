@@ -29,6 +29,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
   private int stallCount;
+  private int rotationStuckCount;
   private double extensionSetpoint = -1.0;
 
   private final TunableNumber rkP =
@@ -65,6 +66,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
           EXTENSION_MAX_ELEVATOR_RETRACTION_VELOCITY_METERS_PER_SECOND);
   private final TunableNumber extensionMagicMotionSCurveStrength =
       new TunableNumber("ElevatorExtension/MMSCurve", EXTENSION_SCURVE_STRENGTH);
+
+  private final TunableNumber rotationStuckMinVelocity =
+      new TunableNumber("ElevatorRotation/StuckMinVelocity", 0.02);
+  private final TunableNumber rotationStuckCycles =
+      new TunableNumber("ElevatorRotation/StuckCycles", 5);
 
   public ElevatorIOTalonFX() {
     CANDeviceFinder can = new CANDeviceFinder();
@@ -226,6 +232,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     } else {
       stallCount = 0;
       Logger.getInstance().recordOutput("Elevator/extensionReZero", false);
+    }
+
+    // check if the elevator is stuck while trying to rotate; if so, stop the rotation
+    if (Math.abs(inputs.rotationVelocityRadiansPerSec) < rotationStuckMinVelocity.get()) {
+      rotationStuckCount++;
+      if (rotationStuckCount > rotationStuckCycles.get()) {
+        setRotationMotorPercentage(0.0);
+        Logger.getInstance().recordOutput("Elevator/rotationStuck", true);
+      }
+    } else {
+      rotationStuckCount = 0;
+      Logger.getInstance().recordOutput("Elevator/rotationStuck", false);
     }
 
     // update tunables

@@ -112,12 +112,12 @@ public class FullOperatorConsoleOI implements OperatorInterface {
 
   @Override
   public double getRotateArm() {
-    return -operatorController.getLeftY();
+    return -operatorController.getRightY();
   }
 
   @Override
   public double getMoveElevator() {
-    return -operatorController.getRightX();
+    return -operatorController.getLeftY();
   }
 
   @Override

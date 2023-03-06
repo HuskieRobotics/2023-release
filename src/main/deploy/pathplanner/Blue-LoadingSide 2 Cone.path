@@ -26,16 +26,16 @@
     },
     {
       "anchorPoint": {
-        "x": 4.528070667515744,
-        "y": 5.005411053476136
+        "x": 3.9146066608105436,
+        "y": 5.01
       },
       "prevControl": {
-        "x": 3.5142545970842964,
-        "y": 4.964542451720938
+        "x": 2.9127498967870826,
+        "y": 5.01
       },
       "nextControl": {
-        "x": 4.8494204696588925,
-        "y": 5.0183651952291966
+        "x": 4.290481904468217,
+        "y": 5.01
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -51,16 +51,16 @@
     },
     {
       "anchorPoint": {
-        "x": 5.553847505799278,
-        "y": 5.0244069208517566
+        "x": 5.112753956410691,
+        "y": 4.650808612381113
       },
       "prevControl": {
-        "x": 5.290023159907432,
-        "y": 5.0323694102249314
+        "x": 4.733280725242007,
+        "y": 4.767944298041374
       },
       "nextControl": {
-        "x": 5.733444806192379,
-        "y": 5.018986490106456
+        "x": 5.28443972893926,
+        "y": 4.597812698489348
       },
       "holonomicAngle": 0.01,
       "isReversal": false,
@@ -140,9 +140,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "AutoBalance"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "after",
         "waitTime": 0
@@ -154,15 +152,21 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.6214488636363642,
+      "position": 0.0,
       "names": [
         "bring in elevator"
       ]
     },
     {
-      "position": 0.7636363636364141,
+      "position": 1.361505681818182,
       "names": [
         "prepare to intake cone"
+      ]
+    },
+    {
+      "position": 3.15,
+      "names": [
+        "bring in elevator"
       ]
     }
   ]

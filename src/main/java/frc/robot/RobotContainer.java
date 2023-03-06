@@ -419,7 +419,7 @@ public class RobotContainer {
   private void configureAutoCommands() {
     autoEventMap.put("event1", Commands.print("passed marker 1"));
     autoEventMap.put("event2", Commands.print("passed marker 2"));
-    autoEventMap.put("bring in elevator", new SetElevatorPosition(elevator, Position.CONE_STORAGE));
+    autoEventMap.put("bring in elevator", new SetElevatorPosition(elevator, Position.AUTO_STORAGE));
     autoEventMap.put("prepare to intake cone", collectGamePieceAuto());
     autoEventMap.put(
         "set elevator auto position", new SetElevatorPosition(elevator, Position.CONE_STORAGE));

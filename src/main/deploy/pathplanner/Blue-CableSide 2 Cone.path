@@ -197,9 +197,21 @@
   ],
   "markers": [
     {
-      "position": 1.5272727272726832,
+      "position": 0.0,
+      "names": [
+        "bring in elevator"
+      ]
+    },
+    {
+      "position": 2.515625,
       "names": [
         "prepare to intake cone"
+      ]
+    },
+    {
+      "position": 4.246235795454545,
+      "names": [
+        "bring in elevator"
       ]
     }
   ]

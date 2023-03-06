@@ -557,6 +557,13 @@ public class RobotContainer {
     autoChooser.addOption("Cable Side 2 Cone", newCableSide2ConeCommand());
 
     // ********************************************************************
+    // ************ Cable Side 2 Cone Rotate in Place *******************
+    // ********************************************************************
+
+    autoChooser.addOption(
+        "Cable Side 2 Cone Rotate-in-Place", newCableSide2ConeRotateInPlaceCommand());
+
+    // ********************************************************************
     // ******************** Cable Side 2 Cone + Engage ********************
     // ********************************************************************
 
@@ -581,6 +588,29 @@ public class RobotContainer {
             Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("Cable Side 2 Cone Engage", cableSide2ConeEngageCommand);
+
+    // ********************************************************************
+    // ******** Cable Side 2 Cone + Engage Rotate in Place ****************
+    // ********************************************************************
+
+    Command cableSide2ConeEngageRotateInPlaceCommand =
+        Commands.sequence(
+            newCableSide2ConeRotateInPlaceCommand(),
+            Commands.parallel(
+                new FollowPath(cableSidePreRotatePath, drivetrain, false, true),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(0.0))),
+            new FollowPath(cableSideEngagePath, drivetrain, false, true),
+            Commands.runOnce(elevator::stopRotation, elevator),
+            new AutoBalance(drivetrain, true, led));
+    autoChooser.addOption(
+        "Cable Side 2 Cone Engage Rotate-in-Place", cableSide2ConeEngageRotateInPlaceCommand);
 
     // ********************************************************************
     // ******************** Loading Side 2 Cone ***************************
@@ -826,6 +856,40 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(180.0)))),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
+            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
+        new ReleaseGamePiece(manipulator));
+  }
+
+  private Command newCableSide2ConeRotateInPlaceCommand() {
+    PathPlannerTrajectory cableSide2ConePreRotatePath =
+        PathPlanner.loadPath("CableSide2ConePreRotate", regularSpeed);
+    PathPlannerTrajectory cableSide2ConeRotateInPlacePath =
+        PathPlanner.loadPath("CableSide2ConeRotateInPlace", regularSpeed);
+    return Commands.sequence(
+        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
+        Commands.sequence(
+            new FollowPath(cableSide2ConePreRotatePath, drivetrain, true, true),
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(0.0))),
+            new FollowPathWithEvents(
+                new FollowPath(cableSide2ConeRotateInPlacePath, drivetrain, false, true),
+                cableSide2ConeRotateInPlacePath.getMarkers(),
+                autoEventMap),
+            new RotateToAngle(
+                drivetrain,
+                () ->
+                    new Pose2d(
+                        drivetrain.getPose().getX(),
+                        drivetrain.getPose().getY(),
+                        Rotation2d.fromDegrees(180.0)))),
+        Commands.parallel(
+            driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
             new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL)),
         new ReleaseGamePiece(manipulator));
   }

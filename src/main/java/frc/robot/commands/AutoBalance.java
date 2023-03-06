@@ -3,6 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.leds.LEDs.AnimationTypes;
+import frc.robot.subsystems.leds.LEDs.RobotStateColors;
+
 import org.littletonrobotics.junction.Logger;
 
 public class AutoBalance extends CommandBase {
@@ -15,13 +19,15 @@ public class AutoBalance extends CommandBase {
   private PIDController frontBack;
   private PIDController leftRight;
   private Drivetrain drivetrain;
+  private LEDs led;
   // private double feedforward;
   private double maxVelocity;
   private boolean finishWhenBalanced;
   private boolean balanced;
 
-  public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced) {
+  public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
     this.drivetrain = drivetrain;
+    this.led = led;
     addRequirements(drivetrain);
     // this.feedforward = 0;
     this.frontBack = new PIDController(KP, KI, KD);
@@ -41,7 +47,7 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public void execute() {
-
+    led.changeAnimationTo(AnimationTypes.BALANCING);
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < MAX_ANGLE_DEG
         && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -MAX_ANGLE_DEG) {
       drivetrain.setXStance();
@@ -75,6 +81,7 @@ public class AutoBalance extends CommandBase {
     drivetrain.disableXstance();
     drivetrain.enableFieldRelative();
     Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", false);
+    led.changeColorTo(RobotStateColors.BLUE);
   }
 
   @Override

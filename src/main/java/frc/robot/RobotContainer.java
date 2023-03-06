@@ -1028,10 +1028,11 @@ public class RobotContainer {
                     Commands.none(),
                     () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()))),
         Commands.parallel(
-            new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition),
+            Commands.sequence(
+                new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE)),
             Commands.runOnce(led::enableTeleopLED),
-            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
-        new SetElevatorPosition(elevator, Position.CONE_STORAGE));
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
   /**

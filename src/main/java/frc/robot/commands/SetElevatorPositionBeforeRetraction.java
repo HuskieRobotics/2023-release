@@ -19,8 +19,8 @@ import org.littletonrobotics.junction.Logger;
  */
 public class SetElevatorPositionBeforeRetraction extends SetElevatorPosition {
 
-  private static final TunableNumber additionalExtension =
-      new TunableNumber("SetElevatorPositionBeforeRetraction/additionalExtension", 5);
+  private static final TunableNumber additionalRotation =
+      new TunableNumber("SetElevatorPositionBeforeRetraction/additionalRotation", 5);
 
   public SetElevatorPositionBeforeRetraction(Elevator subsystem, Position targetPosition) {
     super(subsystem, targetPosition);
@@ -44,7 +44,7 @@ public class SetElevatorPositionBeforeRetraction extends SetElevatorPosition {
 
     super.initialize();
 
-    this.rotation = this.rotation + Units.degreesToRadians(additionalExtension.get());
+    this.rotation = this.rotation + Units.degreesToRadians(additionalRotation.get());
 
     elevator.initializePosition(this.rotation, this.extension);
   }

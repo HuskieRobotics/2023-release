@@ -13,10 +13,9 @@ public class IntakeConstants {
   }
 
   // FIXME: tune all of these
-  public static final boolean DEBUGGING = true;
+  public static final boolean DEBUGGING = false;
 
-  public static final boolean TESTING = true;
-  public static final boolean TUNING = true;
+  public static final boolean TESTING = false;
   public static final String SUBSYSTEM_NAME = "Intake";
 
   public static final int INTAKE_ROTATION_MOTOR_CAN_ID = 2;

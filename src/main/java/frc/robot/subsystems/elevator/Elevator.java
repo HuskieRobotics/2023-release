@@ -220,6 +220,10 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  public void autoZeroExtension() {
+    this.io.autoZeroExtension();
+  }
+
   public boolean nearExtensionMaximum() {
     return this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500; // FIXME
   }

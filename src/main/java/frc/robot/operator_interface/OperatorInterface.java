@@ -194,4 +194,8 @@ public interface OperatorInterface {
   public default Trigger getInterruptAll() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getAutoZeroExtensionButton() {
+    return new Trigger(() -> false);
+  }
 }

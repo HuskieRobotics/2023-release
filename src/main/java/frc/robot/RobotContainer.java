@@ -981,6 +981,9 @@ public class RobotContainer {
     oi.getDisableManualElevatorPresetButton()
         .onTrue(Commands.runOnce(elevator::disableManualPreset, elevator));
 
+    // auto zero the elevator's extension
+    oi.getAutoZeroExtensionButton().onTrue(Commands.runOnce(elevator::autoZeroExtension, elevator));
+
     elevator.setDefaultCommand(
         Commands.sequence(
             Commands.runOnce(

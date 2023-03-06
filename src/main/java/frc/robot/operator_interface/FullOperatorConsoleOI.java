@@ -312,4 +312,9 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   public Trigger getInterruptAll() {
     return translateJoystickButtons[3];
   }
+
+  @Override
+  public Trigger getAutoZeroExtensionButton() {
+    return rotateJoystickButtons[9];
+  }
 }

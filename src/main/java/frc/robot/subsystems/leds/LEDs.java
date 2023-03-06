@@ -340,17 +340,17 @@ public class LEDs extends SubsystemBase {
   public void changeAutoTeleopStateColors(DriveInfoStates autoTeleop) {
     switch (autoTeleop) {
       case TELEOP:
-        candle.setLEDs(0, 0, 255, 0, 0, 24);
-        candle.setLEDs(0, 0, 255, 0, 40, 16);
-        candle.setLEDs(0, 0, 255, 0, 116, 16);
-        candle.setLEDs(0, 0, 255, 0, 148, 16);
+        candle.setLEDs(0, 191, 255, 0, 0, 24);
+        candle.setLEDs(0, 191, 255, 0, 40, 16);
+        candle.setLEDs(0, 191, 255, 0, 116, 16);
+        candle.setLEDs(0, 191, 255, 0, 148, 16);
         // other side figure out indexes
         break;
       case AUTO:
-        candle.setLEDs(255, 165, 0, 0, 0, 24);
-        candle.setLEDs(255, 165, 0, 0, 40, 16);
-        candle.setLEDs(255, 165, 0, 0, 116, 16);
-        candle.setLEDs(255, 165, 0, 0, 148, 16);
+        candle.setLEDs(255, 69, 0, 0, 0, 24);
+        candle.setLEDs(255, 69, 0, 0, 40, 16);
+        candle.setLEDs(255, 69, 0, 0, 116, 16);
+        candle.setLEDs(255, 69, 0, 0, 148, 16);
         break;
       default:
         break;
@@ -360,16 +360,16 @@ public class LEDs extends SubsystemBase {
   public void changePickupStateColors(DriveInfoStates coneCube) {
     switch (coneCube) {
       case CONE:
-        candle.setLEDs(255, 255, 0, 0, 24, 16);
-        candle.setLEDs(255, 255, 0, 0, 56, 15);
-        candle.setLEDs(255, 255, 0, 0, 101, 15);
-        candle.setLEDs(255, 255, 0, 0, 132, 16);
+        candle.setLEDs(255, 215, 0, 0, 24, 16);
+        candle.setLEDs(255, 215, 0, 0, 56, 15);
+        candle.setLEDs(255, 215, 0, 0, 101, 15);
+        candle.setLEDs(255, 215, 0, 0, 132, 16);
         break;
       case CUBE:
-        candle.setLEDs(255, 0, 255, 0, 24, 16);
-        candle.setLEDs(255, 0, 255, 0, 56, 15);
-        candle.setLEDs(255, 0, 255, 0, 101, 15);
-        candle.setLEDs(255, 0, 255, 0, 132, 16);
+        candle.setLEDs(75, 0, 130, 0, 24, 16);
+        candle.setLEDs(75, 0, 130, 0, 56, 15);
+        candle.setLEDs(75, 0, 130, 0, 101, 15);
+        candle.setLEDs(75, 0, 130, 0, 132, 16);
         break;
       default:
         break;

@@ -475,6 +475,7 @@ public class RobotContainer {
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(2), drivetrain, false, true),
+                Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Mobility + Engage",
@@ -522,6 +523,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Left, High)", oneConeEngageMobilityCenterLeftCommand);
@@ -541,7 +543,8 @@ public class RobotContainer {
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
-            new FollowPath(farSideEngagePath, drivetrain, false, true),
+            new FollowPath(farSideEngagePath, drivetrain, false, true), 
+            Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility(Center, Right, High)", oneConeEngageMobilityCenterRightCommand);
@@ -574,6 +577,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(cableSideEngagePath, drivetrain, false, true),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption("Blue-CableSide 2 Cone + Engage ", blueCableSide2ConeEngageCommand);
 
@@ -605,6 +609,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(loadingSideEngagePath, drivetrain, false, true),
+            Commands.runOnce(elevator::stopRotation, elevator),
             new AutoBalance(drivetrain, true));
     autoChooser.addOption(
         "Blue Loading Side 2 Cone + Engage Path", blueLoadingSide2ConeEngageCommand);
@@ -867,7 +872,8 @@ public class RobotContainer {
                 new Pose2d(
                     drivetrain.getPose().getX(),
                     drivetrain.getPose().getY(),
-                    Rotation2d.fromDegrees(0.0))));
+                    Rotation2d.fromDegrees(0.0))),
+        Commands.runOnce(elevator::stopRotation, elevator));
   }
 
   private Command newOneConeCenterRightCommand() {
@@ -884,12 +890,13 @@ public class RobotContainer {
                 new Pose2d(
                     drivetrain.getPose().getX(),
                     drivetrain.getPose().getY(),
-                    Rotation2d.fromDegrees(0.0))));
+                    Rotation2d.fromDegrees(0.0))),
+                    Commands.runOnce(elevator::stopRotation, elevator));
   }
 
   private Command newBlueCableSide2ConeCommand() {
-    PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
-    PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
+    PathConstraints overCableConnector = new PathConstraints(0.5, 1.0);
+    PathConstraints regularSpeed = new PathConstraints(1.0, 2.0);
     List<PathPlannerTrajectory> blueCableSide2ConePath =
         PathPlanner.loadPathGroup(
             "Blue-CableSide 2 Cone",
@@ -934,7 +941,7 @@ public class RobotContainer {
 
   private Command newBlueLoadingSide2ConeCommand() {
     PathPlannerTrajectory blueLoadingSide2ConePath =
-        PathPlanner.loadPath("Blue-LoadingSide 2 Cone", 2.0, 2.0);
+        PathPlanner.loadPath("Blue-LoadingSide 2 Cone", 1.0, 1.0);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
         new FollowPathWithEvents(

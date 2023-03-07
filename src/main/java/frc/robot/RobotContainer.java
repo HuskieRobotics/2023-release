@@ -871,7 +871,7 @@ public class RobotContainer {
     PathPlannerTrajectory cableSide2ConeRotateInPlacePath =
         PathPlanner.loadPath("CableSide2ConeRotateInPlace", regularSpeed);
     PathPlannerTrajectory cableSide2ConeRotateInPlacePathReturn =
-        PathPlanner.loadPath("LoadingSide2ConeRotateInPlaceReturn", regularSpeed);
+        PathPlanner.loadPath("CableSide2ConeRotateInPlaceReturn", regularSpeed);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),

@@ -27,6 +27,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
   private int stallCount;
+  private double previousRotationPosition = -1.0;
   private int rotationStuckCount;
   private double extensionSetpoint = -1.0;
 
@@ -65,8 +66,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final TunableNumber extensionMagicMotionSCurveStrength =
       new TunableNumber("ElevatorExtension/MMSCurve", EXTENSION_SCURVE_STRENGTH);
 
-  private final TunableNumber rotationStuckMinVelocity =
-      new TunableNumber("ElevatorRotation/StuckMinVelocity", -1);
+  private final TunableNumber rotationStuckMinPositionDelta =
+      new TunableNumber("ElevatorRotation/StuckMinPositionDelta", 0.01);
   private final TunableNumber rotationStuckCycles =
       new TunableNumber("ElevatorRotation/StuckCycles", 5);
 
@@ -235,7 +236,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     // check if the elevator is stuck while trying to rotate; if so, stop the rotation
-    if (Math.abs(inputs.rotationVelocityRadiansPerSec) < rotationStuckMinVelocity.get()) {
+    if (Math.abs(previousRotationPosition - inputs.rotationPositionRadians)
+        < rotationStuckMinPositionDelta.get()) {
       rotationStuckCount++;
       if (rotationStuckCount > rotationStuckCycles.get()) {
         setRotationMotorPercentage(0.0);
@@ -245,6 +247,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       rotationStuckCount = 0;
       Logger.getInstance().recordOutput("Elevator/rotationStuck", false);
     }
+    this.previousRotationPosition = inputs.rotationPositionRadians;
 
     // update tunables
     if (rkP.hasChanged() || rkI.hasChanged() || rkD.hasChanged() || rkPeakOutput.hasChanged()) {

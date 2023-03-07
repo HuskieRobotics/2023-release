@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.AnimationTypes;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 import org.littletonrobotics.junction.Logger;
 
@@ -60,7 +59,7 @@ public class AutoBalance extends CommandBase {
   public void execute() {
     Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.timer.get());
 
-    led.changeAnimationTo(AnimationTypes.BALANCING);
+    led.changeTopStateColor(RobotStateColors.BLUE);
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < MAX_ANGLE_DEG
         && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -MAX_ANGLE_DEG) {
       drivetrain.setXStance();
@@ -94,7 +93,7 @@ public class AutoBalance extends CommandBase {
     drivetrain.disableXstance();
     drivetrain.enableFieldRelative();
     Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", false);
-    led.changeColorTo(RobotStateColors.BLUE);
+    led.changeTopStateColor(RobotStateColors.WHITE);
   }
 
   @Override

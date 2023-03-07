@@ -54,6 +54,7 @@ public class LEDs extends SubsystemBase {
     RED,
     PINK,
     BLINKGREEN,
+    BLINKBLUE,
     BLINKPINK
   }
 
@@ -117,27 +118,31 @@ public class LEDs extends SubsystemBase {
     // changeAnimationTo(AnimationTypes.RAINBOW);
   }
 
+  private void clearAnimation() {
+    candle.clearAnimation(0);
+  }
+
   @Override
   public void periodic() {
 
     this.checkErrors();
 
     // setting top values
-    if (currentError == 0) { // loss of can device
-      this.changeTopStateColor(RobotStateColors.RED);
-    } else if (currentError == 1) { // vision failure, we disabled vision
-      this.changeTopStateColor(RobotStateColors.ORANGE);
-    } else if (currentError == 2) { // low voltage
-      this.changeTopStateColor(RobotStateColors.YELLOW);
-    } else if (currentError == 3) { // manipulator sensor disabled
-      this.changeTopStateColor(RobotStateColors.GREEN);
-    } else if (currentError == 4) { // vision failure, we don't have a camera
-      this.changeTopStateColor(RobotStateColors.BLUE);
-    } else if (currentError == 5) { // auto drive disabled
-      this.changeTopStateColor(RobotStateColors.PURPLE);
-    } else { // nothing is wrong, default to white
-      this.changeTopStateColor(RobotStateColors.WHITE);
-    }
+    // if (currentError == 0) { // loss of can device
+    //   this.changeTopStateColor(RobotStateColors.RED);
+    // } else if (currentError == 1) { // vision failure, we disabled vision
+    //   this.changeTopStateColor(RobotStateColors.ORANGE);
+    // } else if (currentError == 2) { // low voltage
+    //   this.changeTopStateColor(RobotStateColors.YELLOW);
+    // } else if (currentError == 3) { // manipulator sensor disabled
+    //   this.changeTopStateColor(RobotStateColors.GREEN);
+    // } else if (currentError == 4) { // vision failure, we don't have a camera
+    //   this.changeTopStateColor(RobotStateColors.BLUE);
+    // } else if (currentError == 5) { // auto drive disabled
+    //   this.changeTopStateColor(RobotStateColors.PURPLE);
+    // } else { // nothing is wrong, default to white
+    //   this.changeTopStateColor(RobotStateColors.WHITE);
+    // }
 
     this.configurePickupLEDs();
     this.configureAutoTeleopLEDs();
@@ -297,6 +302,7 @@ public class LEDs extends SubsystemBase {
   // controlling side colors
 
   public void changeTopStateColor(RobotStateColors topColor) {
+    this.clearAnimation();
     switch (topColor) {
       case YELLOW:
         candle.setLEDs(255, 255, 0, 0, 71, 29);
@@ -323,10 +329,13 @@ public class LEDs extends SubsystemBase {
         break;
 
       case BLINKGREEN:
-        candle.animate(new StrobeAnimation(255, 69, 0, 0, 98.0 / 256.0, ledCount));
+        candle.animate(new StrobeAnimation(255, 69, 0, 0, 98.0 / 256.0, 29, 72));
         break;
       case BLINKPINK:
-        candle.animate(new StrobeAnimation(255, 192, 203, 0, 98.0 / 256.0, ledCount));
+        candle.animate(new StrobeAnimation(255, 192, 203, 0, 98.0 / 256.0, 29, 72));
+        break;
+      case BLINKBLUE:
+        candle.animate(new StrobeAnimation(0, 0, 255, 0, 98.0 / 256.0, 29, 72));
         break;
       case PINK:
         candle.setLEDs(255, 192, 203, 0, 71, 29);

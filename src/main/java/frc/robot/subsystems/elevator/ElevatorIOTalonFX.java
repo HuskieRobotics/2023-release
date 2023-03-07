@@ -66,7 +66,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       new TunableNumber("ElevatorExtension/MMSCurve", EXTENSION_SCURVE_STRENGTH);
 
   private final TunableNumber rotationStuckMinVelocity =
-      new TunableNumber("ElevatorRotation/StuckMinVelocity", 0.02);
+      new TunableNumber("ElevatorRotation/StuckMinVelocity", -1);
   private final TunableNumber rotationStuckCycles =
       new TunableNumber("ElevatorRotation/StuckCycles", 5);
 

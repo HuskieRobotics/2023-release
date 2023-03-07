@@ -33,6 +33,7 @@ public class AutoBalance extends CommandBase {
   public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
     this.drivetrain = drivetrain;
     this.led = led;
+    this.timer = new Timer();
     addRequirements(drivetrain);
     // this.feedforward = 0;
     this.frontBack = new PIDController(KP, KI, KD);

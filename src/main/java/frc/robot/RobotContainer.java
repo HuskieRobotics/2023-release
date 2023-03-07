@@ -834,6 +834,8 @@ public class RobotContainer {
         PathPlanner.loadPath("LoadingSide2ConePreRotate", regularSpeed);
     PathPlannerTrajectory loadingSide2ConeRotateInPlacePath =
         PathPlanner.loadPath("LoadingSide2ConeRotateInPlace", regularSpeed);
+    PathPlannerTrajectory loadingSide2ConeRotateInPlaceReturnPath =
+        PathPlanner.loadPath("LoadingSide2ConeRotateInPlaceReturn", regularSpeed);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
@@ -856,7 +858,8 @@ public class RobotContainer {
                     new Pose2d(
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180.0)))),
+                        Rotation2d.fromDegrees(180.0))),
+            new FollowPath(loadingSide2ConeRotateInPlaceReturnPath, drivetrain, false, true)),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
             new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
@@ -868,6 +871,8 @@ public class RobotContainer {
         PathPlanner.loadPath("CableSide2ConePreRotate", regularSpeed);
     PathPlannerTrajectory cableSide2ConeRotateInPlacePath =
         PathPlanner.loadPath("CableSide2ConeRotateInPlace", regularSpeed);
+    PathPlannerTrajectory cableSide2ConeRotateInPlacePathReturn =
+        PathPlanner.loadPath("LoadingSide2ConeRotateInPlaceReturn", regularSpeed);
     return Commands.sequence(
         scoreGamePieceAuto(Position.CONE_MID_LEVEL),
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
@@ -884,13 +889,15 @@ public class RobotContainer {
                 new FollowPath(cableSide2ConeRotateInPlacePath, drivetrain, false, true),
                 cableSide2ConeRotateInPlacePath.getMarkers(),
                 autoEventMap),
+            new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
             new RotateToAngle(
                 drivetrain,
                 () ->
                     new Pose2d(
                         drivetrain.getPose().getX(),
                         drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180.0)))),
+                        Rotation2d.fromDegrees(180.0))),
+            new FollowPath(cableSide2ConeRotateInPlacePathReturn, drivetrain, false, true)),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
             new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),

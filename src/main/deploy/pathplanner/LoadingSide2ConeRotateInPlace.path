@@ -24,87 +24,12 @@
     },
     {
       "anchorPoint": {
-        "x": 5.112753956410691,
-        "y": 4.650808612381113
+        "x": 6.3,
+        "y": 4.62
       },
       "prevControl": {
-        "x": 4.439513703680186,
-        "y": 4.6633920003951115
-      },
-      "nextControl": {
-        "x": 5.292401658456056,
-        "y": 4.647450856020748
-      },
-      "holonomicAngle": 0.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 6.301351550071521,
-        "y": 4.620899467362846
-      },
-      "prevControl": {
-        "x": 5.871758406711258,
-        "y": 4.625699824316316
-      },
-      "nextControl": {
-        "x": 5.871758406711258,
-        "y": 4.625699824316316
-      },
-      "holonomicAngle": 0.0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 3.3356548362402285,
-        "y": 4.832484901080913
-      },
-      "prevControl": {
-        "x": 3.686241772836524,
-        "y": 4.866956364197316
-      },
-      "nextControl": {
-        "x": 2.3489896424237293,
-        "y": 4.735471038650411
-      },
-      "holonomicAngle": 0.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 2.25,
-        "y": 3.8710979986062544
-      },
-      "prevControl": {
-        "x": 2.557554774965319,
-        "y": 4.326076018471482
+        "x": 5.422467667852003,
+        "y": 4.629816969703384
       },
       "nextControl": null,
       "holonomicAngle": 0.0,
@@ -125,12 +50,6 @@
       "position": 0.5,
       "names": [
         "prepare to intake cone"
-      ]
-    },
-    {
-      "position": 2.1982954545454536,
-      "names": [
-        "bring in elevator"
       ]
     }
   ]

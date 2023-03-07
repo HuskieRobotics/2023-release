@@ -112,6 +112,10 @@ public class RobotContainer {
   private PathConstraints hybridConeSpeed = new PathConstraints(2.0, 2.0);
   private PathConstraints engageSpeed = new PathConstraints(1.5, 2.0);
 
+  private static final double SQUARING_AUTO_TIMEOUT_SECONDS = 0.5;
+  private static final double SQUARING_GRID_TIMEOUT_SECONDS = 1.0;
+  private static final double SQUARING_LOADING_ZONE_TIMEOUT_SECONDS = 6.0;
+
   // FIXME: delete after testing
   private final LoggedDashboardChooser<ElevatorConstants.Position> armChooser =
       new LoggedDashboardChooser<>("Arm Position");
@@ -1083,7 +1087,10 @@ public class RobotContainer {
                 Commands.sequence(
                     moveToGridCommand,
                     new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
-                    new StallAgainstElement(drivetrain, moveToGridCommand.endPoseSupplier())),
+                    new StallAgainstElement(
+                        drivetrain,
+                        moveToGridCommand.endPoseSupplier(),
+                        SQUARING_GRID_TIMEOUT_SECONDS)),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
                 () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
         new ReleaseGamePiece(manipulator),
@@ -1098,7 +1105,9 @@ public class RobotContainer {
                 Field2d.getInstance()
                     .mapPoseToCurrentAlliance(adjustPoseForRobot(moveToGridPosition))),
         new StallAgainstElement(
-            drivetrain, () -> Field2d.getInstance().mapPoseToCurrentAlliance(moveToGridPosition)));
+            drivetrain,
+            () -> Field2d.getInstance().mapPoseToCurrentAlliance(moveToGridPosition),
+            SQUARING_AUTO_TIMEOUT_SECONDS));
   }
 
   private Command scoreGamePieceAuto(Position elevatorPosition) {
@@ -1161,7 +1170,9 @@ public class RobotContainer {
                     Commands.sequence(
                         new DriveToPose(drivetrain, moveToLoadingZoneCommand.endPoseSupplier()),
                         new StallAgainstElement(
-                            drivetrain, moveToLoadingZoneCommand.endPoseSupplier())),
+                            drivetrain,
+                            moveToLoadingZoneCommand.endPoseSupplier(),
+                            SQUARING_LOADING_ZONE_TIMEOUT_SECONDS)),
                     Commands.none(),
                     () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()))),
         Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.BLINKGREEN)),

@@ -33,8 +33,14 @@ public class Elevator extends SubsystemBase {
   public Elevator(ElevatorIO io) {
     this.io = io;
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    tabMain.addBoolean("Manual Control Enabled", this::isManualControlEnabled);
-    tabMain.addBoolean("Preset Enabled", this::isManualPresetEnabled);
+    tabMain
+        .addBoolean("Manual Control Enabled", this::isManualControlEnabled)
+        .withPosition(0, 1)
+        .withSize(2, 1);
+    tabMain
+        .addBoolean("Preset Enabled", this::isManualPresetEnabled)
+        .withPosition(0, 2)
+        .withSize(2, 1);
     // get the default instance of NetworkTables
 
     if (DEBUGGING) {

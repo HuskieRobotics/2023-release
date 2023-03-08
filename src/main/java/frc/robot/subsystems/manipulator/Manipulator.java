@@ -16,8 +16,8 @@ public class Manipulator extends SubsystemBase {
   public Manipulator(ManipulatorIO io) {
     this.io = io;
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    tabMain.addBoolean("isBlocked", this::isBlocked);
-    tabMain.addBoolean("isManipulatorOpen", this::isOpened);
+    tabMain.addBoolean("isBlocked", this::isBlocked).withPosition(0, 3).withSize(2, 1);
+    tabMain.addBoolean("isManipulatorOpen", this::isOpened).withPosition(0, 0).withSize(2, 1);
     isManipulatorSensorEnabled = true;
 
     if (TESTING) {

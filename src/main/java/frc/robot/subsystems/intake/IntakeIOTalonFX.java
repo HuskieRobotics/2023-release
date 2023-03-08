@@ -12,8 +12,6 @@ import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivers.SparkMAXFactory;
 import frc.lib.team3061.swerve.Conversions;
-import frc.lib.team3061.util.CANDeviceFinder;
-import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
 
 /*
@@ -37,10 +35,10 @@ public class IntakeIOTalonFX implements IntakeIO {
       new TunableNumber("IntakeRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
 
   public IntakeIOTalonFX() {
-    CANDeviceFinder can = new CANDeviceFinder();
+    // CANDeviceFinder can = new CANDeviceFinder();
 
-    can.isDevicePresent(CANDeviceType.TALON, INTAKE_ROTATION_MOTOR_CAN_ID, "Rotation Motor");
-    can.isDevicePresent(CANDeviceType.SPARK_MAX, INTAKE_ROLLER_MOTOR_CAN_ID, "Roller Motor");
+    // can.isDevicePresent(CANDeviceType.TALON, INTAKE_ROTATION_MOTOR_CAN_ID, "Rotation Motor");
+    // can.isDevicePresent(CANDeviceType.SPARK_MAX, INTAKE_ROLLER_MOTOR_CAN_ID, "Roller Motor");
 
     // config motors
     configIntakeMotor(INTAKE_ROTATION_MOTOR_CAN_ID, INTAKE_ROLLER_MOTOR_CAN_ID);

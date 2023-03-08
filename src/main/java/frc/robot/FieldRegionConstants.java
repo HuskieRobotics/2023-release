@@ -285,12 +285,13 @@ public final class FieldRegionConstants {
   public static final Pose2d DOUBLE_SUBSTATION_UPPER =
       new Pose2d(
           FieldConstants.LoadingZone.doubleSubstationX,
-          FieldConstants.LoadingZone.leftY - (FieldConstants.LoadingZone.doubleSubstationWidth / 4),
+          FieldConstants.LoadingZone.leftY
+              - ((FieldConstants.LoadingZone.doubleSubstationWidth / 4) - 0.1016),
           Rotation2d.fromDegrees(0));
   public static final Pose2d DOUBLE_SUBSTATION_LOWER =
       new Pose2d(
           FieldConstants.LoadingZone.doubleSubstationX,
           FieldConstants.LoadingZone.leftY
-              - (3 * FieldConstants.LoadingZone.doubleSubstationWidth / 4),
+              - ((3 * FieldConstants.LoadingZone.doubleSubstationWidth / 4) + 0.178),
           Rotation2d.fromDegrees(0));
 }

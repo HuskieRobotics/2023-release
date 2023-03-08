@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.manipulator.Manipulator;
@@ -33,15 +32,13 @@ public class GrabGamePiece extends CommandBase {
   @Override
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/GrabGamePiece", true);
-    oi.getToggleManipulatorOpenCloseButton().toggleOnTrue(Commands.runOnce(() -> {}));
   }
 
   @Override
   public void execute() {
     if (manipulator.isBlocked() && manipulator.isManipulatorSensorEnabled()) {
       manipulator.close();
-    } else if (!manipulator.isManipulatorSensorEnabled()
-        && oi.getToggleManipulatorOpenCloseButton().getAsBoolean()) {
+    } else if (!manipulator.isManipulatorSensorEnabled() && oi.getManualManipulatorClose()) {
       manipulator.close();
     }
   }
@@ -49,12 +46,6 @@ public class GrabGamePiece extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Logger.getInstance().recordOutput("ActiveCommands/GrabGamePiece", false);
-    oi.getToggleManipulatorOpenCloseButton()
-        .toggleOnTrue(
-            Commands.either(
-                new GrabGamePiece(manipulator),
-                new ReleaseGamePiece(manipulator),
-                manipulator::isOpened));
   }
 
   // Returns true when the command should end.

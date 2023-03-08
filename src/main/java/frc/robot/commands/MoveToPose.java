@@ -32,7 +32,7 @@ public abstract class MoveToPose extends CommandBase {
   private Alert noPathAlert = new Alert("No path between start and end pose", AlertType.WARNING);
 
   // FIXME: replace with "predict into future" time closer to actual for robot
-  private static final double TIME_OFFSET = 0.1;
+  private static final double TIME_OFFSET = 0.2;
 
   /**
    * Constructs a new MoveToPose command object.

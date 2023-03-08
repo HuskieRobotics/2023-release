@@ -10,7 +10,6 @@ import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -116,9 +115,10 @@ public class Robot extends LoggedRobot {
     // Invoke the factory method to create the RobotContainer singleton.
     robotContainer = RobotContainer.getInstance();
 
+    robotContainer.robotInit();
+
     if (Constants.getRobot() != Constants.RobotType.ROBOT_SIMBOT) {
-      UsbCamera driverCamera =
-          CameraServer.startAutomaticCapture(RobotConfig.getInstance().getDriverCameraPort());
+      UsbCamera driverCamera = CameraServer.startAutomaticCapture(0);
       driverCamera.setResolution(320, 240);
       driverCamera.setFPS(15);
       driverCamera.setPixelFormat(PixelFormat.kYUYV);
@@ -159,6 +159,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     robotContainer.checkAllianceColor();
+    robotContainer.autonomousInit();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command
@@ -180,6 +181,7 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.checkAllianceColor();
+    robotContainer.teleopInit();
   }
 
   /** This method is invoked at the start of the test period. */

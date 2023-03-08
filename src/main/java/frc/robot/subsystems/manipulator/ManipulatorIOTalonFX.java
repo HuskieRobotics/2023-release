@@ -8,8 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
-import frc.lib.team3061.util.CANDeviceFinder;
-import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
 
 public class ManipulatorIOTalonFX implements ManipulatorIO {
@@ -26,9 +24,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new TunableNumber("manipulator/Kd", ManipulatorConstants.MANIPULATOR_KD);
 
   public ManipulatorIOTalonFX() {
-    CANDeviceFinder can = new CANDeviceFinder();
-    can.isDevicePresent(
-        CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
+    // CANDeviceFinder can = new CANDeviceFinder();
+    // can.isDevicePresent(
+    //     CANDeviceType.TALON, ManipulatorConstants.MANIPULATOR_MOTOR_ID, "Manipulator Motor");
 
     this.manipulatorSensor = new DigitalInput(ManipulatorConstants.MANIPULATOR_SENSOR_ID);
 
@@ -44,16 +42,19 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.isClosed =
         inputs.appliedPercentage > 0
-            && inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1]
+            && Math.abs(inputs.statorCurrentAmps[inputs.statorCurrentAmps.length - 1])
                 > ManipulatorConstants.CLOSE_THRESHOLD_CURRENT;
 
-    inputs.isOpen = false;
     if (inputs.appliedPercentage < 0
-        && inputs.statorCurrentAmps[0] > ManipulatorConstants.OPEN_THRESHOLD_CURRENT) {
+        && Math.abs(inputs.statorCurrentAmps[0]) > ManipulatorConstants.OPEN_THRESHOLD_CURRENT) {
       stallCount++;
       if (stallCount > OPEN_THRESHOLD_ITERATIONS) {
         inputs.isOpen = true;
+        this.setPower(0.0);
       }
+    } else if (inputs.appliedPercentage > 0) {
+      stallCount = 0;
+      inputs.isOpen = false;
     } else {
       stallCount = 0;
     }

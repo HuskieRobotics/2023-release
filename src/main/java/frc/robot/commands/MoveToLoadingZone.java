@@ -23,7 +23,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class MoveToLoadingZone extends MoveToPose {
   private final Pose2d endPose;
-  private double marginOfError = Units.inchesToMeters(6);
+  private double marginOfError = Units.inchesToMeters(24);
 
   /**
    * Constructs a new MoveToGrid command object.

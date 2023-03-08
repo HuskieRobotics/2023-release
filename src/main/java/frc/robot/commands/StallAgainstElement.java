@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
@@ -25,23 +26,22 @@ public class StallAgainstElement extends CommandBase {
   private Pose2d targetPose;
   private Timer timer;
   private boolean isEndNode;
+  private double timeout;
 
   // FIXME: tune these values
   private static final double SQUARING_CURRENT_AMPS = 45.0;
-  private static final double SQUARING_TIMEOUT_SECONDS = 0.5;
 
   private static final TunableNumber squaringSpeed =
       new TunableNumber(
           "StallAgainstElement/SquaringSpeed", RobotConfig.getInstance().getSquaringSpeed());
   private static final TunableNumber squaringCurrent =
       new TunableNumber("StallAgainstElement/SquaringCurrent", SQUARING_CURRENT_AMPS);
-  private static final TunableNumber timeout =
-      new TunableNumber("StallAgainstElement/timeout", SQUARING_TIMEOUT_SECONDS);
 
   /** Drives to the specified pose under full software control. */
-  public StallAgainstElement(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier) {
+  public StallAgainstElement(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier, double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
+    this.timeout = timeout;
     this.timer = new Timer();
     this.isEndNode = false;
     addRequirements(drivetrain);
@@ -49,13 +49,15 @@ public class StallAgainstElement extends CommandBase {
 
   @Override
   public void initialize() {
+    Logger.getInstance().recordOutput("ActiveCommands/StallAgainstElement", true);
     this.targetPose = poseSupplier.get();
     if (targetPose.equals(
             Field2d.getInstance()
                 .mapPoseToCurrentAlliance(
                     new Pose2d(
                         FieldRegionConstants.GRID_1_NODE_1.getX()
-                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2
+                            + Units.inchesToMeters(2),
                         FieldRegionConstants.GRID_1_NODE_1.getY(),
                         FieldRegionConstants.GRID_1_NODE_1.getRotation())))
         || targetPose.equals(
@@ -63,11 +65,11 @@ public class StallAgainstElement extends CommandBase {
                 .mapPoseToCurrentAlliance(
                     new Pose2d(
                         FieldRegionConstants.GRID_3_NODE_3.getX()
-                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2,
+                            + RobotConfig.getInstance().getRobotWidthWithBumpers() / 2
+                            + Units.inchesToMeters(2),
                         FieldRegionConstants.GRID_3_NODE_3.getY(),
                         FieldRegionConstants.GRID_3_NODE_3.getRotation())))) {
       isEndNode = true;
-      Logger.getInstance().recordOutput("ActiveCommands/inIFSTATEMENT", isEndNode);
     }
     this.timer.restart();
   }
@@ -92,7 +94,7 @@ public class StallAgainstElement extends CommandBase {
   public boolean isFinished() {
     return !drivetrain.isMoveToGridEnabled()
         || isEndNode
-        || this.timer.hasElapsed(timeout.get())
+        || this.timer.hasElapsed(this.timeout)
         || (drivetrain.getAverageDriveCurrent() > squaringCurrent.get());
   }
 }

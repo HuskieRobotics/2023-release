@@ -25,6 +25,12 @@ public interface OperatorInterface {
     NODE_9
   }
 
+  public enum GridRow {
+    BOTTOM,
+    MIDDLE,
+    TOP
+  }
+
   public default double getTranslateX() {
     return 0.0;
   }
@@ -121,6 +127,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default GridRow getGridRow() {
+    return GridRow.BOTTOM;
+  }
+
   public default Node getNode() {
     return Node.NODE_INVALID;
   }
@@ -145,6 +155,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default boolean getManualManipulatorClose() {
+    return false;
+  }
+
   public default Trigger getToggleManipulatorSensorButton() {
     return new Trigger(() -> false);
   }
@@ -153,12 +167,12 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getIntakeDeployButton() {
-    return new Trigger(() -> false);
+  public default double getIntakeDeployPower() {
+    return 0.0;
   }
 
-  public default Trigger getIntakeRetractButton() {
-    return new Trigger(() -> false);
+  public default double getIntakeRetractPower() {
+    return 0.0;
   }
 
   public default Trigger getToggleIntakeRollerButton() {
@@ -166,6 +180,22 @@ public interface OperatorInterface {
   }
 
   public default Trigger getPositionIntakeToPushCubeCone() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAutoBalanceButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeGroundConeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getInterruptAll() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAutoZeroExtensionButton() {
     return new Trigger(() -> false);
   }
 }

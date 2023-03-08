@@ -17,9 +17,8 @@ import edu.wpi.first.math.util.Units;
 import frc.lib.team254.drivers.TalonFXFactory;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.swerve.Conversions;
-import frc.lib.team3061.util.CANDeviceFinder;
-import frc.lib.team3061.util.CANDeviceId.CANDeviceType;
 import frc.lib.team6328.util.TunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
@@ -28,6 +27,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final String canBusName = RobotConfig.getInstance().getCANBusName();
   private Pigeon2 pigeon;
   private int stallCount;
+  private double previousRotationPosition = -1.0;
+  private int rotationStuckCount;
   private double extensionSetpoint = -1.0;
 
   private final TunableNumber rkP =
@@ -45,30 +46,37 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       new TunableNumber("ElevatorExtension/kI", EXTENSION_POSITION_PID_I);
   private final TunableNumber ekD =
       new TunableNumber("ElevatorExtension/kD", EXTENSION_POSITION_PID_D);
+  private final TunableNumber ekF =
+      new TunableNumber("ElevatorExtension/kF", EXTENSION_POSITION_PID_F);
   private final TunableNumber ekPeakOutput =
       new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
 
-  private final TunableNumber extensionConMotorAcceleration =
+  private final TunableNumber extensionMagicMotionAcceleration =
       new TunableNumber(
-          "extensionConMotorAcceleration",
+          "ElevatorExtension/MMAcceleration",
           EXTENSION_ELEVATOR_ACCELERATION_METERS_PER_SECOND_PER_SECOND);
-  private final TunableNumber extensionConMotorVelocity =
+  private final TunableNumber extensionMagicMotionExtensionCruiseVelocity =
       new TunableNumber(
-          "extensionConMotorVelocity", EXTENSION_MAX_ELEVATOR_VELOCITY_METERS_PER_SECOND);
-  private final TunableNumber extensionMotionCurveStrength =
-      new TunableNumber("extensionMotionCurveStrength", EXTENSION_SCURVE_STRENGTH);
-  private final TunableNumber rotationMotionAcceleration =
+          "ElevatorExtension/MMExtensionVelocity",
+          EXTENSION_MAX_ELEVATOR_EXTENSION_VELOCITY_METERS_PER_SECOND);
+  private final TunableNumber extensionMagicMotionRetractionCruiseVelocity =
       new TunableNumber(
-          "rotationMotionAcceleration", radiansToPigeon(ROTATION_ELEVATOR_ACCELERATION));
-  private final TunableNumber rotationMotionVelocity =
-      new TunableNumber("rotationMotionVelocity", radiansToPigeon(ROTATION_MAX_ELEVATOR_VELOCITY));
-  private final TunableNumber rotationMotionCurveStrength =
-      new TunableNumber("rotationMotionCurveStrength", ROTATION_SCURVE_STRENGTH);
+          "ElevatorExtension/MMRetractionVelocity",
+          EXTENSION_MAX_ELEVATOR_RETRACTION_VELOCITY_METERS_PER_SECOND);
+  private final TunableNumber extensionMagicMotionSCurveStrength =
+      new TunableNumber("ElevatorExtension/MMSCurve", EXTENSION_SCURVE_STRENGTH);
+
+  private final TunableNumber rotationStuckMinPositionDelta =
+      new TunableNumber("ElevatorRotation/StuckMinPositionDelta", 0.005);
+  private final TunableNumber rotationStuckCycles =
+      new TunableNumber("ElevatorRotation/StuckCycles", 5);
 
   public ElevatorIOTalonFX() {
-    CANDeviceFinder can = new CANDeviceFinder();
-    can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator Extension");
-    can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator Rotation");
+    // CANDeviceFinder can = new CANDeviceFinder();
+    // can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator
+    // Extension");
+    // can.isDevicePresent(CANDeviceType.TALON, ROTATION_ELEVATOR_MOTOR_CAN_ID, "Elevator
+    // Rotation");
 
     /* create and configure the Pigeon */
     this.pigeon = new Pigeon2(PIGEON_ID, RobotConfig.getInstance().getCANBusName());
@@ -87,6 +95,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.SLOT0_KP = ekP.get();
     extensionConfig.SLOT0_KI = ekI.get();
     extensionConfig.SLOT0_KD = ekD.get();
+    extensionConfig.SLOT0_KF = ekF.get();
 
     rotationConfig.INVERTED = ROTATION_INVERTED;
     rotationConfig.NEUTRAL_MODE = NeutralMode.Brake;
@@ -94,8 +103,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.SLOT0_KI = rkI.get();
     rotationConfig.SLOT0_KD = rkD.get();
 
-    extensionConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
-    rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 32, 0.5);
+    extensionConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
+    rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
 
     rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
     rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;
@@ -106,35 +115,30 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.REVERSE_SOFT_LIMIT = (int) radiansToPigeon(MIN_ROTATION_POSITION);
     rotationConfig.ENABLE_SOFT_LIMIT = true;
 
-    extensionConfig.FORWARD_SOFT_LIMIT =
-        (int)
-            Conversions.metersToFalcon(
-                MAX_EXTENSION_POSITION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    extensionConfig.REVERSE_SOFT_LIMIT =
-        (int)
-            Conversions.metersToFalcon(
-                MIN_EXTENSION_POSITION, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    extensionConfig.ENABLE_SOFT_LIMIT = true;
-
     extensionConfig.MOTION_ACCELERATION =
         mpsToFalconMotionMagicUnits(
-            extensionConMotorAcceleration.get(),
+            extensionMagicMotionAcceleration.get(),
             EXTENSION_PULLEY_CIRCUMFERENCE,
             EXTENSION_GEAR_RATIO);
     extensionConfig.MOTION_CRUISE_VELOCITY =
         mpsToFalconMotionMagicUnits(
-            extensionConMotorVelocity.get(), EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO);
-    extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMotionCurveStrength.get();
+            extensionMagicMotionExtensionCruiseVelocity.get(),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO);
+    extensionConfig.MOTION_CURVE_STRENGTH = (int) extensionMagicMotionSCurveStrength.get();
 
-    rotationConfig.MOTION_ACCELERATION = rotationMotionAcceleration.get();
-    rotationConfig.MOTION_CRUISE_VELOCITY = rotationMotionVelocity.get();
-    rotationConfig.MOTION_CURVE_STRENGTH = (int) rotationMotionCurveStrength.get();
+    extensionConfig.NEUTRAL_DEADBAND = 0.001;
+    rotationConfig.NEUTRAL_DEADBAND = 0.001;
 
+    extensionConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.MOTION_MAGIC_STATUS_FRAME_RATE_MS = 9;
     extensionConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
+    extensionConfig.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = 9;
+    extensionConfig.BRUSHLESS_CURRENT_STATUS_FRAME_RATE_MS = 19;
 
     rotationConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 9;
     rotationConfig.BASE_PIDF0_STATUS_FRAME_RATE_MS = 9;
+    rotationConfig.FEEDBACK_INTEGRATED_STATUS_FRAME_RATE_MS = 9;
 
     extensionMotor =
         TalonFXFactory.createTalon(EXTENSION_ELEVATOR_MOTOR_CAN_ID, canBusName, extensionConfig);
@@ -187,6 +191,21 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.extensionCurrentAmps = new double[] {extensionMotor.getStatorCurrent()};
     inputs.extensionTempCelsius = new double[] {extensionMotor.getTemperature()};
 
+    // FIXME: delete after testing
+    Logger.getInstance()
+        .recordOutput("Elevator/extensionSetpointNative", extensionMotor.getClosedLoopTarget());
+    Logger.getInstance()
+        .recordOutput(
+            "Elevator/extensionPositionNative",
+            extensionMotor.getSelectedSensorPosition(SLOT_INDEX));
+    Logger.getInstance()
+        .recordOutput(
+            "Elevator/extensionVelocityNative",
+            extensionMotor.getSelectedSensorVelocity(SLOT_INDEX));
+    Logger.getInstance()
+        .recordOutput(
+            "Elevator/extensionErrorNative", extensionMotor.getClosedLoopError(SLOT_INDEX));
+
     inputs.rotationSetpointRadians = pigeonToRadians(rotationMotor.getClosedLoopTarget(SLOT_INDEX));
     inputs.rotationPositionRadians =
         pigeonToRadians(rotationMotor.getSelectedSensorPosition(SLOT_INDEX));
@@ -208,10 +227,27 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       stallCount++;
       if (stallCount > EXTENSION_MAX_STALL_DURATION_CYCLES) {
         extensionMotor.setSelectedSensorPosition(0);
+        setExtensionMotorPercentage(0.0);
+        Logger.getInstance().recordOutput("Elevator/extensionReZero", true);
       }
     } else {
       stallCount = 0;
+      Logger.getInstance().recordOutput("Elevator/extensionReZero", false);
     }
+
+    // check if the elevator is stuck while trying to rotate; if so, stop the rotation
+    if (Math.abs(previousRotationPosition - inputs.rotationPositionRadians)
+        < rotationStuckMinPositionDelta.get()) {
+      rotationStuckCount++;
+      if (rotationStuckCount > rotationStuckCycles.get()) {
+        setRotationMotorPercentage(0.0);
+        Logger.getInstance().recordOutput("Elevator/rotationStuck", true);
+      }
+    } else {
+      rotationStuckCount = 0;
+      Logger.getInstance().recordOutput("Elevator/rotationStuck", false);
+    }
+    this.previousRotationPosition = inputs.rotationPositionRadians;
 
     // update tunables
     if (rkP.hasChanged() || rkI.hasChanged() || rkD.hasChanged() || rkPeakOutput.hasChanged()) {
@@ -223,29 +259,45 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       this.rotationMotor.configClosedLoopPeakOutput(SLOT_INDEX, rkPeakOutput.get());
     }
 
-    if (ekP.hasChanged() || ekI.hasChanged() || ekD.hasChanged() || ekPeakOutput.hasChanged()) {
+    if (ekP.hasChanged()
+        || ekI.hasChanged()
+        || ekD.hasChanged()
+        || ekF.hasChanged()
+        || ekPeakOutput.hasChanged()) {
       this.extensionMotor.config_kP(SLOT_INDEX, ekP.get());
       this.extensionMotor.config_kI(SLOT_INDEX, ekI.get());
       this.extensionMotor.config_kD(SLOT_INDEX, ekD.get());
+      this.extensionMotor.config_kF(SLOT_INDEX, ekF.get());
       this.extensionMotor.configPeakOutputForward(ekPeakOutput.get());
       this.extensionMotor.configPeakOutputReverse(-ekPeakOutput.get());
       this.extensionMotor.configClosedLoopPeakOutput(SLOT_INDEX, ekPeakOutput.get());
     }
 
-    if (extensionConMotorVelocity.hasChanged()
-        || extensionConMotorAcceleration.hasChanged()
-        || extensionMotionCurveStrength.hasChanged()) {
-      this.extensionMotor.configMotionCruiseVelocity(
-          mpsToFalconMotionMagicUnits(
-              extensionConMotorVelocity.get(),
-              EXTENSION_PULLEY_CIRCUMFERENCE,
-              EXTENSION_GEAR_RATIO));
+    if (extensionMagicMotionAcceleration.hasChanged()
+        || extensionMagicMotionSCurveStrength.hasChanged()) {
       this.extensionMotor.configMotionAcceleration(
           mpsToFalconMotionMagicUnits(
-              extensionConMotorAcceleration.get(),
+              extensionMagicMotionAcceleration.get(),
               EXTENSION_PULLEY_CIRCUMFERENCE,
               EXTENSION_GEAR_RATIO));
-      this.extensionMotor.configMotionSCurveStrength((int) (extensionMotionCurveStrength.get()));
+      this.extensionMotor.configMotionSCurveStrength(
+          (int) (extensionMagicMotionSCurveStrength.get()));
+    }
+
+    if (extensionMagicMotionExtensionCruiseVelocity.hasChanged()) {
+      this.extensionMotor.configMotionCruiseVelocity(
+          mpsToFalconMotionMagicUnits(
+              extensionMagicMotionExtensionCruiseVelocity.get(),
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
+    }
+
+    if (extensionMagicMotionRetractionCruiseVelocity.hasChanged()) {
+      this.extensionMotor.configMotionCruiseVelocity(
+          mpsToFalconMotionMagicUnits(
+              extensionMagicMotionRetractionCruiseVelocity.get(),
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
     }
 
     // FIXME: if we pursue Motion Magic check the TunableNubmers to see if they have changed and
@@ -272,10 +324,29 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
+    if (position
+        > Conversions.falconToMeters(
+            extensionMotor.getSelectedSensorPosition(SLOT_INDEX),
+            EXTENSION_PULLEY_CIRCUMFERENCE,
+            EXTENSION_GEAR_RATIO)) {
+      this.extensionMotor.configMotionCruiseVelocity(
+          mpsToFalconMotionMagicUnits(
+              extensionMagicMotionExtensionCruiseVelocity.get(),
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
+    } else {
+      this.extensionMotor.configMotionCruiseVelocity(
+          mpsToFalconMotionMagicUnits(
+              extensionMagicMotionRetractionCruiseVelocity.get(),
+              EXTENSION_PULLEY_CIRCUMFERENCE,
+              EXTENSION_GEAR_RATIO));
+    }
     this.extensionSetpoint = position;
     extensionMotor.set(
         TalonFXControlMode.MotionMagic,
-        Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO));
+        Conversions.metersToFalcon(position, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
+        DemandType.ArbitraryFeedForward,
+        arbitraryFeedForward);
   }
 
   @Override
@@ -285,6 +356,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         radiansToPigeon(position),
         DemandType.ArbitraryFeedForward,
         arbitraryFeedForward);
+  }
+
+  @Override
+  public void autoZeroExtension() {
+    this.setExtensionMotorPercentage(-MAX_MANUAL_POWER_ROTATION);
+    this.extensionSetpoint = 0.0;
   }
 
   private static double mpsToFalconMotionMagicUnits(

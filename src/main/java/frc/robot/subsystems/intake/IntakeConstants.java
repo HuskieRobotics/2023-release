@@ -12,10 +12,10 @@ public class IntakeConstants {
     SCORING
   }
 
-  public static final boolean DEBUGGING = true;
+  // FIXME: tune all of these
+  public static final boolean DEBUGGING = false;
 
-  public static final boolean TESTING = true;
-  public static final boolean TUNING = true;
+  public static final boolean TESTING = false;
   public static final String SUBSYSTEM_NAME = "Intake";
 
   public static final int INTAKE_ROTATION_MOTOR_CAN_ID = 2;
@@ -57,17 +57,17 @@ public class IntakeConstants {
   public static final double PUSH_CONE_CUBE_ROTATION = 0;
 
   public static final double INTAKE_ROTATION_RETRACTION_POWER = 0;
-  public static final double INTAKE_ROTATION_MANUAL_CONTROL_POWER = 0.2;
+  public static final double INTAKE_ROTATION_MANUAL_CONTROL_POWER = 1;
 
   public static final double INTAKE_ROTATION_DEFAULT_POSITION = 0;
 
   public static final int SLOT_INDEX = 0;
 
-  public static final boolean INTAKE_ROLLER_MOTOR_INVERTED = false;
+  public static final boolean INTAKE_ROLLER_MOTOR_INVERTED = true;
   public static final boolean INTAKE_ROTATION_MOTOR_INVERTED = false;
 
   // FIXME - change to 20 after testing if limit works
-  public static final int INTAKE_ROLLER_CURRENT_LIMIT = 5;
+  public static final int INTAKE_ROLLER_CURRENT_LIMIT = 20;
   public static final double INTAKE_ROTATION_CURRENT_THRESHOLD = 29.5;
 
   public static final StatorCurrentLimitConfiguration INTAKE_ROTATION_CURRENT_LIMIT =

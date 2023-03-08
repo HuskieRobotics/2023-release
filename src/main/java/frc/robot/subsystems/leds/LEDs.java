@@ -18,7 +18,6 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 import java.util.*;
@@ -53,6 +52,9 @@ public class LEDs extends SubsystemBase {
     BLUE,
     ORANGE,
     RED,
+    PINK,
+    BLINKGREEN,
+    BLINKPINK
   }
 
   public enum Errors {
@@ -61,7 +63,7 @@ public class LEDs extends SubsystemBase {
     LOW_VOLTAGE,
     MANIPULATOR_SENSOR_DISABLED,
     VISION_FAILURE_NO_CAMERA,
-    AUTO_DRIVE_DISABLED,
+    AUTO_DRIVE_DISABLED
   }
 
   public enum AnimationTypes {
@@ -82,6 +84,10 @@ public class LEDs extends SubsystemBase {
     BLUE,
     ORANGE,
     RED,
+    BALANCING,
+    BALANCED,
+    BLUEFLOW,
+    ORANGEFLOW
   }
 
   // animation to be set
@@ -125,12 +131,12 @@ public class LEDs extends SubsystemBase {
       this.changeTopStateColor(RobotStateColors.YELLOW);
     } else if (currentError == 3) { // manipulator sensor disabled
       this.changeTopStateColor(RobotStateColors.GREEN);
-    } else if (currentError == 4) { // vision failure, we dont have a camera
+    } else if (currentError == 4) { // vision failure, we don't have a camera
       this.changeTopStateColor(RobotStateColors.BLUE);
     } else if (currentError == 5) { // auto drive disabled
       this.changeTopStateColor(RobotStateColors.PURPLE);
-    } else { // nothing is wrong, deafult to white
-      this.changeTopStateColor(null);
+    } else { // nothing is wrong, default to white
+      this.changeTopStateColor(RobotStateColors.WHITE);
     }
 
     this.configurePickupLEDs();
@@ -198,12 +204,6 @@ public class LEDs extends SubsystemBase {
   }
 
   public void configureAutoTeleopLEDs() {
-
-    if (DriverStation.isAutonomousEnabled()) {
-      enableAutoLED();
-    } else if (DriverStation.isTeleopEnabled()) {
-      enableTeleopLED();
-    }
 
     if (auto) {
       this.changeAutoTeleopStateColors(DriveInfoStates.AUTO);
@@ -322,6 +322,15 @@ public class LEDs extends SubsystemBase {
         candle.setLEDs(255, 0, 0, 0, 71, 29);
         break;
 
+      case BLINKGREEN:
+        candle.animate(new StrobeAnimation(255, 69, 0, 0, 98.0 / 256.0, ledCount));
+        break;
+      case BLINKPINK:
+        candle.animate(new StrobeAnimation(255, 192, 203, 0, 98.0 / 256.0, ledCount));
+        break;
+      case PINK:
+        candle.setLEDs(255, 192, 203, 0, 71, 29);
+        break;
       default:
         candle.setLEDs(255, 255, 255, 0, 71, 29);
         break;
@@ -331,17 +340,17 @@ public class LEDs extends SubsystemBase {
   public void changeAutoTeleopStateColors(DriveInfoStates autoTeleop) {
     switch (autoTeleop) {
       case TELEOP:
-        candle.setLEDs(0, 0, 255, 0, 0, 24);
-        candle.setLEDs(0, 0, 255, 0, 40, 16);
-        candle.setLEDs(0, 0, 255, 0, 116, 16);
-        candle.setLEDs(0, 0, 255, 0, 148, 16);
+        candle.setLEDs(0, 191, 255, 0, 0, 24);
+        candle.setLEDs(0, 191, 255, 0, 40, 16);
+        candle.setLEDs(0, 191, 255, 0, 116, 16);
+        candle.setLEDs(0, 191, 255, 0, 148, 16);
         // other side figure out indexes
         break;
       case AUTO:
-        candle.setLEDs(255, 165, 0, 0, 0, 24);
-        candle.setLEDs(255, 165, 0, 0, 40, 16);
-        candle.setLEDs(255, 165, 0, 0, 116, 16);
-        candle.setLEDs(255, 165, 0, 0, 148, 16);
+        candle.setLEDs(255, 69, 0, 0, 0, 24);
+        candle.setLEDs(255, 69, 0, 0, 40, 16);
+        candle.setLEDs(255, 69, 0, 0, 116, 16);
+        candle.setLEDs(255, 69, 0, 0, 148, 16);
         break;
       default:
         break;
@@ -351,16 +360,16 @@ public class LEDs extends SubsystemBase {
   public void changePickupStateColors(DriveInfoStates coneCube) {
     switch (coneCube) {
       case CONE:
-        candle.setLEDs(255, 255, 0, 0, 24, 16);
-        candle.setLEDs(255, 255, 0, 0, 56, 15);
-        candle.setLEDs(255, 255, 0, 0, 101, 15);
-        candle.setLEDs(255, 255, 0, 0, 132, 16);
+        candle.setLEDs(255, 215, 0, 0, 24, 16);
+        candle.setLEDs(255, 215, 0, 0, 56, 15);
+        candle.setLEDs(255, 215, 0, 0, 101, 15);
+        candle.setLEDs(255, 215, 0, 0, 132, 16);
         break;
       case CUBE:
-        candle.setLEDs(255, 0, 255, 0, 24, 16);
-        candle.setLEDs(255, 0, 255, 0, 56, 15);
-        candle.setLEDs(255, 0, 255, 0, 101, 15);
-        candle.setLEDs(255, 0, 255, 0, 132, 16);
+        candle.setLEDs(75, 0, 130, 0, 24, 16);
+        candle.setLEDs(75, 0, 130, 0, 56, 15);
+        candle.setLEDs(75, 0, 130, 0, 101, 15);
+        candle.setLEDs(75, 0, 130, 0, 132, 16);
         break;
       default:
         break;
@@ -434,12 +443,64 @@ public class LEDs extends SubsystemBase {
         toAnimate =
             new TwinkleOffAnimation(70, 90, 175, 0, 0.8, ledCount, TwinkleOffPercent.Percent100);
         break;
-
       case SETALL:
         toAnimate = null;
         break;
+      case BALANCING:
+        toAnimate = new StrobeAnimation(220, 88, 42, 0, 0.25, ledCount);
+        break;
+      case BALANCED:
+        toAnimate = null;
+        break;
+      case BLUEFLOW:
+        toAnimate = new ColorFlowAnimation(0, 0, 255, 125, 0.6, ledCount, Direction.Forward, 0);
+        break;
+      case ORANGEFLOW:
+        toAnimate = new ColorFlowAnimation(255, 69, 0, 125, 0.6, ledCount, Direction.Forward, 5);
+        break;
     }
     candle.animate(toAnimate);
+  }
+
+  public void changeColorTo(RobotStateColors topColor) {
+    switch (topColor) {
+      case YELLOW:
+        candle.setLEDs(255, 255, 0, 0, 0, ledCount);
+        break;
+
+      case PURPLE:
+        candle.setLEDs(255, 0, 255, 0, 0, ledCount);
+        break;
+
+      case GREEN:
+        candle.setLEDs(0, 255, 0, 0, 0, ledCount);
+        break;
+
+      case BLUE:
+        candle.setLEDs(0, 0, 128, 0, 0, ledCount);
+        break;
+
+      case ORANGE:
+        candle.setLEDs(255, 172, 28, 0, 0, ledCount);
+        break;
+
+      case RED:
+        candle.setLEDs(255, 0, 0, 0, 0, ledCount);
+        break;
+
+      default:
+        candle.setLEDs(255, 255, 255, 0, 0, ledCount);
+        break;
+    }
+  }
+
+  public void setBlueOrangeStaticLed() {
+    for (int i = 0; i < ledCount; i += 6) {
+      candle.setLEDs(255, 172, 28, 0, i, 3);
+    }
+    for (int i = 3; i < ledCount; i += 6) {
+      candle.setLEDs(0, 0, 128, 0, i, 3);
+    }
   }
 
   // invoke this within the command that goes to the substation and pass in the elevator

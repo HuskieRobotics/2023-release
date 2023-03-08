@@ -33,16 +33,6 @@ public class Intake extends SubsystemBase {
       tab.add("Set Intake State", new SetIntakeState(this));
       tab.add("Auto Zero", new AutoZeroIntake(this));
     }
-
-    if (TUNING) {
-      tab.addNumber("Rotation Motor Position Degrees", () -> inputs.rotationPositionDeg);
-      tab.addNumber("Rotation Motor Power", () -> inputs.rotationPower);
-      tab.addNumber("Rotation Closed Loop Error", () -> inputs.rotationClosedLoopError);
-      tab.addNumber("Rotation Velocity", () -> inputs.rotationVelocityDegPerSec);
-      tab.addNumber("Rotation Motor Volts", () -> inputs.rotationAppliedVolts);
-
-      tab.addNumber("Roller Motor Volts", () -> inputs.rollerAppliedVolts);
-    }
   }
 
   @Override
@@ -79,7 +69,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void setRotationMotorPercentage(double power) {
-    io.setRotationMotorPercentage(power);
+    io.setRotationMotorPercentage(power * INTAKE_ROTATION_MANUAL_CONTROL_POWER);
   }
 
   public void setRollerMotorPercentage(double power) {
@@ -105,7 +95,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isRotationMotorPastCurrentLimit() {
-    return inputs.rotationCurrentAmps[inputs.rotationCurrentAmps.length - 1]
+    return Math.abs(inputs.rotationCurrentAmps[inputs.rotationCurrentAmps.length - 1])
         > INTAKE_ROTATION_CURRENT_THRESHOLD;
   }
 

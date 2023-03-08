@@ -41,4 +41,6 @@ public interface ElevatorIO {
 
   /** Run the climber closed loop to the specified position. */
   public default void setRotationPosition(double position, double arbitraryFeedForward) {}
+
+  public default void autoZeroExtension() {}
 }

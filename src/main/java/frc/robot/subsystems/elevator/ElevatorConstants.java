@@ -6,9 +6,9 @@ import edu.wpi.first.math.util.*;
 public class ElevatorConstants {
 
   /** Make constants for each positions */
-  public static final boolean DEBUGGING = true;
+  public static final boolean DEBUGGING = false;
 
-  public static final boolean TESTING = true;
+  public static final boolean TESTING = false;
   public static final String SUBSYSTEM_NAME = "Elevator";
 
   public enum Position {
@@ -83,18 +83,18 @@ public class ElevatorConstants {
   public static final int ROTATION_ELEVATOR_MOTOR_CAN_ID = 19;
 
   public static final boolean EXTENSION_INVERTED = false;
-  public static final double EXTENSION_POSITION_PID_F = 0;
-  public static final double EXTENSION_POSITION_PID_P = 0.75;
+  public static final double EXTENSION_POSITION_PID_F = 0.07;
+  public static final double EXTENSION_POSITION_PID_P = 0.3;
   public static final double EXTENSION_POSITION_PID_I = 0;
   public static final double EXTENSION_POSITION_PID_D = 0;
   public static final double EXTENSION_POSITION_PID_I_ZONE = 0;
-  public static final double EXTENSION_POSITION_PID_PEAK_OUTPUT = 0.5;
+  public static final double EXTENSION_POSITION_PID_PEAK_OUTPUT = 1;
   public static final int EXTENSION_MAX_STALL_DURATION_CYCLES = 10;
   public static final double EXTENSION_MAX_STALL_VELOCITY_METERS_PER_SECOND = 0.01;
 
   public static final boolean ROTATION_INVERTED = false;
   public static final double ROTATION_POSITION_PID_F = 0;
-  public static final double ROTATION_POSITION_PID_P = 1.0;
+  public static final double ROTATION_POSITION_PID_P = 3.25;
   public static final double ROTATION_POSITION_PID_I = 0.01;
   public static final double ROTATION_POSITION_PID_D = 0;
   public static final double ROTATION_POSITION_PID_I_ZONE = 0.1;
@@ -102,9 +102,10 @@ public class ElevatorConstants {
 
   public static final int PIGEON_ID = 4;
   public static final double EXTENSION_SLOW_PEAK_OUTPUT = 0.15;
-  public static final double EXTENSION_MAX_ELEVATOR_VELOCITY_METERS_PER_SECOND = 1.0;
-  public static final double EXTENSION_ELEVATOR_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 2.0;
-  public static final double EXTENSION_SCURVE_STRENGTH = 0;
+  public static final double EXTENSION_MAX_ELEVATOR_EXTENSION_VELOCITY_METERS_PER_SECOND = 1.8;
+  public static final double EXTENSION_MAX_ELEVATOR_RETRACTION_VELOCITY_METERS_PER_SECOND = 1.0;
+  public static final double EXTENSION_ELEVATOR_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 4.0;
+  public static final double EXTENSION_SCURVE_STRENGTH = 4;
 
   public static final double ROTATION_SLOW_PEAK_OUTPUT = 0.15;
   public static final double ROTATION_MAX_ELEVATOR_VELOCITY = 20000; // theoretical maximum 21305
@@ -113,7 +114,7 @@ public class ElevatorConstants {
 
   public static final double ELEVATOR_EXTENSION_POSITION_TOLERANCE = .02;
   public static final double DEFAULT_EXTENSION_MOTOR_POWER = 0.5;
-  public static final double MAX_MANUAL_POWER_EXTENSION = .2;
+  public static final double MAX_MANUAL_POWER_EXTENSION = 1;
 
   public static final double ELEVATOR_ROTATION_POSITION_TOLERANCE = .01;
   public static final double DEFAULT_ROTATION_MOTOR_POWER = 0.5;

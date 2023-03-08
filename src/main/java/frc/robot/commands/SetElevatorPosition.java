@@ -2,8 +2,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.operator_interface.OperatorInterface.GridRow;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.leds.LEDs;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -18,16 +21,24 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * <p>At End: continues to hold the elevator at the specified positions
  */
 public class SetElevatorPosition extends CommandBase {
-  private Elevator elevator;
-  private double rotation;
-  private double extension;
-  private Position position;
+  protected Elevator elevator;
+  protected double rotation;
+  protected double extension;
+  private Supplier<Position> positionSupplier;
   private LoggedDashboardChooser<Position> armChooser;
+  private boolean finishImmediately;
+  private LEDs led;
 
-  public SetElevatorPosition(Elevator subsystem, Position targetPostion) {
+  public SetElevatorPosition(Elevator subsystem, Position targetPosition, LEDs led) {
+    this(subsystem, () -> targetPosition, led);
+  }
+
+  public SetElevatorPosition(
+      Elevator subsystem, Supplier<Position> targetPositionSupplier, LEDs led) {
     this.elevator = subsystem;
     this.armChooser = null;
-    this.position = targetPostion;
+    this.positionSupplier = targetPositionSupplier;
+    this.led = led;
 
     addRequirements(elevator);
   }
@@ -41,7 +52,7 @@ public class SetElevatorPosition extends CommandBase {
   public SetElevatorPosition(Elevator subsystem, LoggedDashboardChooser<Position> armChooser) {
     this.elevator = subsystem;
     this.armChooser = armChooser;
-    this.position = Position.INVALID;
+    this.positionSupplier = () -> Position.INVALID;
 
     addRequirements(elevator);
   }
@@ -57,25 +68,29 @@ public class SetElevatorPosition extends CommandBase {
 
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", true);
 
+    this.finishImmediately = false;
+
+    Position position = positionSupplier.get();
+
     if (armChooser != null) {
-      this.position = armChooser.get();
+      position = armChooser.get();
     }
 
     // check if we are toggled for cones or cubes; if cubes, adjust the position
-    switch (this.position) {
+    switch (position) {
       case CONE_HYBRID_LEVEL:
         if (!this.elevator.getToggledToCone()) {
-          this.position = Position.CUBE_HYBRID_LEVEL;
+          position = Position.CUBE_HYBRID_LEVEL;
         }
         break;
       case CONE_MID_LEVEL:
         if (!this.elevator.getToggledToCone()) {
-          this.position = Position.CUBE_MID_LEVEL;
+          position = Position.CUBE_MID_LEVEL;
         }
         break;
       case CONE_HIGH_LEVEL:
         if (!this.elevator.getToggledToCone()) {
-          this.position = Position.CUBE_HIGH_LEVEL;
+          position = Position.CUBE_HIGH_LEVEL;
         }
         break;
       default:
@@ -89,16 +104,17 @@ public class SetElevatorPosition extends CommandBase {
         break;
       case CONE_STORAGE:
       case CUBE_STORAGE:
-        this.extension = 0.05;
-        this.rotation = Units.degreesToRadians(90.0 - 20.0);
+        this.extension = 0.0;
+        this.rotation = Units.degreesToRadians(90.0 - 24.173);
         break;
       case AUTO_STORAGE:
         this.extension = Units.inchesToMeters(34);
-        this.rotation = Units.degreesToRadians(90.0 - 70.0);
+        this.rotation = Units.degreesToRadians(90.0 - 24.173);
+        this.finishImmediately = true;
         break;
       case CONE_INTAKE_FLOOR:
         this.extension = Units.inchesToMeters(34);
-        this.rotation = Units.degreesToRadians(90.0 - 82.0);
+        this.rotation = Units.degreesToRadians(90.0 - 77.0);
         break;
       case CONE_INTAKE_SHELF:
       case CUBE_INTAKE_SHELF:
@@ -116,35 +132,38 @@ public class SetElevatorPosition extends CommandBase {
         break;
       case CONE_MID_LEVEL:
         this.extension = Units.inchesToMeters(44);
-        this.rotation = Units.degreesToRadians(90.0 - 44.0);
+        this.rotation = Units.degreesToRadians(90.0 - 44.0); // 48.0
         break;
       case CONE_HIGH_LEVEL:
         this.extension = Units.inchesToMeters(65);
-        this.rotation = Units.degreesToRadians(90.0 - 48.0);
+        this.rotation = Units.degreesToRadians(90.0 - 44.0);
         break;
       case CUBE_INTAKE_BUMPER:
         this.extension = Units.inchesToMeters(8);
         this.rotation = Units.degreesToRadians(90.0 - 43.0);
         break;
       case CUBE_HYBRID_LEVEL:
-        this.extension = Units.inchesToMeters(17);
-        this.rotation = Units.degreesToRadians(90.0 - 65.0);
+        this.extension = Units.inchesToMeters(20.98);
+        this.rotation = Units.degreesToRadians(90.0 - 53.88);
         break;
       case CUBE_MID_LEVEL:
-        this.extension = Units.inchesToMeters(36);
-        this.rotation = Units.degreesToRadians(90.0 - 53.0);
+        this.extension = Units.inchesToMeters(40.63);
+        this.rotation = Units.degreesToRadians(90.0 - 51.55);
         break;
       case CUBE_HIGH_LEVEL:
         this.extension = Units.inchesToMeters(58);
         this.rotation = Units.degreesToRadians(90.0 - 53.0);
         break;
     }
+
+    elevator.initializePosition(this.rotation, this.extension);
   }
 
   @Override
   public void execute() {
     // FIXME: need to query the intake subsystem to determine the position of the intake, replace
     // true with isIntakeEnabled()
+    // led.changeTopStateColor(RobotStateColors.BLINKPINK);
     elevator.setPosition(this.rotation, this.extension, true);
   }
 
@@ -156,6 +175,7 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public void end(boolean interrupted) {
+    // led.changeTopStateColor(RobotStateColors.PINK);
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", false);
   }
 
@@ -165,6 +185,19 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public boolean isFinished() {
-    return elevator.atSetpoint();
+    return this.finishImmediately || elevator.atSetpoint();
+  }
+
+  public static Position convertGridRowToPosition(GridRow row) {
+    switch (row) {
+      case BOTTOM:
+        return Position.CONE_HYBRID_LEVEL;
+      case MIDDLE:
+        return Position.CONE_MID_LEVEL;
+      case TOP:
+        return Position.CONE_HIGH_LEVEL;
+      default:
+        return Position.CONE_HYBRID_LEVEL;
+    }
   }
 }

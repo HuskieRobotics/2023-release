@@ -33,7 +33,6 @@ import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
 import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
-import frc.robot.commands.AutoBalanceNonStop;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -176,7 +175,6 @@ public class Drivetrain extends SubsystemBase {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("Enable XStance", new InstantCommand(this::enableXstance));
       tab.add("Disable XStance", new InstantCommand(this::disableXstance));
-      tab.add("NonStop", new AutoBalanceNonStop(this));
     }
   }
 
@@ -189,7 +187,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public boolean getTurbo() {
-    return isTurbo;
+    // based on testing, we can drive in turbo mode all the time
+    return true;
   }
 
   /**
@@ -449,7 +448,7 @@ public class Drivetrain extends SubsystemBase {
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(), this.getRotation(), swerveModulePositions);
 
-    if (!DriverStation.isDSAttached()) {
+    if (!DriverStation.isFMSAttached()) {
       if (poseEstimator.getEstimatedPosition().getX() > FieldConstants.fieldLength * (2.0 / 3)
           && !hasCrossedToRedSide) {
         hasCrossedToRedSide = true;
@@ -655,7 +654,7 @@ public class Drivetrain extends SubsystemBase {
   public double getAverageDriveCurrent() {
     double totalCurrent = 0.0;
     for (SwerveModule module : swerveModules) {
-      totalCurrent += module.getDriveCurrent();
+      totalCurrent += Math.abs(module.getDriveCurrent());
     }
     return totalCurrent / swerveModules.length;
   }

@@ -140,13 +140,13 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getIntakeDeployButton() {
-    return new Trigger(controller::getLeftBumper);
+  public double getIntakeDeployPower() {
+    return controller.getLeftTriggerAxis();
   }
 
   @Override
-  public Trigger getIntakeRetractButton() {
-    return new Trigger(controller::getRightBumper);
+  public double getIntakeRetractPower() {
+    return controller.getRightTriggerAxis();
   }
 
   @Override

@@ -3,12 +3,12 @@
     {
       "anchorPoint": {
         "x": 2.25,
-        "y": 3.35
+        "y": 4.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.840683473033613,
-        "y": 3.3361055107526885
+        "x": 2.281766450338098,
+        "y": 4.75
       },
       "holonomicAngle": 0.0,
       "isReversal": false,
@@ -17,22 +17,22 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 3.091107749911463,
-        "y": 3.35
+        "x": 6.3,
+        "y": 4.62
       },
       "prevControl": {
-        "x": 2.6740121761493523,
-        "y": 3.321376568100358
+        "x": 5.422467667852003,
+        "y": 4.629816969703384
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -40,10 +40,17 @@
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
-        "waitBehavior": "none",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.5,
+      "names": [
+        "prepare to intake cone"
+      ]
+    }
+  ]
 }

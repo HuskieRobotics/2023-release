@@ -107,13 +107,16 @@ public class Vision extends SubsystemBase {
         if (isEnabled) {
           poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());
           isVisionUpdating = true;
+        } else {
+          isVisionUpdating = false;
         }
 
         Logger.getInstance().recordOutput("Vision/RobotPose", robotPose.toPose2d());
         Logger.getInstance().recordOutput("Vision/isEnabled", isEnabled);
       }
+    } else {
+      isVisionUpdating = false;
     }
-    isVisionUpdating = false;
   }
 
   public boolean isEnabled() {

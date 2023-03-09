@@ -691,6 +691,15 @@ public class RobotContainer {
         Commands.sequence(new FollowPath(getOutTheWay, drivetrain, true, true));
     autoChooser.addOption("Loading Side Get out of the Way", loadingGetOutOfTheWay);
 
+    PathPlannerTrajectory loadingSide1ConeStay =
+        PathPlanner.loadPath("LoadingSide1ConeStay", 1.0, 1.0);
+    Command loadingSide1ConeStayCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () -> drivetrain.resetOdometry(loadingSide1ConeStay.getInitialState()), drivetrain),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL));
+    autoChooser.addOption("loadingSide1ConeStay", loadingSide1ConeStayCommand);
+
     // "auto" path for Tuning auto turn PID
     PathPlannerTrajectory autoTurnPidTuningPath =
         PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
@@ -942,7 +951,7 @@ public class RobotContainer {
     oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
 
     // auto balance
-    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, false, led));
+    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, true, led));
   }
 
   private void configureElevatorCommands() {

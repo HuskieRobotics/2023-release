@@ -1048,7 +1048,7 @@ public class RobotContainer {
     oi.getIntakeShelfLeftButton()
         .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_SHELF, DOUBLE_SUBSTATION_UPPER));
     oi.getIntakeChuteButton()
-        .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_CHUTE, SINGLE_SUBSTATION));
+        .onTrue(new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_MID_LEVEL, led));
 
     // move to grid
     oi.getMoveToGridButton().onTrue(moveAndScoreGamePiece());

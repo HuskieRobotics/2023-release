@@ -197,7 +197,7 @@ public final class FieldRegionConstants {
           (FieldConstants.LoadingZone.midY + FieldConstants.LoadingZone.rightY) / 2.0);
   public static final Translation2d FIELD_ZONE_REGION_1_4_TRANSITION_POINT =
       new Translation2d(
-          FieldConstants.LoadingZone.outerX / 2.0,
+          FieldConstants.LoadingZone.outerX + 0.5,
           (FieldConstants.LoadingZone.leftY + FieldConstants.LoadingZone.midY) / 2.0);
   public static final Translation2d FIELD_ZONE_REGION_4_1_TRANSITION_POINT =
       new Translation2d(

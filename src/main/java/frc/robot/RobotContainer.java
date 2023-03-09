@@ -69,7 +69,6 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
@@ -201,7 +200,7 @@ public class RobotContainer {
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
-            intake = new Intake(new IntakeIOTalonFX());
+            intake = new Intake(new IntakeIO() {});
 
             vision = new Vision(new VisionIOPhotonVision(config.getCameraName()));
 
@@ -253,7 +252,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOSim());
-            intake = new Intake(new IntakeIOSim());
+            intake = new Intake(new IntakeIO() {});
             led = new LEDs();
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;

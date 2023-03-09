@@ -154,9 +154,15 @@ public class Drivetrain extends SubsystemBase {
     this.isMoveToGridEnabled = true;
 
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
-    tabMain.addBoolean("X-Stance On?", this::isXstance);
-    tabMain.addBoolean("Field-Relative Enabled?", () -> this.isFieldRelative);
+    tabMain
+        .addNumber("Gyroscope Angle", () -> getRotation().getDegrees())
+        .withPosition(9, 0)
+        .withSize(1, 1);
+    tabMain.addBoolean("X-Stance On?", this::isXstance).withPosition(7, 0).withSize(1, 1);
+    tabMain
+        .addBoolean("Field-Relative Enabled?", () -> this.isFieldRelative)
+        .withPosition(8, 0)
+        .withSize(1, 1);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);

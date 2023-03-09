@@ -50,7 +50,7 @@ public class Pneumatics extends SubsystemBase {
     noPressureTimer.start();
     compressorEnabledTimer.start();
 
-    Shuffleboard.getTab("MAIN").addNumber("Pressure", this::getPressure);
+    //Shuffleboard.getTab("MAIN").addNumber("Pressure", this::getPressure);
   }
 
   public double getPressure() {

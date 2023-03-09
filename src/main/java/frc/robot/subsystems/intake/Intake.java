@@ -26,9 +26,8 @@ public class Intake extends SubsystemBase {
     this.io = io;
     this.rotationSetpoint = 0;
 
-    ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
-
     if (TESTING) {
+      ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("Intake", this);
       tab.add("Set Intake State", new SetIntakeState(this));
       tab.add("Auto Zero", new AutoZeroIntake(this));

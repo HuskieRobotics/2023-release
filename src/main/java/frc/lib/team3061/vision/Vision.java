@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.RobotOdometry;
@@ -31,6 +33,7 @@ public class Vision extends SubsystemBase {
   private double lastTimestamp;
   private SwerveDrivePoseEstimator poseEstimator;
   private boolean isEnabled = true;
+  private boolean isVisionUpdating = true;
 
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -40,6 +43,11 @@ public class Vision extends SubsystemBase {
   public Vision(VisionIO visionIO) {
     this.visionIO = visionIO;
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
+    ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+    tabMain
+        .addBoolean("isVisionUpdating", () -> isVisionUpdating)
+        .withPosition(7, 2)
+        .withSize(1, 2);
 
     try {
       layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
@@ -98,11 +106,16 @@ public class Vision extends SubsystemBase {
           < MAX_POSE_DIFFERENCE_METERS) {
         if (isEnabled) {
           poseEstimator.addVisionMeasurement(robotPose.toPose2d(), getLatestTimestamp());
+          isVisionUpdating = true;
+        } else {
+          isVisionUpdating = false;
         }
 
         Logger.getInstance().recordOutput("Vision/RobotPose", robotPose.toPose2d());
         Logger.getInstance().recordOutput("Vision/isEnabled", isEnabled);
       }
+    } else {
+      isVisionUpdating = false;
     }
   }
 

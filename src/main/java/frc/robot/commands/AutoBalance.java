@@ -15,7 +15,7 @@ public class AutoBalance extends CommandBase {
   private static final double KP = 0.04;
   private static final double KI = 0.0;
   private static final double KD = 0.0;
-  private static final double MAX_ANGLE_DEG = 7.0;
+  private static final double MAX_ANGLE_DEG = 10.0;
 
   private PIDController frontBack;
   private PIDController leftRight;
@@ -29,6 +29,7 @@ public class AutoBalance extends CommandBase {
   private double timeout;
   // FIXME: Adjust this value for the timeout we determine
   private static final TunableNumber tuneTimeout = new TunableNumber("AutoBalance/timeout", 40.0);
+  private static final TunableNumber maxAngle = new TunableNumber("AutoBalance/threshold", 10);
 
   public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
     this.drivetrain = drivetrain;
@@ -61,8 +62,8 @@ public class AutoBalance extends CommandBase {
     Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.timer.get());
 
     led.changeAnimationTo(AnimationTypes.BALANCING);
-    if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < MAX_ANGLE_DEG
-        && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -MAX_ANGLE_DEG) {
+    if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
+        && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get()) {
       drivetrain.setXStance();
       balanced = true;
     } else {

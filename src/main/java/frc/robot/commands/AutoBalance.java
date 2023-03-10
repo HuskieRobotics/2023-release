@@ -61,7 +61,7 @@ public class AutoBalance extends CommandBase {
   public void execute() {
     Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.timer.get());
 
-    led.changeAnimationTo(AnimationTypes.BALANCING);
+    led.changeAnimationTo(AnimationTypes.BLUE);
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
         && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get()) {
       drivetrain.setXStance();
@@ -95,7 +95,7 @@ public class AutoBalance extends CommandBase {
     drivetrain.disableXstance();
     drivetrain.enableFieldRelative();
     Logger.getInstance().recordOutput("ActiveCommands/AutoBalanceNonStop", false);
-    led.changeColorTo(RobotStateColors.BLUE);
+    led.changeTopStateColor(RobotStateColors.WHITE);
   }
 
   @Override

@@ -6,6 +6,7 @@ import frc.robot.operator_interface.OperatorInterface.GridRow;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -67,6 +68,8 @@ public class SetElevatorPosition extends CommandBase {
   public void initialize() {
 
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", true);
+
+    led.changeTopStateColor(RobotStateColors.BLINKPINK);
 
     this.finishImmediately = false;
 
@@ -175,7 +178,7 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public void end(boolean interrupted) {
-    // led.changeTopStateColor(RobotStateColors.PINK);
+    led.changeTopStateColor(RobotStateColors.WHITE);
     Logger.getInstance().recordOutput("ActiveCommands/SetElevatorPosition", false);
   }
 

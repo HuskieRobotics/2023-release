@@ -1209,8 +1209,8 @@ public class RobotContainer {
                 new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition, led),
                 new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
             Commands.runOnce(led::enableTeleopLED),
-            Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.WHITE)),
-            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+        Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.WHITE)));
   }
 
   /**

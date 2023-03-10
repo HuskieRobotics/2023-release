@@ -1162,15 +1162,14 @@ public class RobotContainer {
                 Commands.runOnce(led::enableTeleopLED),
                 () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()),
             Commands.sequence(
-                Commands.parallel(
-                    Commands.print(
-                        "replace with command to set LED color after delay and pass reference to move to grid command from which the time can be queried"),
-                    setElevatorPositionCommandCollection,
-                    Commands.either(
-                        moveToLoadingZoneCommand,
+                Commands.either(
+                    moveToLoadingZoneCommand,
+                    Commands.parallel(
                         new TeleopSwerve(
                             drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
-                        () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
+                        setElevatorPositionCommandCollection),
+                    () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()),
+                setElevatorPositionCommandCollection,
                 Commands.either(
                     Commands.sequence(
                         new DriveToPose(drivetrain, moveToLoadingZoneCommand.endPoseSupplier()),

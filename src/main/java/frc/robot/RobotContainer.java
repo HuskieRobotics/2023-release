@@ -69,7 +69,6 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
@@ -201,7 +200,7 @@ public class RobotContainer {
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
-            intake = new Intake(new IntakeIOTalonFX());
+            intake = new Intake(new IntakeIO() {});
 
             vision = new Vision(new VisionIOPhotonVision(config.getCameraName()));
 
@@ -253,7 +252,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOSim());
-            intake = new Intake(new IntakeIOSim());
+            intake = new Intake(new IntakeIO() {});
             led = new LEDs();
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;
@@ -691,6 +690,15 @@ public class RobotContainer {
         Commands.sequence(new FollowPath(getOutTheWay, drivetrain, true, true));
     autoChooser.addOption("Loading Side Get out of the Way", loadingGetOutOfTheWay);
 
+    PathPlannerTrajectory loadingSide1ConeStay =
+        PathPlanner.loadPath("LoadingSide1ConeStay", 1.0, 1.0);
+    Command loadingSide1ConeStayCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () -> drivetrain.resetOdometry(loadingSide1ConeStay.getInitialState()), drivetrain),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL));
+    autoChooser.addOption("loadingSide1ConeStay", loadingSide1ConeStayCommand);
+
     // "auto" path for Tuning auto turn PID
     PathPlannerTrajectory autoTurnPidTuningPath =
         PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
@@ -942,7 +950,7 @@ public class RobotContainer {
     oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
 
     // auto balance
-    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, false, led));
+    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, true, led));
   }
 
   private void configureElevatorCommands() {

@@ -236,18 +236,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     // check if the elevator is stuck while trying to rotate; if so, stop the rotation
-    if (Math.abs(previousRotationPosition - inputs.rotationPositionRadians)
-        < rotationStuckMinPositionDelta.get()) {
-      rotationStuckCount++;
-      if (rotationStuckCount > rotationStuckCycles.get()) {
-        setRotationMotorPercentage(0.0);
-        Logger.getInstance().recordOutput("Elevator/rotationStuck", true);
-      }
-    } else {
-      rotationStuckCount = 0;
-      Logger.getInstance().recordOutput("Elevator/rotationStuck", false);
-    }
-    this.previousRotationPosition = inputs.rotationPositionRadians;
+    // if (Math.abs(previousRotationPosition - inputs.rotationPositionRadians)
+    //     < rotationStuckMinPositionDelta.get()) {
+    //   rotationStuckCount++;
+    //   if (rotationStuckCount > rotationStuckCycles.get()) {
+    //     setRotationMotorPercentage(0.0);
+    //     Logger.getInstance().recordOutput("Elevator/rotationStuck", true);
+    //   }
+    // } else {
+    //   rotationStuckCount = 0;
+    //   Logger.getInstance().recordOutput("Elevator/rotationStuck", false);
+    // }
+    // this.previousRotationPosition = inputs.rotationPositionRadians;
 
     // update tunables
     if (rkP.hasChanged() || rkI.hasChanged() || rkD.hasChanged() || rkPeakOutput.hasChanged()) {

@@ -699,6 +699,13 @@ public class RobotContainer {
             scoreGamePieceAuto(Position.CONE_MID_LEVEL));
     autoChooser.addOption("loadingSide1ConeStay", loadingSide1ConeStayCommand);
 
+    Command loadingSide1ConeStayHighCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () -> drivetrain.resetOdometry(loadingSide1ConeStay.getInitialState()), drivetrain),
+            scoreGamePieceAutoHigh());
+    autoChooser.addOption("loadingSide1ConeHighStay", loadingSide1ConeStayHighCommand);
+
     // "auto" path for Tuning auto turn PID
     PathPlannerTrajectory autoTurnPidTuningPath =
         PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
@@ -1123,6 +1130,22 @@ public class RobotContainer {
 
     return Commands.sequence(
         stallOnGamePieceAuto, setElevatorPositionToScoreAuto, dropGamePieceAuto);
+  }
+
+  private Command scoreGamePieceAutoHigh() {
+    Command setElevatorPositionToScoreMidAuto =
+        new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led);
+    Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
+    Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
+    Command setElevatorPositionToScoreHighAuto =
+        new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL, led);
+
+    return Commands.sequence(
+        stallOnGamePieceAuto,
+        setElevatorPositionToScoreMidAuto,
+        Commands.waitSeconds(1.0),
+        setElevatorPositionToScoreHighAuto,
+        dropGamePieceAuto);
   }
 
   private Command collectGamePieceAuto() {

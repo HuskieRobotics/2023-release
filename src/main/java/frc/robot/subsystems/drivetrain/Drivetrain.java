@@ -308,10 +308,8 @@ public class Drivetrain extends SubsystemBase {
     Pose3d pose = poseSupplier.get();
     if (pose != null) {
       noPoseAlert.set(false);
-      poseEstimator.resetPosition(
-          this.getRotation(),
-          swerveModulePositions,
-          new Pose2d(new Translation2d(pose.getX(), pose.getY()), this.getRotation()));
+      setGyroOffset(pose.toPose2d().getRotation().getDegrees());
+      poseEstimator.resetPosition(this.getRotation(), swerveModulePositions, pose.toPose2d());
     } else {
       noPoseAlert.set(true);
     }

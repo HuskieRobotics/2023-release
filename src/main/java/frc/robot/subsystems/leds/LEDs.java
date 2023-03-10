@@ -329,16 +329,22 @@ public class LEDs extends SubsystemBase {
         break;
 
       case BLINKGREEN:
-        candle.animate(new StrobeAnimation(255, 69, 0, 0, 98.0 / 256.0, 29, 72));
+        candle.clearAnimation(0);
+        candle.animate(new StrobeAnimation(0, 2655, 0, 0, 98.0 / 256.0, 29, 72));
         break;
       case BLINKPINK:
-        candle.animate(new StrobeAnimation(255, 192, 203, 0, 98.0 / 256.0, 29, 72));
+        candle.clearAnimation(0);
+        candle.animate(new StrobeAnimation(159, 43, 104, 0, 98.0 / 256.0, 29, 72));
         break;
       case BLINKBLUE:
         candle.animate(new StrobeAnimation(0, 0, 255, 0, 98.0 / 256.0, 29, 72));
         break;
       case PINK:
-        candle.setLEDs(255, 192, 203, 0, 71, 29);
+        candle.clearAnimation(0);
+        candle.setLEDs(159, 43, 104, 0, 71, 29);
+      case WHITE:
+        candle.clearAnimation(0);
+        candle.setLEDs(0, 0, 0, 100, 71, 29);
         break;
       default:
         candle.setLEDs(255, 255, 255, 0, 71, 29);

@@ -29,6 +29,7 @@ public class Elevator extends SubsystemBase {
   private boolean manualControlEnabled = false;
   private boolean manualPresetEnabled = false;
   private ElevatorIO io;
+  private boolean reachedExtensionSetpoint = false;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -184,6 +185,7 @@ public class Elevator extends SubsystemBase {
   public void initializePosition(double rotation, double extension) {
     this.extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
     this.rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();
+    this.reachedExtensionSetpoint = false;
   }
 
   public void setPosition(double rotation, double extension, boolean intakeStored) {
@@ -192,18 +194,16 @@ public class Elevator extends SubsystemBase {
      * the new setpoint values yet. Instead, we will compare the current position to the eventual position.
      */
     if (extensionIsIncreasing && !rotationIsIncreasing) {
-      // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
-      // positions
-      if ((extension < Units.inchesToMeters(52.0))
-          || (this.getRotationElevatorEncoderAngle() < Units.degreesToRadians(90.0 - 35.0))) {
-        this.setElevatorExtension(extension);
-      } else if (this.getRotationElevatorEncoderAngle() > Units.degreesToRadians(90.0 - 32.0)) {
-        this.setElevatorExtension(Units.inchesToMeters(52.0));
-      }
+      this.setElevatorExtension(extension);
 
       if (this.atExtension(extension)) {
+        this.reachedExtensionSetpoint = true;
         this.setElevatorRotation(rotation);
       }
+      // else if (!this.reachedExtensionSetpoint && rotation < Units.degreesToRadians(90.0 - 36.0))
+      // {
+      //   this.setElevatorRotation(Units.degreesToRadians(90.0 - 36.0));
+      // }
     } else if (!extensionIsIncreasing && rotationIsIncreasing) {
       // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
       // positions

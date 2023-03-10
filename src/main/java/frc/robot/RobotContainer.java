@@ -696,7 +696,7 @@ public class RobotContainer {
         Commands.sequence(
             Commands.runOnce(
                 () -> drivetrain.resetOdometry(loadingSide1ConeStay.getInitialState()), drivetrain),
-            scoreGamePieceAuto(Position.CONE_MID_LEVEL));
+            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL));
     autoChooser.addOption("loadingSide1ConeStay", loadingSide1ConeStayCommand);
 
     // "auto" path for Tuning auto turn PID
@@ -752,7 +752,7 @@ public class RobotContainer {
     PathPlannerTrajectory oneConeEngageCenterLeftPath =
         PathPlanner.loadPath("1ConeEngageCenterLeft", overCableConnector);
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
         new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
         new FollowPath(oneConeEngageCenterLeftPath, drivetrain, true, true),
         new RotateToAngle(
@@ -769,7 +769,7 @@ public class RobotContainer {
     PathPlannerTrajectory oneConeEngageCenterRightPath =
         PathPlanner.loadPath("1ConeEngageCenterRight", overCableConnector);
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
         new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
         new FollowPath(oneConeEngageCenterRightPath, drivetrain, true, true),
         new RotateToAngle(
@@ -793,7 +793,7 @@ public class RobotContainer {
             overCableConnector,
             regularSpeed);
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
         // new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
         new FollowPathWithEvents(
             new FollowPath(cableSide2ConePath.get(0), drivetrain, true, true),
@@ -821,7 +821,7 @@ public class RobotContainer {
             autoEventMap),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
+            new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -829,14 +829,14 @@ public class RobotContainer {
     PathPlannerTrajectory loadingSide2ConePath =
         PathPlanner.loadPath("LoadingSide2Cone", regularSpeed);
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
         new FollowPathWithEvents(
             new FollowPath(loadingSide2ConePath, drivetrain, true, true),
             loadingSide2ConePath.getMarkers(),
             autoEventMap),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
+            new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -848,7 +848,7 @@ public class RobotContainer {
     PathPlannerTrajectory loadingSide2ConeRotateInPlaceReturnPath =
         PathPlanner.loadPath("LoadingSide2ConeRotateInPlaceReturn", regularSpeed);
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
         Commands.sequence(
             new FollowPath(loadingSide2ConePreRotatePath, drivetrain, true, true),
@@ -873,7 +873,7 @@ public class RobotContainer {
             new FollowPath(loadingSide2ConeRotateInPlaceReturnPath, drivetrain, false, true)),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
+            new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -885,7 +885,7 @@ public class RobotContainer {
     PathPlannerTrajectory cableSide2ConeRotateInPlacePathReturn =
         PathPlanner.loadPath("CableSide2ConeRotateInPlaceReturn", regularSpeed);
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
         Commands.sequence(
             new FollowPath(cableSide2ConePreRotatePath, drivetrain, true, true),
@@ -911,7 +911,7 @@ public class RobotContainer {
             new FollowPath(cableSide2ConeRotateInPlacePathReturn, drivetrain, false, true)),
         Commands.parallel(
             driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
+            new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL, led)),
         new ReleaseGamePiece(manipulator));
   }
 

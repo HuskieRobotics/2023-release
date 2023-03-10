@@ -160,7 +160,8 @@ public final class FieldRegionConstants {
   public static final Translation2d COMMUNITY_REGION_2_1_TRANSITION_POINT =
       new Translation2d(
           FieldConstants.Community.chargingStationInnerX - 0.5,
-          (FieldConstants.Community.leftY + FieldConstants.Community.chargingStationLeftY) / 2.0);
+          (FieldConstants.Community.leftY + FieldConstants.Community.chargingStationLeftY) / 2.0
+              - 0.5);
   public static final Translation2d COMMUNITY_REGION_1_3_TRANSITION_POINT =
       new Translation2d(
           FieldConstants.Community.chargingStationInnerX,
@@ -168,7 +169,7 @@ public final class FieldRegionConstants {
   public static final Translation2d COMMUNITY_REGION_3_1_TRANSITION_POINT =
       new Translation2d(
           FieldConstants.Community.chargingStationInnerX - 0.5,
-          FieldConstants.Community.chargingStationRightY / 2.0);
+          FieldConstants.Community.chargingStationRightY / 2.0 + 0.5);
 
   public static final Translation2d LOADING_ZONE_REGION_1_2_TRANSITION_POINT =
       new Translation2d(

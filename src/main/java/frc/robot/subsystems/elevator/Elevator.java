@@ -135,8 +135,15 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atRotationSetpoint() {
-    return Math.abs(this.inputs.rotationPositionRadians - rotationSetpoint)
-        < ELEVATOR_ROTATION_POSITION_TOLERANCE;
+    // storage position is a special case: if the rotation angle is greater than the setpoint,
+    // which it will be when we stall against the mechanical hard stop, we still want to
+    // return that we are at the setpoint
+    if (this.rotationSetpoint == Units.degreesToRadians(90.0 - 24.173)) {
+      return this.inputs.rotationPositionRadians > this.rotationSetpoint;
+    } else {
+      return Math.abs(this.inputs.rotationPositionRadians - rotationSetpoint)
+          < ELEVATOR_ROTATION_POSITION_TOLERANCE;
+    }
   }
 
   public boolean atExtension(double targetExtension) {

@@ -963,10 +963,7 @@ public class RobotContainer {
                     Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
                 elevator::getToggledToCone));
 
-    oi.getMoveArmToChuteButton()
-        .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_CHUTE, led)
-                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToChuteButton().onTrue(Commands.runOnce(elevator::stopElevator));
     oi.getMoveArmToShelfButton()
         .onTrue(
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_SHELF, led)

@@ -957,7 +957,8 @@ public class RobotContainer {
     oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
 
     // auto balance
-    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, true, led));
+    //NEW RELEASE GAME PIECE
+    oi.getAutoBalanceButton().onTrue(new ReleaseGamePiece(manipulator));
   }
 
   private void configureElevatorCommands() {

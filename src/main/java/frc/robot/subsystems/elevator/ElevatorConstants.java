@@ -98,11 +98,11 @@ public class ElevatorConstants {
   public static final double ROTATION_POSITION_PID_I = 0.01;
   public static final double ROTATION_POSITION_PID_D = 0;
   public static final double ROTATION_POSITION_PID_I_ZONE = 0.1;
-  public static final double ROTATION_POSITION_PID_PEAK_OUTPUT = 1.0;
+  public static final double ROTATION_POSITION_PID_PEAK_OUTPUT = 0.5;
 
   public static final int PIGEON_ID = 4;
   public static final double EXTENSION_SLOW_PEAK_OUTPUT = 0.15;
-  public static final double EXTENSION_MAX_ELEVATOR_EXTENSION_VELOCITY_METERS_PER_SECOND = 1.8;
+  public static final double EXTENSION_MAX_ELEVATOR_EXTENSION_VELOCITY_METERS_PER_SECOND = 1.0;
   public static final double EXTENSION_MAX_ELEVATOR_RETRACTION_VELOCITY_METERS_PER_SECOND = 1.0;
   public static final double EXTENSION_ELEVATOR_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 4.0;
   public static final double EXTENSION_SCURVE_STRENGTH = 4;

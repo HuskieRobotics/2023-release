@@ -30,6 +30,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private double previousRotationPosition = -1.0;
   private int rotationStuckCount;
   private double extensionSetpoint = -1.0;
+  private double rotationSetpoint = 0.0;
 
   private final TunableNumber rkP =
       new TunableNumber("ElevatorRotation/kP", ROTATION_POSITION_PID_P);
@@ -71,6 +72,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final TunableNumber rotationStuckCycles =
       new TunableNumber("ElevatorRotation/StuckCycles", 5);
 
+  private final TunableNumber rotationStorageHoldCurrent =
+      new TunableNumber("ElevatorRotation/StorageHoldCurrent", 5);
+
   public ElevatorIOTalonFX() {
     // CANDeviceFinder can = new CANDeviceFinder();
     // can.isDevicePresent(CANDeviceType.TALON, EXTENSION_ELEVATOR_MOTOR_CAN_ID, "Elevator
@@ -104,7 +108,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.SLOT0_KD = rkD.get();
 
     extensionConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
-    rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
+    rotationConfig.STATOR_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 30, 40, 1);
 
     rotationConfig.REMOTE_SENSOR_DEVICE_ID = PIGEON_ID;
     rotationConfig.REMOTE_SENSOR_SOURCE = RemoteSensorSource.Pigeon_Pitch;
@@ -235,19 +239,26 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       Logger.getInstance().recordOutput("Elevator/extensionReZero", false);
     }
 
-    // check if the elevator is stuck while trying to rotate; if so, stop the rotation
-    if (Math.abs(previousRotationPosition - inputs.rotationPositionRadians)
-        < rotationStuckMinPositionDelta.get()) {
-      rotationStuckCount++;
-      if (rotationStuckCount > rotationStuckCycles.get()) {
-        setRotationMotorPercentage(0.0);
-        Logger.getInstance().recordOutput("Elevator/rotationStuck", true);
-      }
-    } else {
-      rotationStuckCount = 0;
-      Logger.getInstance().recordOutput("Elevator/rotationStuck", false);
+    // stall the rotation motor against the mechanical hard stop when moving into the storage
+    // position
+    if (this.rotationSetpoint == Units.degreesToRadians(90.0 - 24.173)
+        && inputs.rotationPositionRadians > Units.degreesToRadians(90.0 - 25)) {
+      setRotationMotorCurrent(rotationStorageHoldCurrent.get());
     }
-    this.previousRotationPosition = inputs.rotationPositionRadians;
+
+    // check if the elevator is stuck while trying to rotate; if so, stop the rotation
+    // if (Math.abs(previousRotationPosition - inputs.rotationPositionRadians)
+    //     < rotationStuckMinPositionDelta.get()) {
+    //   rotationStuckCount++;
+    //   if (rotationStuckCount > rotationStuckCycles.get()) {
+    //     setRotationMotorPercentage(0.0);
+    //     Logger.getInstance().recordOutput("Elevator/rotationStuck", true);
+    //   }
+    // } else {
+    //   rotationStuckCount = 0;
+    //   Logger.getInstance().recordOutput("Elevator/rotationStuck", false);
+    // }
+    // this.previousRotationPosition = inputs.rotationPositionRadians;
 
     // update tunables
     if (rkP.hasChanged() || rkI.hasChanged() || rkD.hasChanged() || rkPeakOutput.hasChanged()) {
@@ -322,6 +333,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationMotor.set(ControlMode.PercentOutput, percentage);
   }
 
+  private void setRotationMotorCurrent(double current) {
+    rotationMotor.set(ControlMode.Current, current);
+  }
+
   @Override
   public void setExtensionPosition(double position, double arbitraryFeedForward) {
     if (position
@@ -351,6 +366,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setRotationPosition(double position, double arbitraryFeedForward) {
+    this.rotationSetpoint = position;
     rotationMotor.set(
         TalonFXControlMode.Position, // try MotionMagic later
         radiansToPigeon(position),

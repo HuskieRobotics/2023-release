@@ -69,7 +69,6 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
@@ -201,7 +200,7 @@ public class RobotContainer {
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
-            intake = new Intake(new IntakeIOTalonFX());
+            intake = new Intake(new IntakeIO() {});
 
             vision = new Vision(new VisionIOPhotonVision(config.getCameraName()));
 
@@ -253,7 +252,7 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOSim());
-            intake = new Intake(new IntakeIOSim());
+            intake = new Intake(new IntakeIO() {});
             led = new LEDs();
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;
@@ -691,6 +690,53 @@ public class RobotContainer {
         Commands.sequence(new FollowPath(getOutTheWay, drivetrain, true, true));
     autoChooser.addOption("Loading Side Get out of the Way", loadingGetOutOfTheWay);
 
+    PathPlannerTrajectory loadingSide1ConeStay =
+        PathPlanner.loadPath("LoadingSide1ConeStay", 1.0, 1.0);
+    Command loadingSide1ConeStayCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () ->
+                    drivetrain.resetOdometry(
+                        PathPlannerTrajectory.transformStateForAlliance(
+                            loadingSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
+                drivetrain),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL));
+    autoChooser.addOption("loadingSide1ConeStay", loadingSide1ConeStayCommand);
+
+    PathPlannerTrajectory cableSide1ConeStay = PathPlanner.loadPath("cableSide1ConeStay", 1.0, 1.0);
+    Command cableSide1ConeStayCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () ->
+                    drivetrain.resetOdometry(
+                        PathPlannerTrajectory.transformStateForAlliance(
+                            cableSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
+                drivetrain),
+            scoreGamePieceAuto(Position.CONE_MID_LEVEL));
+    autoChooser.addOption("cableSide1ConeStay", cableSide1ConeStayCommand);
+
+    Command cableSide1ConeStayHighCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () ->
+                    drivetrain.resetOdometry(
+                        PathPlannerTrajectory.transformStateForAlliance(
+                            cableSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
+                drivetrain),
+            scoreGamePieceAutoHigh());
+    autoChooser.addOption("cableSide1ConeHighStay", cableSide1ConeStayHighCommand);
+
+    Command loadingSide1ConeStayHighCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () ->
+                    drivetrain.resetOdometry(
+                        PathPlannerTrajectory.transformStateForAlliance(
+                            loadingSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
+                drivetrain),
+            scoreGamePieceAutoHigh());
+    autoChooser.addOption("loadingSide1ConeHighStay", loadingSide1ConeStayHighCommand);
+
     // "auto" path for Tuning auto turn PID
     PathPlannerTrajectory autoTurnPidTuningPath =
         PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
@@ -929,6 +975,9 @@ public class RobotContainer {
     // reset gyro to 0 degrees
     oi.getResetGyroButton().onTrue(Commands.runOnce(drivetrain::zeroGyroscope, drivetrain));
 
+    // Ian release game Piece
+    oi.getReleaseTriggerButton().onTrue(new ReleaseGamePiece(manipulator));
+
     // reset pose based on vision
     oi.getResetPoseToVisionButton()
         .onTrue(Commands.runOnce(() -> drivetrain.resetPoseToVision(() -> vision.getRobotPose())));
@@ -938,11 +987,13 @@ public class RobotContainer {
     oi.getXStanceButton().onFalse(Commands.runOnce(drivetrain::disableXstance, drivetrain));
 
     // turbo
-    oi.getTurboButton().onTrue(Commands.runOnce(drivetrain::enableTurbo, drivetrain));
-    oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
+    // oi.getTurboButton().onTrue(Commands.runOnce(drivetrain::enableTurbo, drivetrain));
+    // oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
+    oi.getTurboButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
 
     // auto balance
-    oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, false, led));
+    // NEW RELEASE GAME PIECE
+    oi.getAutoBalanceButton().onTrue(new ReleaseGamePiece(manipulator));
   }
 
   private void configureElevatorCommands() {
@@ -955,10 +1006,7 @@ public class RobotContainer {
                     Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
                 elevator::getToggledToCone));
 
-    oi.getMoveArmToChuteButton()
-        .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_CHUTE, led)
-                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToChuteButton().onTrue(Commands.runOnce(elevator::stopElevator));
     oi.getMoveArmToShelfButton()
         .onTrue(
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_SHELF, led)
@@ -1048,7 +1096,7 @@ public class RobotContainer {
     oi.getIntakeShelfLeftButton()
         .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_SHELF, DOUBLE_SUBSTATION_UPPER));
     oi.getIntakeChuteButton()
-        .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_CHUTE, SINGLE_SUBSTATION));
+        .onTrue(new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led));
 
     // move to grid
     oi.getMoveToGridButton().onTrue(moveAndScoreGamePiece());
@@ -1065,8 +1113,17 @@ public class RobotContainer {
     // optimize when it starts moving the robot and to ensure that the held game piece is not
     // smashed into a field element because the elevator isn't in the final position.
     Command setElevatorPositionCommand =
-        new SetElevatorPosition(
-            elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led);
+        Commands.either(
+            Commands.sequence(
+                new SetElevatorPosition(elevator, () -> Position.CONE_MID_LEVEL, led),
+                Commands.waitSeconds(0.5),
+                new SetElevatorPosition(elevator, () -> Position.CONE_HIGH_LEVEL, led)),
+            new SetElevatorPosition(
+                elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led),
+            () ->
+                SetElevatorPosition.convertGridRowToPosition(oi.getGridRow())
+                        == Position.CONE_HIGH_LEVEL
+                    && this.elevator.getToggledToCone());
     MoveToGrid moveToGridCommand =
         new MoveToGrid(drivetrain); // , 2.0), // replace 2.0 with the time to position the elevator
     // (e.g., setElevatorPosition.getTimeToPosition())
@@ -1093,7 +1150,6 @@ public class RobotContainer {
                         SQUARING_GRID_TIMEOUT_SECONDS)),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
                 () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
-        new ReleaseGamePiece(manipulator),
         Commands.runOnce(led::enableTeleopLED));
   }
 
@@ -1120,6 +1176,22 @@ public class RobotContainer {
         stallOnGamePieceAuto, setElevatorPositionToScoreAuto, dropGamePieceAuto);
   }
 
+  private Command scoreGamePieceAutoHigh() {
+    Command setElevatorPositionToScoreMidAuto =
+        new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led);
+    Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
+    Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
+    Command setElevatorPositionToScoreHighAuto =
+        new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL, led);
+
+    return Commands.sequence(
+        stallOnGamePieceAuto,
+        setElevatorPositionToScoreMidAuto,
+        Commands.waitSeconds(1.0),
+        setElevatorPositionToScoreHighAuto,
+        dropGamePieceAuto);
+  }
+
   private Command collectGamePieceAuto() {
     return Commands.sequence(
         new SetElevatorPosition(elevator, Position.CONE_INTAKE_FLOOR, led),
@@ -1138,6 +1210,7 @@ public class RobotContainer {
         new MoveToLoadingZone(drivetrain, moveToGridPosition);
 
     return Commands.sequence(
+        new ReleaseGamePiece(manipulator),
         /*
          * If move-to-grid is enabled, automatically move the robot to the specified
          * substation location. This command group will complete as soon as the manipulator grabs a
@@ -1181,8 +1254,8 @@ public class RobotContainer {
                 new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition, led),
                 new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
             Commands.runOnce(led::enableTeleopLED),
-            Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.WHITE)),
-            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+        Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.WHITE)));
   }
 
   /**

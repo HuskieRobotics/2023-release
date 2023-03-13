@@ -15,6 +15,6 @@ public final class VisionConstants {
       new File(Filesystem.getDeployDirectory(), "2023-chargedup.json").toPath();
 
   public static final double MAXIMUM_AMBIGUITY = 0.2;
-  public static final double MAX_POSE_DIFFERENCE_METERS = 2.0;
+  public static final double MAX_POSE_DIFFERENCE_METERS = 1000.0;
   public static final double MAX_DISTANCE_TO_TARGET = 3.0;
 }

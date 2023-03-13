@@ -154,9 +154,15 @@ public class Drivetrain extends SubsystemBase {
     this.isMoveToGridEnabled = true;
 
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
-    tabMain.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
-    tabMain.addBoolean("X-Stance On?", this::isXstance);
-    tabMain.addBoolean("Field-Relative Enabled?", () -> this.isFieldRelative);
+    tabMain
+        .addNumber("Gyroscope Angle", () -> getRotation().getDegrees())
+        .withPosition(9, 0)
+        .withSize(1, 1);
+    tabMain.addBoolean("X-Stance On?", this::isXstance).withPosition(7, 0).withSize(1, 1);
+    tabMain
+        .addBoolean("Field-Relative Enabled?", () -> this.isFieldRelative)
+        .withPosition(8, 0)
+        .withSize(1, 1);
 
     if (DEBUGGING) {
       ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
@@ -302,10 +308,8 @@ public class Drivetrain extends SubsystemBase {
     Pose3d pose = poseSupplier.get();
     if (pose != null) {
       noPoseAlert.set(false);
-      poseEstimator.resetPosition(
-          this.getRotation(),
-          swerveModulePositions,
-          new Pose2d(new Translation2d(pose.getX(), pose.getY()), this.getRotation()));
+      setGyroOffset(pose.toPose2d().getRotation().getDegrees());
+      poseEstimator.resetPosition(this.getRotation(), swerveModulePositions, pose.toPose2d());
     } else {
       noPoseAlert.set(true);
     }

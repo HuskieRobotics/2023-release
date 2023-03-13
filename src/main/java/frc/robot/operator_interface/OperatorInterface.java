@@ -198,4 +198,8 @@ public interface OperatorInterface {
   public default Trigger getAutoZeroExtensionButton() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getReleaseTriggerButton() {
+    return new Trigger(() -> false);
+  }
 }

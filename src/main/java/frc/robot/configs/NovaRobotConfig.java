@@ -21,7 +21,8 @@ public class NovaRobotConfig extends RobotConfig {
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 16;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 15;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
-  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 83.49;
+  // FIXME find new offset: 1
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 100.01; // 83.49;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
@@ -107,7 +108,7 @@ public class NovaRobotConfig extends RobotConfig {
   private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.08;
   private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.008;
 
-  private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.8;
+  private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.2;
   private static final double SQUARING_DURATION_SECONDS = 1;
 
   private static final int LED_COUNT = 200;

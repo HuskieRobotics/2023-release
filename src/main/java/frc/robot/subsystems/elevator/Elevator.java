@@ -29,21 +29,27 @@ public class Elevator extends SubsystemBase {
   private boolean manualControlEnabled = false;
   private boolean manualPresetEnabled = false;
   private ElevatorIO io;
+  private boolean reachedExtensionSetpoint = false;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
-    tab.addBoolean("Manual Control Enabled", this::isManualControlEnabled);
-    tab.addBoolean("Manual Preset Enabled", this::isManualPresetEnabled);
+    ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
+    tabMain
+        .addBoolean("Manual Control Enabled", this::isManualControlEnabled)
+        .withPosition(0, 1)
+        .withSize(2, 1);
+    tabMain
+        .addBoolean("Preset Enabled", this::isManualPresetEnabled)
+        .withPosition(0, 2)
+        .withSize(2, 1);
     // get the default instance of NetworkTables
 
     if (DEBUGGING) {
+      ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
       tab.add("elevator", this);
       tab.addNumber("Encoder", this::getExtensionElevatorEncoderHeight);
       tab.addNumber("Angle", this::getRotationElevatorEncoderAngle);
     }
-
-    if (TESTING) {}
   }
 
   @Override
@@ -130,8 +136,15 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean atRotationSetpoint() {
-    return Math.abs(this.inputs.rotationPositionRadians - rotationSetpoint)
-        < ELEVATOR_ROTATION_POSITION_TOLERANCE;
+    // storage position is a special case: if the rotation angle is greater than the setpoint,
+    // which it will be when we stall against the mechanical hard stop, we still want to
+    // return that we are at the setpoint
+    if (this.rotationSetpoint == Units.degreesToRadians(90.0 - 24.173)) {
+      return this.inputs.rotationPositionRadians > this.rotationSetpoint;
+    } else {
+      return Math.abs(this.inputs.rotationPositionRadians - rotationSetpoint)
+          < ELEVATOR_ROTATION_POSITION_TOLERANCE;
+    }
   }
 
   public boolean atExtension(double targetExtension) {
@@ -172,6 +185,7 @@ public class Elevator extends SubsystemBase {
   public void initializePosition(double rotation, double extension) {
     this.extensionIsIncreasing = extension > this.getExtensionElevatorEncoderHeight();
     this.rotationIsIncreasing = rotation > this.getRotationElevatorEncoderAngle();
+    this.reachedExtensionSetpoint = false;
   }
 
   public void setPosition(double rotation, double extension, boolean intakeStored) {
@@ -180,18 +194,16 @@ public class Elevator extends SubsystemBase {
      * the new setpoint values yet. Instead, we will compare the current position to the eventual position.
      */
     if (extensionIsIncreasing && !rotationIsIncreasing) {
-      // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
-      // positions
-      if ((extension < Units.inchesToMeters(52.0))
-          || (this.getRotationElevatorEncoderAngle() < Units.degreesToRadians(90.0 - 35.0))) {
-        this.setElevatorExtension(extension);
-      } else if (this.getRotationElevatorEncoderAngle() > Units.degreesToRadians(90.0 - 32.0)) {
-        this.setElevatorExtension(Units.inchesToMeters(52.0));
-      }
+      this.setElevatorExtension(extension);
 
       if (this.atExtension(extension)) {
+        this.reachedExtensionSetpoint = true;
         this.setElevatorRotation(rotation);
       }
+      // else if (!this.reachedExtensionSetpoint && rotation < Units.degreesToRadians(90.0 - 36.0))
+      // {
+      //   this.setElevatorRotation(Units.degreesToRadians(90.0 - 36.0));
+      // }
     } else if (!extensionIsIncreasing && rotationIsIncreasing) {
       // use a 3 degree hysteresis window to prevent the carriage from oscillating between the
       // positions

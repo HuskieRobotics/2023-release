@@ -317,4 +317,9 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   public Trigger getAutoZeroExtensionButton() {
     return rotateJoystickButtons[9];
   }
+
+  @Override
+  public Trigger getReleaseTriggerButton() {
+    return rotateJoystickButtons[1];
+  }
 }

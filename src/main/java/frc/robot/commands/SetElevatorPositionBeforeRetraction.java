@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class SetElevatorPositionBeforeRetraction extends SetElevatorPosition {
 
   private static final TunableNumber additionalRotation =
-      new TunableNumber("SetElevatorPositionBeforeRetraction/additionalRotation", 5);
+      new TunableNumber("SetElevatorPositionBeforeRetraction/additionalRotation", 15);
 
   public SetElevatorPositionBeforeRetraction(
       Elevator subsystem, Position targetPosition, LEDs led) {

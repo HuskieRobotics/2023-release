@@ -25,6 +25,7 @@ public class AutoBalance extends CommandBase {
   // private double feedforward;
   private boolean finishWhenBalanced;
   private boolean balanced;
+  private boolean started;
   private Timer timer;
   private double timeout;
   // FIXME: Adjust this value for the timeout we determine
@@ -54,13 +55,27 @@ public class AutoBalance extends CommandBase {
     this.timer.restart();
     drivetrain.disableFieldRelative();
     drivetrain.disableXstance();
+    led.changeAnimationTo(AnimationTypes.BLUE);
+    if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
+        && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get()) {
+      started = false;
+    } else {
+      started = true;
+    }
   }
 
   @Override
   public void execute() {
     Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.timer.get());
-
-    led.changeAnimationTo(AnimationTypes.BLUE);
+    if (!started) {
+      // FIXME: Will only work if robot is driving forward onto the charge station. maybe use
+      // overrideFieldRelative set to true to always go right direction
+      drivetrain.drive(MAX_VELOCITY, 0, 0, false, false);
+      if (!(Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
+          && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get())) {
+        started = true;
+      }
+    }
     if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
         && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get()) {
       drivetrain.setXStance();
@@ -73,10 +88,6 @@ public class AutoBalance extends CommandBase {
       // double feedforwardX = Math.sin(yaw.getRadians()) * feedforward;
       // double feedforwardY = Math.cos(yaw.getRadians()) * feedforward;
 
-      // double frontBackOutput = -Math.min(Math.max(frontBack.calculate(roll, 0), -maxVelocity),
-      // maxVelocity);
-      // double leftRightOutput = Math.min(Math.max(leftRight.calculate(pitch, 0), -maxVelocity),
-      // maxVelocity);
       double frontBackOutput = -frontBack.calculate(roll, 0);
       double leftRightOutput = leftRight.calculate(pitch, 0);
       if (Math.abs(frontBackOutput) > MAX_VELOCITY)
@@ -99,6 +110,6 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return (finishWhenBalanced && balanced) || (this.timer.hasElapsed(this.timeout));
+    return (started && finishWhenBalanced && balanced) || (this.timer.hasElapsed(this.timeout));
   }
 }

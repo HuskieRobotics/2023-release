@@ -67,19 +67,19 @@ public class AutoBalance extends CommandBase {
   @Override
   public void execute() {
     Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.timer.get());
+    balanced =
+        Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
+            && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get();
     if (!started) {
       // FIXME: Will only work if robot is driving forward onto the charge station. maybe use
       // overrideFieldRelative set to true to always go right direction
       drivetrain.drive(MAX_VELOCITY, 0, 0, false, false);
-      if (!(Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
-          && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get())) {
+      if (!balanced) {
         started = true;
       }
     }
-    if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
-        && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get()) {
+    if (balanced) {
       drivetrain.setXStance();
-      balanced = true;
     } else {
       drivetrain.disableXstance();
       double pitch = drivetrain.getPitch();

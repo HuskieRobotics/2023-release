@@ -16,13 +16,13 @@ public class AutoBalance extends CommandBase {
   private static final double KI = 0.0;
   private static final double KD = 0.0;
   private static final double MAX_ANGLE_DEG = 10.0;
+  private static final double MAX_VELOCITY = 0.5;
 
   private PIDController frontBack;
   private PIDController leftRight;
   private Drivetrain drivetrain;
   private LEDs led;
   // private double feedforward;
-  private double maxVelocity;
   private boolean finishWhenBalanced;
   private boolean balanced;
   private Timer timer;
@@ -40,7 +40,6 @@ public class AutoBalance extends CommandBase {
     this.frontBack = new PIDController(KP, KI, KD);
     this.leftRight = new PIDController(KP, KI, KD);
     this.finishWhenBalanced = finishWhenBalanced;
-    this.maxVelocity = .5;
   }
 
   @Override
@@ -80,10 +79,10 @@ public class AutoBalance extends CommandBase {
       // maxVelocity);
       double frontBackOutput = -frontBack.calculate(roll, 0);
       double leftRightOutput = leftRight.calculate(pitch, 0);
-      if (Math.abs(frontBackOutput) > maxVelocity)
-        frontBackOutput = Math.copySign(maxVelocity, frontBackOutput);
-      if (Math.abs(leftRightOutput) > maxVelocity)
-        leftRightOutput = Math.copySign(maxVelocity, leftRightOutput);
+      if (Math.abs(frontBackOutput) > MAX_VELOCITY)
+        frontBackOutput = Math.copySign(MAX_VELOCITY, frontBackOutput);
+      if (Math.abs(leftRightOutput) > MAX_VELOCITY)
+        leftRightOutput = Math.copySign(MAX_VELOCITY, leftRightOutput);
 
       drivetrain.drive(
           frontBackOutput /*+ feedforwardX*/, leftRightOutput /*+ feedforwardY*/, 0, true, false);

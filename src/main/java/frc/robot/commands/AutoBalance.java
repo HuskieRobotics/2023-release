@@ -16,7 +16,7 @@ public class AutoBalance extends CommandBase {
   private static final double KI = 0.0;
   private static final double KD = 0.0;
   private static final double MAX_ANGLE_DEG = 10.0;
-  private static final double MAX_VELOCITY = 0.5;
+  private double maxVelocity;
 
   private PIDController frontBack;
   private PIDController leftRight;
@@ -26,6 +26,7 @@ public class AutoBalance extends CommandBase {
   private boolean finishWhenBalanced;
   private boolean balanced;
   private boolean started;
+  private boolean comingFromGrid;
   private Timer timer;
   private double timeout;
   // FIXME: Adjust this value for the timeout we determine
@@ -33,6 +34,11 @@ public class AutoBalance extends CommandBase {
   private static final TunableNumber maxAngle = new TunableNumber("AutoBalance/threshold", 10);
 
   public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
+    this(drivetrain, finishWhenBalanced, led, true);
+  }
+
+  public AutoBalance(
+      Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led, boolean comingFromGrid) {
     this.drivetrain = drivetrain;
     this.led = led;
     this.timer = new Timer();
@@ -41,6 +47,8 @@ public class AutoBalance extends CommandBase {
     this.frontBack = new PIDController(KP, KI, KD);
     this.leftRight = new PIDController(KP, KI, KD);
     this.finishWhenBalanced = finishWhenBalanced;
+    this.comingFromGrid = comingFromGrid;
+    this.maxVelocity = .5;
   }
 
   @Override
@@ -62,6 +70,9 @@ public class AutoBalance extends CommandBase {
     } else {
       started = true;
     }
+    if (!comingFromGrid) {
+      maxVelocity *= -1;
+    }
   }
 
   @Override
@@ -71,14 +82,11 @@ public class AutoBalance extends CommandBase {
         Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
             && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get();
     if (!started) {
-      // FIXME: Will only work if robot is driving forward onto the charge station. maybe use
-      // overrideFieldRelative set to true to always go right direction
-      drivetrain.drive(MAX_VELOCITY, 0, 0, false, false);
+      drivetrain.drive(maxVelocity, 0, 0, false, true);
       if (!balanced) {
         started = true;
       }
-    }
-    if (balanced) {
+    } else if (balanced) {
       drivetrain.setXStance();
     } else {
       drivetrain.disableXstance();
@@ -90,10 +98,10 @@ public class AutoBalance extends CommandBase {
 
       double frontBackOutput = -frontBack.calculate(roll, 0);
       double leftRightOutput = leftRight.calculate(pitch, 0);
-      if (Math.abs(frontBackOutput) > MAX_VELOCITY)
-        frontBackOutput = Math.copySign(MAX_VELOCITY, frontBackOutput);
-      if (Math.abs(leftRightOutput) > MAX_VELOCITY)
-        leftRightOutput = Math.copySign(MAX_VELOCITY, leftRightOutput);
+      if (Math.abs(frontBackOutput) > Math.abs(maxVelocity))
+        frontBackOutput = Math.copySign(maxVelocity, frontBackOutput);
+      if (Math.abs(leftRightOutput) > Math.abs(maxVelocity))
+        leftRightOutput = Math.copySign(maxVelocity, leftRightOutput);
 
       drivetrain.drive(
           frontBackOutput /*+ feedforwardX*/, leftRightOutput /*+ feedforwardY*/, 0, true, false);

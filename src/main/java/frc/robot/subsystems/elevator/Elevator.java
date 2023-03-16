@@ -101,8 +101,8 @@ public class Elevator extends SubsystemBase {
   public void setElevatorExtensionMotorPower(double power) {
     if (this.isManualControlEnabled()) {
       // software stops the elevator from going too far up or down
-      if (this.inputs.extensionPositionMeters > MAX_ELEVATOR_HEIGHT && power > 0
-          || this.inputs.extensionPositionMeters < MIN_ELEVATOR_HEIGHT && power < 0) {
+      if (this.inputs.extensionPositionMeters > Units.inchesToMeters(52.0) && power > 0
+          || this.inputs.extensionPositionMeters < 0 && power < 0) {
         power = 0;
       }
       io.setExtensionMotorPercentage(power * MAX_MANUAL_POWER_EXTENSION);

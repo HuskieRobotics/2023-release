@@ -241,8 +241,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     // stall the rotation motor against the mechanical hard stop when moving into the storage
     // position
-    if (this.rotationSetpoint == Units.degreesToRadians(90.0 - 24.173)
-        && inputs.rotationPositionRadians > Units.degreesToRadians(90.0 - 25)) {
+    if (this.rotationSetpoint == CONE_STORAGE_ROTATION_POSITION
+        && inputs.rotationPositionRadians
+            > CONE_STORAGE_ROTATION_POSITION - STORAGE_ROTATION_POSITION_TOLERANCE) {
       setRotationMotorCurrent(rotationStorageHoldCurrent.get());
     }
 

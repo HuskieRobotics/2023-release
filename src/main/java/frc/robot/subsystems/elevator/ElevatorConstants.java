@@ -35,45 +35,55 @@ public class ElevatorConstants {
     CUBE_HIGH_LEVEL,
   }
 
-  // public static final int EXTENSION_POSITION = 0;
-  // public static final int ROTATION_POSITION = 0;
+  public static final double CONE_HIGH_ROTATION_POSITION = Units.degreesToRadians(42.40);
+  public static final double CONE_MID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 44.0);
+  public static final double CONE_HYBRID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 60.0);
+  public static final double CUBE_HIGH_ROTATION_POSITION = Units.degreesToRadians(90.0 - 53.0);
+  public static final double CUBE_MID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 51.55);
+  public static final double CUBE_HYBRID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 53.88);
 
-  // public static final int TOP_ROTATION_POSITION = 0;
-  // public static final int MID_ROTATION_POSITION = 0;
-  // public static final int LOW_ROTATION_POSITION = 0;
-  // public static final int CONE_INTAKE_ROTATION_POSITION = 0;
-  // public static final int CUBE_INTAKE_ROTATION_POSITION = 0;
-  // public static final int SHELF_ROTATION_POSITION = 0;
-  // public static final int CHUTE_ROTATION_POSITION = 0;
+  public static final double CONE_STORAGE_ROTATION_POSITION = Units.degreesToRadians(90.0 - 24.173);
+  public static final double CUBE_STORAGE_ROTATION_POSITION = Units.degreesToRadians(90.0 - 24.173);
+  public static final double STORAGE_ROTATION_POSITION_TOLERANCE = 0.5;
+  public static final double CONE_GROUND_INTAKE_ROTATION_POSITION =
+      Units.degreesToRadians(90.0 - 77.0);
+  public static final double SHELF_ROTATION_POSITION = Units.degreesToRadians(90.0 - 32.0);
+  public static final double CONE_CHUTE_ROTATION_POSITION = Units.degreesToRadians(90.0 - 27.0);
+  public static final double CUBE_CHUTE_ROTATION_POSITION = Units.degreesToRadians(90.0 - 27.0);
 
-  // public static final int TOP_EXTENSION_POSITION = 0;
-  // public static final int MID_EXTENSION_POSITION = 0;
-  // public static final int LOW_EXTENSION_POSITION = 0;
-  // public static final int CONE_INTAKE_EXTENSION_POSITION = 0;
-  // public static final int CUBE_INTAKE_EXTENSION_POSITION = 0;
-  // public static final int SHELF_EXTENSION_POSITION = 0;
-  // public static final int CHUTE_EXTENSION_POSITION = 0;
+  public static final double CONE_HIGH_EXTENSION_POSITION = Units.inchesToMeters(64.5);
+  public static final double CONE_MID_EXTENSION_POSITION = Units.inchesToMeters(44);
+  public static final double CONE_HYBRID_EXTENSION_POSITION = Units.inchesToMeters(19);
+  public static final double CUBE_HIGH_EXTENSION_POSITION = Units.inchesToMeters(58);
+  public static final double CUBE_MID_EXTENSION_POSITION = Units.inchesToMeters(40.63);
+  public static final double CUBE_HYBRID_EXTENSION_POSITION = Units.inchesToMeters(20.98);
 
-  public static final double TOP_ROTATION_POSITION_TIME = 0;
+  public static final double CONE_STORAGE_EXTENSION_POSITION = 0;
+  public static final double CUBE_STORAGE_EXTENSION_POSITION = 0;
+  public static final double CONE_GROUND_INTAKE_EXTENSION_POSITION = Units.inchesToMeters(34);
+  public static final double SHELF_EXTENSION_POSITION = Units.inchesToMeters(35);
+  public static final double CONE_CHUTE_EXTENSION_POSITION = Units.inchesToMeters(24);
+  public static final double CUBE_CHUTE_EXTENSION_POSITION = Units.inchesToMeters(24);
+
+  public static final double AUTO_STORAGE_ROTATION = CONE_STORAGE_ROTATION_POSITION;
+  public static final double AUTO_STORAGE_EXTENSION = Units.inchesToMeters(34);
+
+  public static final double HIGH_ROTATION_POSITION_TIME = 0;
   public static final double MID_ROTATION_POSITION_TIME = 0;
-  public static final double LOW_ROTATION_POSITION_TIME = 0;
+  public static final double HYBRID_ROTATION_POSITION_TIME = 0;
   public static final double CONE_INTAKE_ROTATION_POSITION_TIME = 0;
   public static final double CUBE_INTAKE_ROTATION_POSITION_TIME = 0;
   public static final double SHELF_ROTATION_POSITION_TIME = 0;
   public static final double CHUTE_ROTATION_POSITION_TIME = 0;
 
-  public static final double TOP_EXTENSION_POSITION_TIME = 0;
+  public static final double HIGH_EXTENSION_POSITION_TIME = 0;
   public static final double MID_EXTENSION_POSITION_TIME = 0;
-  public static final double LOW_EXTENSION_POSITION_TIME = 0;
+  public static final double HYBRID_EXTENSION_POSITION_TIME = 0;
   public static final double CONE_INTAKE_EXTENSION_POSITION_TIME = 0;
   public static final double CUBE_INTAKE_EXTENSION_POSITION_TIME = 0;
   public static final double SHELF_EXTENSION_POSITION_TIME = 0;
   public static final double CHUTE_EXTENSION_POSITION_TIME = 0;
 
-  public static final double MIN_EXTENSION_POSITION = 0.0;
-  public static final double MAX_EXTENSION_POSITION = 1.722;
-
-  // FIXME: change to starting position when holding a cone
   public static final int START_EXTENSION_POSITION_INCHES = 0;
 
   public static final double MIN_ROTATION_POSITION = 0.0;

@@ -236,14 +236,6 @@ public class Elevator extends SubsystemBase {
     this.io.autoZeroExtension();
   }
 
-  public boolean nearExtensionMaximum() {
-    return this.getExtensionElevatorEncoderHeight() > MAX_EXTENSION_POSITION - 2500; // FIXME
-  }
-
-  public boolean nearExtensionMinimum() {
-    return this.getExtensionElevatorEncoderHeight() < MIN_EXTENSION_POSITION + 2500; // FIXME
-  }
-
   public boolean getToggledToCone() {
     return this.toggledToCone;
   }

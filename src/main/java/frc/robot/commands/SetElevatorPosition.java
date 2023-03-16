@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.operator_interface.OperatorInterface.GridRow;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
@@ -107,55 +107,55 @@ public class SetElevatorPosition extends CommandBase {
         break;
       case CONE_STORAGE:
       case CUBE_STORAGE:
-        this.extension = 0.0;
-        this.rotation = Units.degreesToRadians(90.0 - 24.173);
+        this.extension = ElevatorConstants.CUBE_STORAGE_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CUBE_STORAGE_ROTATION_POSITION;
         break;
       case AUTO_STORAGE:
-        this.extension = Units.inchesToMeters(34);
-        this.rotation = Units.degreesToRadians(90.0 - 24.173);
+        this.extension = ElevatorConstants.AUTO_STORAGE_EXTENSION;
+        this.rotation = ElevatorConstants.AUTO_STORAGE_ROTATION;
         this.finishImmediately = true;
         break;
       case CONE_INTAKE_FLOOR:
-        this.extension = Units.inchesToMeters(34);
-        this.rotation = Units.degreesToRadians(90.0 - 77.0);
+        this.extension = ElevatorConstants.CONE_GROUND_INTAKE_ROTATION_POSITION;
+        this.rotation = ElevatorConstants.CONE_GROUND_INTAKE_EXTENSION_POSITION;
         break;
       case CONE_INTAKE_SHELF:
       case CUBE_INTAKE_SHELF:
-        this.extension = Units.inchesToMeters(45);
-        this.rotation = Units.degreesToRadians(90.0 - 42.0);
+        this.extension = ElevatorConstants.SHELF_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.SHELF_ROTATION_POSITION;
         break;
       case CONE_INTAKE_CHUTE:
       case CUBE_INTAKE_CHUTE:
-        this.extension = Units.inchesToMeters(24);
-        this.rotation = Units.degreesToRadians(90.0 - 27.0);
+        this.extension = ElevatorConstants.CUBE_CHUTE_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CUBE_CHUTE_ROTATION_POSITION;
         break;
       case CONE_HYBRID_LEVEL:
-        this.extension = Units.inchesToMeters(19);
-        this.rotation = Units.degreesToRadians(90.0 - 60.0);
+        this.extension = ElevatorConstants.CONE_HYBRID_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CONE_HYBRID_ROTATION_POSITION;
         break;
       case CONE_MID_LEVEL:
-        this.extension = Units.inchesToMeters(44);
-        this.rotation = Units.degreesToRadians(90.0 - 44.0); // 48.0
+        this.extension = ElevatorConstants.CONE_MID_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CONE_MID_ROTATION_POSITION; // 48.0
         break;
       case CONE_HIGH_LEVEL:
-        this.extension = Units.inchesToMeters(64.5);
-        this.rotation = Units.degreesToRadians(42.40);
+        this.extension = ElevatorConstants.CONE_HIGH_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CONE_HIGH_EXTENSION_POSITION;
         break;
       case CUBE_INTAKE_BUMPER:
-        this.extension = Units.inchesToMeters(8);
-        this.rotation = Units.degreesToRadians(90.0 - 43.0);
+        this.extension = ElevatorConstants.CONE_HYBRID_ROTATION_POSITION;
+        this.rotation = ElevatorConstants.CUBE_HYBRID_ROTATION_POSITION;
         break;
       case CUBE_HYBRID_LEVEL:
-        this.extension = Units.inchesToMeters(20.98);
-        this.rotation = Units.degreesToRadians(90.0 - 53.88);
+        this.extension = ElevatorConstants.CUBE_HYBRID_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CUBE_HYBRID_ROTATION_POSITION;
         break;
       case CUBE_MID_LEVEL:
-        this.extension = Units.inchesToMeters(40.63);
-        this.rotation = Units.degreesToRadians(90.0 - 51.55);
+        this.extension = ElevatorConstants.CUBE_MID_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CUBE_MID_ROTATION_POSITION;
         break;
       case CUBE_HIGH_LEVEL:
-        this.extension = Units.inchesToMeters(58);
-        this.rotation = Units.degreesToRadians(90.0 - 53.0);
+        this.extension = ElevatorConstants.CUBE_HIGH_EXTENSION_POSITION;
+        this.rotation = ElevatorConstants.CUBE_HIGH_ROTATION_POSITION;
         break;
     }
 

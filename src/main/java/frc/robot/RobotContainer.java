@@ -976,7 +976,11 @@ public class RobotContainer {
     oi.getResetGyroButton().onTrue(Commands.runOnce(drivetrain::zeroGyroscope, drivetrain));
 
     // Ian release game Piece
-    oi.getReleaseTriggerButton().onTrue(new ReleaseGamePiece(manipulator));
+    oi.getReleaseTriggerButton()
+        .onTrue(
+            Commands.sequence(
+                new ReleaseGamePiece(manipulator),
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)));
 
     // reset pose based on vision
     oi.getResetPoseToVisionButton()

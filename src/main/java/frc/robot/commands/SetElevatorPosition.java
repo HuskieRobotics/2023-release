@@ -188,7 +188,7 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public boolean isFinished() {
-    return this.finishImmediately || elevator.atSetpoint();
+    return (this.finishImmediately || elevator.atSetpoint()) && elevator.getRotationVelocity() == 0.0; // radians/second
   }
 
   public static Position convertGridRowToPosition(GridRow row) {

@@ -23,6 +23,9 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
   private double rotationSetpoint = 0.0;
   private double extensionSetpoint = 0.0;
+  private double currentRotationVelocity = 0.0; // radians per second
+  private double currentRotationPosition = 0.0;
+  private double lastRotationPosition = 0.0;
   private boolean extensionIsIncreasing;
   private boolean rotationIsIncreasing;
   private boolean toggledToCone = true;
@@ -61,6 +64,11 @@ public class Elevator extends SubsystemBase {
     Logger.getInstance().recordOutput("Elevator/extentionAtSetpoint", atExtensionSetpoint());
     Logger.getInstance().recordOutput("Elevator/toggledToCone", getToggledToCone());
 
+    this.lastRotationPosition = this.currentRotationPosition;
+    this.currentRotationPosition = inputs.rotationPositionRadians;
+    this.currentRotationVelocity =
+        Math.abs(this.lastRotationPosition - this.currentRotationPosition) * 50;
+
     // FIXME: update feedforward to call methods once elevator is assembled
     if (TESTING) {
       if (rotationPositionRadians.get() != 0) {
@@ -96,6 +104,10 @@ public class Elevator extends SubsystemBase {
       }
     }
     */
+  }
+
+  public double getRotationVelocity() {
+    return this.currentRotationVelocity;
   }
 
   public void setElevatorExtensionMotorPower(double power) {

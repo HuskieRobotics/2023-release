@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.AnimationTypes;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
@@ -12,16 +13,20 @@ import org.littletonrobotics.junction.Logger;
 
 public class AutoBalance extends CommandBase {
 
-  private static final double KP = 0.04;
-  private static final double KI = 0.0;
-  private static final double KD = 0.0;
+  private static final double KPd = 0.04;
+  private static final double KId = 0.0;
+  private static final double KDd = 0.0;
+  private static final double KPe = 0.04;
+  private static final double KIe = 0.0;
+  private static final double KDe = 0.0;
   private static final double MAX_ANGLE_DEG = 10.0;
   private double maxVelocity;
 
-  private PIDController frontBack;
-  private PIDController leftRight;
+  private PIDController drivePID;
+  private PIDController elevatorPidController;
   private Drivetrain drivetrain;
   private LEDs led;
+  private Elevator elevator;
   // private double feedforward;
   private boolean finishWhenBalanced;
   private boolean balanced;
@@ -33,19 +38,25 @@ public class AutoBalance extends CommandBase {
   private static final TunableNumber tuneTimeout = new TunableNumber("AutoBalance/timeout", 40.0);
   private static final TunableNumber maxAngle = new TunableNumber("AutoBalance/threshold", 10);
 
-  public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
-    this(drivetrain, finishWhenBalanced, led, true);
+  public AutoBalance(
+      Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led, Elevator elevator) {
+    this(drivetrain, finishWhenBalanced, led, elevator, true);
   }
 
   public AutoBalance(
-      Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led, boolean comingFromGrid) {
+      Drivetrain drivetrain,
+      boolean finishWhenBalanced,
+      LEDs led,
+      Elevator elevator,
+      boolean comingFromGrid) {
     this.drivetrain = drivetrain;
     this.led = led;
+    this.elevator = elevator;
     this.timer = new Timer();
-    addRequirements(drivetrain);
+    addRequirements(drivetrain, elevator);
     // this.feedforward = 0;
-    this.frontBack = new PIDController(KP, KI, KD);
-    this.leftRight = new PIDController(KP, KI, KD);
+    this.drivePID = new PIDController(KPd, KId, KDd);
+    this.elevatorPidController = new PIDController(KPe, KIe, KDe);
     this.finishWhenBalanced = finishWhenBalanced;
     this.comingFromGrid = comingFromGrid;
     this.maxVelocity = .5;
@@ -73,6 +84,9 @@ public class AutoBalance extends CommandBase {
     if (!comingFromGrid) {
       maxVelocity *= -1;
     }
+
+    //elevator part
+    elevator.enableManualControl();
   }
 
   @Override
@@ -96,8 +110,8 @@ public class AutoBalance extends CommandBase {
       // double feedforwardX = Math.sin(yaw.getRadians()) * feedforward;
       // double feedforwardY = Math.cos(yaw.getRadians()) * feedforward;
 
-      double frontBackOutput = -frontBack.calculate(roll, 0);
-      double leftRightOutput = leftRight.calculate(pitch, 0);
+      double frontBackOutput = -drivePID.calculate(roll, 0);
+      double leftRightOutput = drivePID.calculate(pitch, 0);
       if (Math.abs(frontBackOutput) > Math.abs(maxVelocity))
         frontBackOutput = Math.copySign(maxVelocity, frontBackOutput);
       if (Math.abs(leftRightOutput) > Math.abs(maxVelocity))
@@ -105,6 +119,8 @@ public class AutoBalance extends CommandBase {
 
       drivetrain.drive(
           frontBackOutput /*+ feedforwardX*/, leftRightOutput /*+ feedforwardY*/, 0, true, false);
+
+      elevator.setElevatorExtensionMotorPower(elevatorPidController.calculate(roll));
     }
   }
 

@@ -1,9 +1,11 @@
 package frc.robot.commands;
 
+import static frc.robot.subsystems.elevator.ElevatorConstants.*;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.lib.team6328.util.TunableNumber;
 import frc.robot.operator_interface.OperatorInterface.GridRow;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.leds.LEDs.RobotStateColors;
@@ -22,6 +24,14 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * <p>At End: continues to hold the elevator at the specified positions
  */
 public class SetElevatorPosition extends CommandBase {
+
+  // positive values rotation finishes after the extension
+  // negative values: extension finishes after the rotation
+  private final TunableNumber extensionRotationProfileOffsetIn =
+      new TunableNumber("Elevator/ProfileDeltaIn(s)", ROTATION_EXTENSION_TIME_OFFSET_IN);
+  private final TunableNumber extensionRotationProfileOffsetOut =
+      new TunableNumber("Elevator/ProfileDeltaIn(s)", ROTATION_EXTENSION_TIME_OFFSET_OUT);
+
   protected Elevator elevator;
   protected double rotation;
   protected double extension;
@@ -50,10 +60,12 @@ public class SetElevatorPosition extends CommandBase {
    * @param subsystem the elevator subsystem this command will control
    * @return
    */
-  public SetElevatorPosition(Elevator subsystem, LoggedDashboardChooser<Position> armChooser) {
+  public SetElevatorPosition(
+      Elevator subsystem, LoggedDashboardChooser<Position> armChooser, LEDs led) {
     this.elevator = subsystem;
     this.armChooser = armChooser;
     this.positionSupplier = () -> Position.INVALID;
+    this.led = led;
 
     addRequirements(elevator);
   }
@@ -100,74 +112,100 @@ public class SetElevatorPosition extends CommandBase {
         break;
     }
 
+    // positive values rotation starts/finishes after the extension
+    // negative values: extension starts/finishes after the rotation
+    double rotationExtensionTimeOffset;
+    boolean applyTimeOffsetAtStart;
+
     switch (position) { // extension is in meters, rotation is in radians
-      case INVALID:
-        this.extension = this.elevator.getExtensionElevatorEncoderHeight();
-        this.rotation = this.elevator.getRotationElevatorEncoderAngle();
-        break;
       case CONE_STORAGE:
       case CUBE_STORAGE:
-        this.extension = ElevatorConstants.CUBE_STORAGE_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CUBE_STORAGE_ROTATION_POSITION;
+        this.extension = CUBE_STORAGE_EXTENSION_POSITION;
+        this.rotation = CUBE_STORAGE_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetIn.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_IN;
         break;
       case AUTO_STORAGE:
-        this.extension = ElevatorConstants.AUTO_STORAGE_EXTENSION;
-        this.rotation = ElevatorConstants.AUTO_STORAGE_ROTATION;
+        this.extension = AUTO_STORAGE_EXTENSION;
+        this.rotation = AUTO_STORAGE_ROTATION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetIn.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_IN;
         this.finishImmediately = true;
         break;
       case CONE_INTAKE_FLOOR:
-        this.extension = ElevatorConstants.CONE_GROUND_INTAKE_ROTATION_POSITION;
-        this.rotation = ElevatorConstants.CONE_GROUND_INTAKE_EXTENSION_POSITION;
+        this.extension = CONE_GROUND_INTAKE_EXTENSION_POSITION;
+        this.rotation = CONE_GROUND_INTAKE_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_INTAKE_SHELF:
       case CUBE_INTAKE_SHELF:
-        this.extension = ElevatorConstants.SHELF_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.SHELF_ROTATION_POSITION;
+        this.extension = SHELF_EXTENSION_POSITION;
+        this.rotation = SHELF_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_INTAKE_CHUTE:
       case CUBE_INTAKE_CHUTE:
-        this.extension = ElevatorConstants.CUBE_CHUTE_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CUBE_CHUTE_ROTATION_POSITION;
+        this.extension = CUBE_CHUTE_EXTENSION_POSITION;
+        this.rotation = CUBE_CHUTE_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_HYBRID_LEVEL:
-        this.extension = ElevatorConstants.CONE_HYBRID_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CONE_HYBRID_ROTATION_POSITION;
+        this.extension = CONE_HYBRID_EXTENSION_POSITION;
+        this.rotation = CONE_HYBRID_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_MID_LEVEL:
-        this.extension = ElevatorConstants.CONE_MID_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CONE_MID_ROTATION_POSITION; // 48.0
+        this.extension = CONE_MID_EXTENSION_POSITION;
+        this.rotation = CONE_MID_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_HIGH_LEVEL:
-        this.extension = ElevatorConstants.CONE_HIGH_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CONE_HIGH_EXTENSION_POSITION;
+        this.extension = CONE_HIGH_EXTENSION_POSITION;
+        this.rotation = CONE_HIGH_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_INTAKE_BUMPER:
-        this.extension = ElevatorConstants.CONE_HYBRID_ROTATION_POSITION;
-        this.rotation = ElevatorConstants.CUBE_HYBRID_ROTATION_POSITION;
+        this.extension = CUBE_HYBRID_EXTENSION_POSITION;
+        this.rotation = CUBE_HYBRID_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_HYBRID_LEVEL:
-        this.extension = ElevatorConstants.CUBE_HYBRID_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CUBE_HYBRID_ROTATION_POSITION;
+        this.extension = CUBE_HYBRID_EXTENSION_POSITION;
+        this.rotation = CUBE_HYBRID_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_MID_LEVEL:
-        this.extension = ElevatorConstants.CUBE_MID_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CUBE_MID_ROTATION_POSITION;
+        this.extension = CUBE_MID_EXTENSION_POSITION;
+        this.rotation = CUBE_MID_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_HIGH_LEVEL:
-        this.extension = ElevatorConstants.CUBE_HIGH_EXTENSION_POSITION;
-        this.rotation = ElevatorConstants.CUBE_HIGH_ROTATION_POSITION;
+        this.extension = CUBE_HIGH_EXTENSION_POSITION;
+        this.rotation = CUBE_HIGH_ROTATION_POSITION;
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
+        break;
+
+      default:
+        this.extension = this.elevator.getExtensionElevatorEncoderHeight();
+        this.rotation = this.elevator.getRotationElevatorEncoderAngle();
+        rotationExtensionTimeOffset = 0.0;
+        applyTimeOffsetAtStart = false;
         break;
     }
 
     elevator.initializePosition(this.rotation, this.extension);
-  }
-
-  @Override
-  public void execute() {
-    // FIXME: need to query the intake subsystem to determine the position of the intake, replace
-    // true with isIntakeEnabled()
-    // led.changeTopStateColor(RobotStateColors.BLINKPINK);
-    elevator.setPosition(this.rotation, this.extension, true);
+    elevator.setPosition(
+        this.rotation, this.extension, rotationExtensionTimeOffset, applyTimeOffsetAtStart);
   }
 
   /**
@@ -188,7 +226,7 @@ public class SetElevatorPosition extends CommandBase {
    */
   @Override
   public boolean isFinished() {
-    return this.finishImmediately || elevator.atSetpoint();
+    return this.finishImmediately || elevator.isAtSetpoint();
   }
 
   public static Position convertGridRowToPosition(GridRow row) {

@@ -16,25 +16,25 @@ public class NovaRobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 13;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 12;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 14;
-  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 37.70;
+  private static final double FRONT_LEFT_MODULE_STEER_OFFSET = 37.52;
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 16;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 15;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 17;
   // FIXME find new offset: 1
-  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 100.01; // 83.49;
+  private static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 99.84; // 83.49;
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 8;
-  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 262.44;
+  private static final double BACK_LEFT_MODULE_STEER_OFFSET = 263.05;
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 10;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 9;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
-  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 9.49;
+  private static final double BACK_RIGHT_MODULE_STEER_OFFSET = 8.0;
 
-  private static final int GYRO_ID = 18;
+  private static final int GYRO_ID = 3;
 
   private static final double TRACKWIDTH_METERS = 0.523875; // 20.625
   private static final double WHEELBASE_METERS = 0.52705; // 20.75

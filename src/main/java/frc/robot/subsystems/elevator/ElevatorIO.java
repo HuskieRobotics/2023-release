@@ -33,14 +33,18 @@ public interface ElevatorIO {
   /** Run the climber open loop at the specified voltage. */
   public default void setExtensionMotorPercentage(double percentage) {}
 
-  /** Run the climber closed loop to the specified position. */
-  public default void setExtensionPosition(double position, double arbitraryFeedForward) {}
-
   /** Run the climber open loop at the specified voltage. */
   public default void setRotationMotorPercentage(double percentage) {}
 
-  /** Run the climber closed loop to the specified position. */
-  public default void setRotationPosition(double position, double arbitraryFeedForward) {}
+  public default void setPosition(
+      double rotation,
+      double extension,
+      double rotationExtensionTimeOffset,
+      boolean applyTimeOffsetAtStart) {}
+
+  public default boolean isAtSetpoint() {
+    return false;
+  }
 
   public default void autoZeroExtension() {}
 }

@@ -453,7 +453,7 @@ public class RobotContainer {
     Command hybridConeCenterPositionEngageCommand =
         Commands.sequence(
             new FollowPath(hybridConeCenterPositionEngagePath.get(0), drivetrain, true, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new FollowPath(hybridConeCenterPositionEngagePath.get(1), drivetrain, false, true),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
@@ -471,7 +471,7 @@ public class RobotContainer {
         Commands.sequence(
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(0), drivetrain, true, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(1), drivetrain, false, true),
             new RotateToAngle(
@@ -495,7 +495,7 @@ public class RobotContainer {
     Command oneConeEngageCenterLeftCommand =
         Commands.sequence(
             newOneConeCenterLeftCommand(),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new FollowPath(centerEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
@@ -507,7 +507,7 @@ public class RobotContainer {
     Command oneConeEngageCenterRightCommand =
         Commands.sequence(
             newOneConeCenterRightCommand(),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new FollowPath(centerEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("1 Cone + Engage (Center, Right)", oneConeEngageCenterRightCommand);
@@ -520,7 +520,7 @@ public class RobotContainer {
     Command oneConeEngageMobilityCenterLeftCommand =
         Commands.sequence(
             newOneConeCenterLeftCommand(),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new FollowPath(centerMobilityPath, drivetrain, false, true),
             new RotateToAngle(
                 drivetrain,
@@ -541,7 +541,7 @@ public class RobotContainer {
     Command oneConeEngageMobilityCenterRightCommand =
         Commands.sequence(
             newOneConeCenterRightCommand(),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new FollowPath(centerMobilityPath, drivetrain, false, true),
             new RotateToAngle(
                 drivetrain,
@@ -590,7 +590,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(cableSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("Cable Side 2 Cone Engage", cableSide2ConeEngageCommand);
 
@@ -612,7 +612,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(cableSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "Cable Side 2 Cone Engage Rotate-in-Place", cableSide2ConeEngageRotateInPlaceCommand);
@@ -652,7 +652,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(0.0))),
             new FollowPath(loadingSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption("Loading Side 2 Cone + Engage", loadingSide2ConeEngageCommand);
 
@@ -675,7 +675,7 @@ public class RobotContainer {
                                 drivetrain.getPose().getY(),
                                 Rotation2d.fromDegrees(0.0))),
                     new FollowPath(loadingSideEngagePath, drivetrain, false, true))),
-            Commands.runOnce(elevator::stopRotation, elevator),
+            Commands.runOnce(elevator::stopElevator, elevator),
             new AutoBalance(drivetrain, true, led));
     autoChooser.addOption(
         "Loading Side 2 Cone + Engage Rotate-in-Place", loadingSide2ConeEngageRotateInPlaceCommand);
@@ -800,7 +800,7 @@ public class RobotContainer {
                     drivetrain.getPose().getX(),
                     drivetrain.getPose().getY(),
                     Rotation2d.fromDegrees(0.0))),
-        Commands.runOnce(elevator::stopRotation, elevator));
+        Commands.runOnce(elevator::stopElevator, elevator));
   }
 
   private Command newOneConeCenterRightCommand() {
@@ -817,7 +817,7 @@ public class RobotContainer {
                     drivetrain.getPose().getX(),
                     drivetrain.getPose().getY(),
                     Rotation2d.fromDegrees(0.0))),
-        Commands.runOnce(elevator::stopRotation, elevator));
+        Commands.runOnce(elevator::stopElevator, elevator));
   }
 
   private Command newCableSide2ConeCommand() {
@@ -1117,17 +1117,8 @@ public class RobotContainer {
     // optimize when it starts moving the robot and to ensure that the held game piece is not
     // smashed into a field element because the elevator isn't in the final position.
     Command setElevatorPositionCommand =
-        Commands.either(
-            Commands.sequence(
-                new SetElevatorPosition(elevator, () -> Position.CONE_MID_LEVEL, led),
-                Commands.waitSeconds(0.5),
-                new SetElevatorPosition(elevator, () -> Position.CONE_HIGH_LEVEL, led)),
-            new SetElevatorPosition(
-                elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led),
-            () ->
-                SetElevatorPosition.convertGridRowToPosition(oi.getGridRow())
-                        == Position.CONE_HIGH_LEVEL
-                    && this.elevator.getToggledToCone());
+        new SetElevatorPosition(
+            elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led);
     MoveToGrid moveToGridCommand =
         new MoveToGrid(drivetrain); // , 2.0), // replace 2.0 with the time to position the elevator
     // (e.g., setElevatorPosition.getTimeToPosition())

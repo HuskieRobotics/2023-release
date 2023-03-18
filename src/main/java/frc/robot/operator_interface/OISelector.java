@@ -90,7 +90,7 @@ public class OISelector {
       return new SingleHandheldOI(xBoxPort);
     } else {
       noOperatorInterfaceWarning.set(true);
-      nonCompetitionOperatorInterfaceWarning.set(false);
+      nonCompetitionOperatorInterfaceWarning.set(true);
       return new OperatorInterface() {};
     }
   }

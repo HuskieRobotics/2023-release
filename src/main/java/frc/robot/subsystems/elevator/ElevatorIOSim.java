@@ -1,16 +1,25 @@
 package frc.robot.subsystems.elevator;
 
 import static frc.robot.Constants.*;
+import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
+import com.ctre.phoenix.motion.TrajectoryPoint;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import frc.lib.team3061.swerve.Conversions;
 import frc.lib.team6328.util.TunableNumber;
+import java.io.FileWriter;
+import java.io.IOException;
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSim implements ElevatorIO {
@@ -26,6 +35,28 @@ public class ElevatorIOSim implements ElevatorIO {
       new TunableNumber("Elevator/RotationKi", SIM_ROTATION_KI);
   private final TunableNumber rotationKd =
       new TunableNumber("Elevator/RotationKd", SIM_ROTATION_KD);
+
+  private final TunableNumber rotationMotionProfileAcceleration =
+      new TunableNumber(
+          "ElevatorRotation/acceleration(degpsps)",
+          ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND);
+  private final TunableNumber rotationMotionProfileExtensionCruiseVelocity =
+      new TunableNumber(
+          "ElevatorRotation/maxVelocity(degps)", MAX_ROTATION_VELOCITY_DEGREES_PER_SECOND);
+
+  private final TunableNumber extensionMotionProfileAcceleration =
+      new TunableNumber(
+          "ElevatorExtension/acceleration(mpsps)",
+          EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND);
+  private final TunableNumber extensionMotionProfileExtensionCruiseVelocity =
+      new TunableNumber(
+          "ElevatorExtension/maxExtensionVelocity(mps)", MAX_EXTENSION_VELOCITY_METERS_PER_SECOND);
+  private final TunableNumber extensionMotionProfileRetractionCruiseVelocity =
+      new TunableNumber(
+          "ElevatorExtension/maxRetractionVelocity(mps)",
+          MAX_RETRACTION_VELOCITY_METERS_PER_SECOND);
+
+  private static final int LOOP_DT_MS = 10;
 
   /* Simulated Angle Motor PID Values */
   private static final double SIM_EXTENSION_KP = 2.0;
@@ -132,12 +163,6 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   @Override
-  public void setExtensionPosition(double position, double arbitraryFeedForward) {
-    isExtensionOpenLoop = false;
-    extensionSetpointMeters = position;
-  }
-
-  @Override
   public void setRotationMotorPercentage(double percentage) {
     isRotationOpenLoop = true;
     rotationController.reset();
@@ -146,8 +171,281 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   @Override
-  public void setRotationPosition(double position, double arbitraryFeedForward) {
-    isRotationOpenLoop = false;
-    rotationSetpointRadians = position;
+  public void setPosition(
+      double rotation,
+      double extension,
+      double rotationExtensionTimeOffset,
+      boolean applyTimeOffsetAtStart) {
+    try {
+      isExtensionOpenLoop = false;
+      isRotationOpenLoop = false;
+      this.rotationSetpointRadians = rotation;
+      this.extensionSetpointMeters = extension;
+
+      // use different motion profiles for the extension based on direction
+      double extensionCruiseVelocity;
+      if (this.extensionSetpointMeters > elevatorSim.getPositionMeters()) {
+        extensionCruiseVelocity = extensionMotionProfileExtensionCruiseVelocity.get();
+      } else {
+        extensionCruiseVelocity = extensionMotionProfileRetractionCruiseVelocity.get();
+      }
+
+      Constraints rotationConstraints =
+          new Constraints(
+              radiansToPigeon(
+                  Units.degreesToRadians(rotationMotionProfileExtensionCruiseVelocity.get())),
+              radiansToPigeon(Units.degreesToRadians(rotationMotionProfileAcceleration.get())));
+      State rotationStartState = new State(radiansToPigeon(armSim.getAngleRads()), 0);
+      TrapezoidProfile rotationProfile =
+          new TrapezoidProfile(
+              rotationConstraints, new State(radiansToPigeon(rotation), 0), rotationStartState);
+
+      Constraints extensionConstraints =
+          new Constraints(
+              Conversions.metersToFalcon(
+                  extensionCruiseVelocity, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
+              Conversions.metersToFalcon(
+                  extensionMotionProfileAcceleration.get(),
+                  EXTENSION_PULLEY_CIRCUMFERENCE,
+                  EXTENSION_GEAR_RATIO));
+      State extensionStartState =
+          new State(
+              Conversions.metersToFalcon(
+                  elevatorSim.getPositionMeters(),
+                  EXTENSION_PULLEY_CIRCUMFERENCE,
+                  EXTENSION_GEAR_RATIO),
+              0);
+      TrapezoidProfile extensionProfile =
+          new TrapezoidProfile(
+              extensionConstraints,
+              new State(
+                  Conversions.metersToFalcon(
+                      extension, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
+                  0),
+              extensionStartState);
+
+      // subtract durationDifference to the time when generating the extension profile
+      double durationDifference =
+          rotationProfile.totalTime() - extensionProfile.totalTime() - rotationExtensionTimeOffset;
+
+      double extensionTimeOffset = 0.0;
+      double rotationTimeOffset = 0.0;
+
+      // FIXME: explain this algorithm
+      if (applyTimeOffsetAtStart) {
+        if (rotationExtensionTimeOffset > 0) {
+          extensionTimeOffset = -rotationExtensionTimeOffset;
+        } else {
+          rotationTimeOffset = rotationExtensionTimeOffset;
+        }
+
+      } else {
+        if (durationDifference > 0) {
+          extensionTimeOffset = -durationDifference;
+        } else {
+          rotationTimeOffset = durationDifference;
+        }
+      }
+
+      TrajectoryPoint point = new TrajectoryPoint();
+
+      FileWriter trajectoryFile = new FileWriter("trajectory1.txt");
+      trajectoryFile.write(
+          "t\trotationPosition\trotationVelocity\textensionPosition\textensionVelocity\tx\ty\n");
+
+      for (double t = 0;
+          !rotationProfile.isFinished(t + rotationTimeOffset - LOOP_DT_MS / 1000.0)
+              || !extensionProfile.isFinished(t + extensionTimeOffset - LOOP_DT_MS / 1000.0);
+          t += LOOP_DT_MS / 1000.0) {
+
+        boolean lastPoint =
+            rotationProfile.isFinished(t + rotationTimeOffset)
+                && extensionProfile.isFinished(t + extensionTimeOffset);
+
+        double rotationPosition;
+        double rotationVelocity;
+        double extensionPosition;
+        double extensionVelocity;
+
+        // we may invoke calculate after the end of the profile; if we do, it just
+        // returns the goal state
+        if (t + rotationTimeOffset >= 0) {
+          rotationPosition = rotationProfile.calculate(t + rotationTimeOffset).position;
+          rotationVelocity = rotationProfile.calculate(t + rotationTimeOffset).velocity;
+        } else {
+          rotationPosition = rotationStartState.position;
+          rotationVelocity = rotationStartState.velocity;
+        }
+
+        if (t + extensionTimeOffset >= 0) {
+          extensionPosition = extensionProfile.calculate(t + extensionTimeOffset).position;
+          extensionVelocity = extensionProfile.calculate(t + extensionTimeOffset).velocity;
+        } else {
+          extensionPosition = extensionStartState.position;
+          extensionVelocity = extensionStartState.velocity;
+        }
+
+        point.timeDur = LOOP_DT_MS;
+        point.position = rotationPosition;
+        point.velocity = rotationVelocity / 10;
+        point.auxiliaryPos = 0;
+        point.auxiliaryVel = 0;
+        point.profileSlotSelect0 = SLOT_INDEX; /* which set of gains would you like to use [0,3]? */
+        point.profileSlotSelect1 = 0; /* auxiliary PID [0,1], leave zero */
+        point.zeroPos = false;
+        point.isLastPoint = lastPoint; /* set this to true on the last point */
+        point.arbFeedFwd =
+            calculateRotationFeedForward(
+                Units.metersToInches(
+                    Conversions.falconToMeters(
+                        extensionPosition, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO)),
+                pigeonToRadians(rotationPosition));
+
+        point.timeDur = LOOP_DT_MS;
+        point.position = extensionPosition;
+        point.velocity = extensionVelocity / 10;
+        point.auxiliaryPos = 0;
+        point.auxiliaryVel = 0;
+        point.profileSlotSelect0 = SLOT_INDEX; /* which set of gains would you like to use [0,3]? */
+        point.profileSlotSelect1 = 0; /* auxiliary PID [0,1], leave zero */
+        point.zeroPos = false;
+        point.isLastPoint = lastPoint; /* set this to true on the last point */
+        point.arbFeedFwd =
+            calculateExtensionFeedForward(
+                Units.metersToInches(
+                    Conversions.falconToMeters(
+                        extensionPosition, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO)),
+                pigeonToRadians(rotationPosition));
+
+        trajectoryFile.write(
+            t
+                + "\t"
+                + Units.radiansToDegrees(pigeonToRadians(rotationPosition))
+                + "\t"
+                + Units.radiansToDegrees(pigeonToRadians(rotationVelocity))
+                + "\t"
+                + Units.metersToInches(
+                    Conversions.falconToMeters(
+                        extensionPosition, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO))
+                + "\t"
+                + Units.metersToInches(
+                    Conversions.falconToMeters(
+                        extensionVelocity, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO))
+                + "\t"
+                + Units.metersToInches(
+                        Conversions.falconToMeters(
+                            extensionPosition,
+                            EXTENSION_PULLEY_CIRCUMFERENCE,
+                            EXTENSION_GEAR_RATIO))
+                    * Math.cos(pigeonToRadians(rotationPosition))
+                + "\t"
+                + Units.metersToInches(
+                        Conversions.falconToMeters(
+                            extensionPosition,
+                            EXTENSION_PULLEY_CIRCUMFERENCE,
+                            EXTENSION_GEAR_RATIO))
+                    * Math.sin(pigeonToRadians(rotationPosition))
+                + "\n");
+      }
+
+      trajectoryFile.close();
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public boolean isAtSetpoint() {
+    boolean extensionIsAtSetpoint = false;
+    boolean rotationIsAtSetpoint = false;
+
+    double extensionPositionMeters = elevatorSim.getPositionMeters();
+    double rotationPositionRadians = armSim.getAngleRads();
+
+    if (this.rotationSetpointRadians == CONE_STORAGE_ROTATION_POSITION) {
+      rotationIsAtSetpoint = rotationPositionRadians > this.rotationSetpointRadians;
+    } else {
+      rotationIsAtSetpoint =
+          Math.abs(rotationPositionRadians - this.rotationSetpointRadians)
+              < ELEVATOR_ROTATION_POSITION_TOLERANCE;
+    }
+
+    extensionIsAtSetpoint =
+        Math.abs(extensionPositionMeters - this.extensionSetpointMeters)
+            < ELEVATOR_EXTENSION_POSITION_TOLERANCE;
+
+    return extensionIsAtSetpoint && rotationIsAtSetpoint;
+  }
+
+  private double pigeonToRadians(double counts) {
+    return counts / PIGEON_UNITS_PER_ROTATION * (2 * Math.PI);
+  }
+
+  private double radiansToPigeon(double radians) {
+    return radians / (2 * Math.PI) * PIGEON_UNITS_PER_ROTATION;
+  }
+
+  private static final double D1 = 39.8;
+  private static final double D2 = 40.3;
+  private static final double D3 = 3.9;
+  private static final double D5 = 40.5;
+  private static final double H1 = 14.0;
+  private static final double H2 = 49.0;
+  private static final double M = 21.6;
+  private static final double T_SPRING = 34.0;
+  private static final double MAX_EXTENSION_BEFORE_MOVING_STAGE_ENGAGEMENT = 34.0;
+  private static final double CARRIAGE_MASS = 8.682;
+  private static final double MOVING_STAGE_MASS = 4.252;
+  private static final double FIXED_STAGE_MASS = 9.223;
+  private static final double F_COLLAPSED_ELEVATOR_AT_11_DEG = 25.712; // FIXME: update after tuning
+  private static final double MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG = 0.05; // FIXME: tune
+  private static final double MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_11_DEG =
+      0.05; // FIXME: tune
+
+  private static double calculateRotationFeedForward(double extension, double rotation) {
+    double r =
+        Math.sqrt(
+            Math.pow((D2 - D1 * Math.sin(rotation)), 2)
+                + Math.pow((D1 * Math.cos(rotation) + D3), 2));
+    double Sa =
+        Math.sqrt(
+            1 - Math.pow((Math.pow(r, 2) + Math.pow(D1, 2) - Math.pow(D5, 2)) / (2 * D1 * r), 2));
+    double h;
+
+    if (extension <= MAX_EXTENSION_BEFORE_MOVING_STAGE_ENGAGEMENT) {
+      h = 14.0 + 0.441176 * extension;
+    } else {
+      h = 0.575539 * extension + 9.43165;
+    }
+
+    double F3 =
+        (M * h * Math.cos(rotation) + T_SPRING * ((2 * rotation / Math.PI) + 1.0 / 3.0))
+            / (D1 * Sa);
+
+    // FIXME: delete after tuning
+    Logger.getInstance().recordOutput("Elevator/rotationFeedForwardF3", F3);
+
+    double feedForward =
+        (MIN_MOTOR_POWER_TO_ROTATE_COLLAPSED_ELEVATOR_AT_11_DEG / F_COLLAPSED_ELEVATOR_AT_11_DEG)
+            * F3;
+    Logger.getInstance().recordOutput("Elevator/rotationFeedForward", feedForward);
+    return feedForward;
+  }
+
+  private static double calculateExtensionFeedForward(double extension, double rotation) {
+    double mass;
+    if (extension <= MAX_EXTENSION_BEFORE_MOVING_STAGE_ENGAGEMENT) {
+      mass = CARRIAGE_MASS;
+    } else {
+      mass = (CARRIAGE_MASS + MOVING_STAGE_MASS) / 2.0; // two belts are now in tension
+    }
+
+    double f = mass * Math.sin(rotation);
+
+    double feedForward =
+        (MIN_MOTOR_POWER_TO_EXTEND_CARRIAGE_AT_60_DEG / (CARRIAGE_MASS * 0.866)) * f;
+    Logger.getInstance().recordOutput("Elevator/extensionFeedForward", feedForward);
+    return feedForward;
   }
 }

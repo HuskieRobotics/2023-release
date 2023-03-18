@@ -225,8 +225,8 @@ public class MK4IRobotConfig extends RobotConfig {
   }
 
   @Override
-  public Transform3d getRobotToCameraTransform() {
-    return ROBOT_TO_CAMERA;
+  public Transform3d[] getRobotToCameraTransforms() {
+    return new Transform3d[] {ROBOT_TO_CAMERA};
   }
 
   @Override
@@ -300,7 +300,7 @@ public class MK4IRobotConfig extends RobotConfig {
   }
 
   @Override
-  public String getCameraName() {
+  public String getCameraName0() {
     return CAMERA_NAME;
   }
 

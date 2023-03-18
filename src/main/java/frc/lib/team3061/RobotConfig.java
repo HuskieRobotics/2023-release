@@ -1,9 +1,7 @@
 package frc.lib.team3061;
 
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.lib.team3061.swerve.SwerveModuleConstants.SwerveType;
 
@@ -275,8 +273,8 @@ public abstract class RobotConfig {
    *
    * @return the 3D transform from the center of the robot to the center of the camera
    */
-  public Transform3d getRobotToCameraTransform() {
-    return new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
+  public Transform3d[] getRobotToCameraTransforms() {
+    return new Transform3d[] {};
   }
 
   /**
@@ -423,7 +421,11 @@ public abstract class RobotConfig {
    *
    * @return the name of the camera used by the vision subsystem
    */
-  public String getCameraName() {
+  public String getCameraName0() {
+    return "";
+  }
+
+  public String getCameraName1() {
     return "";
   }
 

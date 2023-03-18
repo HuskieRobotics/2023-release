@@ -69,7 +69,7 @@ public class SierraRobotConfig extends RobotConfig {
 
   private static final int DRIVER_CAMERA_PORT = 0;
 
-  private static final Transform3d ROBOT_TO_CAMERA =
+  private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(new Translation3d(0.254, 0, 0.648), new Rotation3d(0, 0, 0));
 
   private static final int PNEUMATICS_HUB_ID = 20;
@@ -223,8 +223,8 @@ public class SierraRobotConfig extends RobotConfig {
   }
 
   @Override
-  public Transform3d getRobotToCameraTransform() {
-    return ROBOT_TO_CAMERA;
+  public Transform3d[] getRobotToCameraTransforms() {
+    return new Transform3d[] {ROBOT_TO_CAMERA_0};
   }
 
   @Override
@@ -297,7 +297,7 @@ public class SierraRobotConfig extends RobotConfig {
   }
 
   @Override
-  public String getCameraName() {
+  public String getCameraName0() {
     return CAMERA_NAME;
   }
 

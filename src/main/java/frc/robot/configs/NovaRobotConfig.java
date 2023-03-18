@@ -74,18 +74,28 @@ public class NovaRobotConfig extends RobotConfig {
 
   private static final String CAN_BUS_NAME = "canbus1";
 
-  private static final String CAMERA_NAME = "OV9281";
+  private static final String CAMERA_NAME_0 = "OV9281";
+
+  private static final String CAMERA_NAME_1 = "OV9281R";
 
   private static final int DRIVER_CAMERA_PORT = 0;
 
   // FIXME: update this with the actual transform from the robot to the camera
-  private static final Transform3d ROBOT_TO_CAMERA =
+  private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-11.251),
-              Units.inchesToMeters(7.003),
-              Units.inchesToMeters(49.528)),
-          new Rotation3d(0, Units.degreesToRadians(25), 0));
+              Units.inchesToMeters(-10.406),
+              Units.inchesToMeters(6.603),
+              Units.inchesToMeters(49.240)),
+          new Rotation3d(0, Units.degreesToRadians(25), Units.degreesToRadians(42.5)));
+
+  private static final Transform3d ROBOT_TO_CAMERA_1 =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(-10.406),
+              Units.inchesToMeters(-6.603),
+              Units.inchesToMeters(49.240)),
+          new Rotation3d(0, Units.degreesToRadians(25), Units.degreesToRadians(-42.5)));
 
   // FIXME: specify maximum velocity and acceleration and tune PID values for auto paths
 
@@ -239,8 +249,8 @@ public class NovaRobotConfig extends RobotConfig {
   }
 
   @Override
-  public Transform3d getRobotToCameraTransform() {
-    return ROBOT_TO_CAMERA;
+  public Transform3d[] getRobotToCameraTransforms() {
+    return new Transform3d[] {ROBOT_TO_CAMERA_0, ROBOT_TO_CAMERA_1};
   }
 
   @Override
@@ -314,8 +324,13 @@ public class NovaRobotConfig extends RobotConfig {
   }
 
   @Override
-  public String getCameraName() {
-    return CAMERA_NAME;
+  public String getCameraName0() {
+    return CAMERA_NAME_0;
+  }
+
+  @Override
+  public String getCameraName1() {
+    return CAMERA_NAME_1;
   }
 
   @Override

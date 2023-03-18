@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -184,6 +185,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.remoteFilter0.remoteSensorDeviceID = PIGEON_ID;
     rotationConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.Pigeon_Pitch;
 
+    rotationConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 30, 40, 1);
+
     // rotationConfig.slot0.allowableClosedloopError // left default for this
     // example
     // rotationConfig.slot0.maxIntegralAccumulator; // left default for this example
@@ -208,6 +211,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.slot0.kD = ekD.get();
     extensionConfig.slot0.integralZone = (int) 400;
     extensionConfig.slot0.closedLoopPeakOutput = ekPeakOutput.get();
+
+    extensionConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
+
     // extensionConfig.slot0.allowableClosedloopError // left default for this
     // example
     // extensionConfig.slot0.maxIntegralAccumulator; // left default for this
@@ -287,7 +293,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     if (this.rotationSetpoint == CONE_STORAGE_ROTATION_POSITION
         && inputs.rotationPositionRadians
             > CONE_STORAGE_ROTATION_POSITION - STORAGE_ROTATION_POSITION_TOLERANCE) {
-      setRotationMotorCurrent(rotationStorageHoldCurrent.get());
+      this.rotationMotor.configStatorCurrentLimit(
+          new StatorCurrentLimitConfiguration(true, 5, 5, 0.1));
+      setRotationMotorPercentage(0.2);
     }
 
     // check if the elevator is stuck while trying to rotate; if so, stop the rotation
@@ -355,10 +363,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     this.rotationSetpoint = rotation;
     this.extensionSetpoint = extension;
 
-    // this may allow the current control mode to stop and switch to motion profiling
-    if (this.rotationMotor.getControlMode() == ControlMode.Current) {
-      this.rotationMotor.set(ControlMode.PercentOutput, 0.0);
-    }
+    this.rotationMotor.configStatorCurrentLimit(
+        new StatorCurrentLimitConfiguration(true, 30, 40, 1));
 
     // use different motion profiles for the extension based on direction
     double extensionCruiseVelocity;

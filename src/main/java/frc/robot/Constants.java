@@ -23,7 +23,7 @@ import frc.lib.team6328.util.Alert.AlertType;
 public final class Constants {
 
   // FIXME: set to false after testing
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
 
   private static final RobotType ROBOT = RobotType.ROBOT_2023_NOVA;
 

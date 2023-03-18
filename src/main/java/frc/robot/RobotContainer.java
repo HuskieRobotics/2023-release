@@ -497,7 +497,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true, led));
+            new AutoBalance(drivetrain, true, led, false));
     autoChooser.addOption(
         "Hybrid Cone Center Position + Mobility + Engage",
         hybridConeCenterPositionMobilityEngageCommand);
@@ -545,7 +545,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true, led));
+            new AutoBalance(drivetrain, true, led, false));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility (Center, Left)", oneConeEngageMobilityCenterLeftCommand);
 
@@ -566,7 +566,7 @@ public class RobotContainer {
                         drivetrain.getPose().getY(),
                         Rotation2d.fromDegrees(180.0))),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true, led));
+            new AutoBalance(drivetrain, true, led, false));
     autoChooser.addOption(
         "1 Cone + Engage + Mobility (Center, Right)", oneConeEngageMobilityCenterRightCommand);
 

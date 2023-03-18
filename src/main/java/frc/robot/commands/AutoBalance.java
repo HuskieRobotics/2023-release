@@ -16,15 +16,17 @@ public class AutoBalance extends CommandBase {
   private static final double KI = 0.0;
   private static final double KD = 0.0;
   private static final double MAX_ANGLE_DEG = 10.0;
+  private double maxVelocity;
 
   private PIDController frontBack;
   private PIDController leftRight;
   private Drivetrain drivetrain;
   private LEDs led;
   // private double feedforward;
-  private double maxVelocity;
   private boolean finishWhenBalanced;
   private boolean balanced;
+  private boolean started;
+  private boolean comingFromGrid;
   private Timer timer;
   private double timeout;
   // FIXME: Adjust this value for the timeout we determine
@@ -32,6 +34,11 @@ public class AutoBalance extends CommandBase {
   private static final TunableNumber maxAngle = new TunableNumber("AutoBalance/threshold", 10);
 
   public AutoBalance(Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led) {
+    this(drivetrain, finishWhenBalanced, led, true);
+  }
+
+  public AutoBalance(
+      Drivetrain drivetrain, boolean finishWhenBalanced, LEDs led, boolean comingFromGrid) {
     this.drivetrain = drivetrain;
     this.led = led;
     this.timer = new Timer();
@@ -40,6 +47,7 @@ public class AutoBalance extends CommandBase {
     this.frontBack = new PIDController(KP, KI, KD);
     this.leftRight = new PIDController(KP, KI, KD);
     this.finishWhenBalanced = finishWhenBalanced;
+    this.comingFromGrid = comingFromGrid;
     this.maxVelocity = .5;
   }
 
@@ -55,17 +63,32 @@ public class AutoBalance extends CommandBase {
     this.timer.restart();
     drivetrain.disableFieldRelative();
     drivetrain.disableXstance();
+    led.changeAnimationTo(AnimationTypes.BLUE);
+    if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
+        && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get()) {
+      started = false;
+    } else {
+      started = true;
+    }
+    if (!comingFromGrid) {
+      maxVelocity *= -1;
+    }
   }
 
   @Override
   public void execute() {
     Logger.getInstance().recordOutput("AutoBalanceNonStop/time", this.timer.get());
-
-    led.changeAnimationTo(AnimationTypes.BLUE);
-    if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
-        && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get()) {
+    balanced =
+        Math.max(drivetrain.getPitch(), drivetrain.getRoll()) < maxAngle.get()
+            && Math.min(drivetrain.getPitch(), drivetrain.getRoll()) > -maxAngle.get();
+    if (!started) {
+      drivetrain.drive(maxVelocity, 0, 0, false, true);
+      if (Math.max(drivetrain.getPitch(), drivetrain.getRoll()) > maxAngle.get() + 3
+          || Math.min(drivetrain.getPitch(), drivetrain.getRoll()) < -maxAngle.get() - 3) {
+        started = true;
+      }
+    } else if (balanced) {
       drivetrain.setXStance();
-      balanced = true;
     } else {
       drivetrain.disableXstance();
       double pitch = drivetrain.getPitch();
@@ -74,15 +97,11 @@ public class AutoBalance extends CommandBase {
       // double feedforwardX = Math.sin(yaw.getRadians()) * feedforward;
       // double feedforwardY = Math.cos(yaw.getRadians()) * feedforward;
 
-      // double frontBackOutput = -Math.min(Math.max(frontBack.calculate(roll, 0), -maxVelocity),
-      // maxVelocity);
-      // double leftRightOutput = Math.min(Math.max(leftRight.calculate(pitch, 0), -maxVelocity),
-      // maxVelocity);
       double frontBackOutput = -frontBack.calculate(roll, 0);
       double leftRightOutput = leftRight.calculate(pitch, 0);
-      if (Math.abs(frontBackOutput) > maxVelocity)
+      if (Math.abs(frontBackOutput) > Math.abs(maxVelocity))
         frontBackOutput = Math.copySign(maxVelocity, frontBackOutput);
-      if (Math.abs(leftRightOutput) > maxVelocity)
+      if (Math.abs(leftRightOutput) > Math.abs(maxVelocity))
         leftRightOutput = Math.copySign(maxVelocity, leftRightOutput);
 
       drivetrain.drive(
@@ -100,6 +119,6 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return (finishWhenBalanced && balanced) || (this.timer.hasElapsed(this.timeout));
+    return (started && finishWhenBalanced && balanced) || (this.timer.hasElapsed(this.timeout));
   }
 }

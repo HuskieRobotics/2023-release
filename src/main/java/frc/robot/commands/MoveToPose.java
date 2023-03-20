@@ -68,6 +68,8 @@ public abstract class MoveToPose extends CommandBase {
     this.drivetrain.getAutoYController().reset();
     this.drivetrain.getAutoThetaController().reset();
 
+    double beforeCalc = Logger.getInstance().getRealTimestamp();
+
     Pose2d endPose = endPose();
     Pose2d startingPose =
         new Pose2d(
@@ -105,6 +107,10 @@ public abstract class MoveToPose extends CommandBase {
               this.drivetrain.getAutoThetaController(),
               this.drivetrain::setSwerveModuleStates);
       this.ppSwerveControllerCommand.initialize();
+      
+      double afterCalc = Logger.getInstance().getRealTimestamp();
+
+      Logger.getInstance().recordOutput("Odometry/trajectoryCalcTime", afterCalc - beforeCalc);
 
       Logger.getInstance().recordOutput("Odometry/trajectory", trajectory);
     }

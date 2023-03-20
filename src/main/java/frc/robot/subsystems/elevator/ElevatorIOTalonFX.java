@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -67,26 +68,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       new TunableNumber("ElevatorExtension/kF", EXTENSION_POSITION_PID_F);
   private final TunableNumber ekPeakOutput =
       new TunableNumber("ElevatorExtension/kPeakOutput", EXTENSION_POSITION_PID_PEAK_OUTPUT);
-
-  private final TunableNumber rotationMotionProfileAcceleration =
-      new TunableNumber(
-          "ElevatorRotation/acceleration(degpsps)",
-          ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND);
-  private final TunableNumber rotationMotionProfileExtensionCruiseVelocity =
-      new TunableNumber(
-          "ElevatorRotation/maxVelocity(degps)", MAX_ROTATION_VELOCITY_DEGREES_PER_SECOND);
-
-  private final TunableNumber extensionMotionProfileAcceleration =
-      new TunableNumber(
-          "ElevatorExtension/acceleration(mpsps)",
-          EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND);
-  private final TunableNumber extensionMotionProfileExtensionCruiseVelocity =
-      new TunableNumber(
-          "ElevatorExtension/maxExtensionVelocity(mps)", MAX_EXTENSION_VELOCITY_METERS_PER_SECOND);
-  private final TunableNumber extensionMotionProfileRetractionCruiseVelocity =
-      new TunableNumber(
-          "ElevatorExtension/maxRetractionVelocity(mps)",
-          MAX_RETRACTION_VELOCITY_METERS_PER_SECOND);
 
   private final TunableNumber rotationStuckMinPositionDelta =
       new TunableNumber("ElevatorRotation/StuckMinPositionDelta", 0.005);
@@ -179,10 +160,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.slot0.kI = rkI.get();
     rotationConfig.slot0.kD = rkD.get();
     rotationConfig.slot0.integralZone = (int) 400;
+
     rotationConfig.slot0.closedLoopPeakOutput = rkPeakOutput.get();
 
     rotationConfig.remoteFilter0.remoteSensorDeviceID = PIGEON_ID;
     rotationConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.Pigeon_Pitch;
+    rotationConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 30, 40, 1);
 
     // rotationConfig.slot0.allowableClosedloopError // left default for this
     // example
@@ -208,6 +191,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.slot0.kD = ekD.get();
     extensionConfig.slot0.integralZone = (int) 400;
     extensionConfig.slot0.closedLoopPeakOutput = ekPeakOutput.get();
+
+    extensionConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
+
     // extensionConfig.slot0.allowableClosedloopError // left default for this
     // example
     // extensionConfig.slot0.maxIntegralAccumulator; // left default for this
@@ -351,33 +337,28 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void setPosition(
       double rotation,
+      double rotationCruiseVelocity,
+      double rotationAcceleration,
       double extension,
+      double extensionCruiseVelocity,
+      double extensionAcceleration,
       double rotationExtensionTimeOffset,
       boolean applyTimeOffsetAtStart) {
 
     this.rotationSetpoint = rotation;
     this.extensionSetpoint = extension;
 
+    double startTime = Logger.getInstance().getRealTimestamp();
+
     // this may allow the current control mode to stop and switch to motion profiling
     if (this.rotationMotor.getControlMode() == ControlMode.Current) {
       this.rotationMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
-    // use different motion profiles for the extension based on direction
-    double extensionCruiseVelocity;
-    if (Conversions.metersToFalcon(
-            this.extensionSetpoint, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO)
-        > this.extensionMotor.getSelectedSensorPosition(SLOT_INDEX)) {
-      extensionCruiseVelocity = extensionMotionProfileExtensionCruiseVelocity.get();
-    } else {
-      extensionCruiseVelocity = extensionMotionProfileRetractionCruiseVelocity.get();
-    }
-
     Constraints rotationConstraints =
         new Constraints(
-            radiansToPigeon(
-                Units.degreesToRadians(rotationMotionProfileExtensionCruiseVelocity.get())),
-            radiansToPigeon(Units.degreesToRadians(rotationMotionProfileAcceleration.get())));
+            radiansToPigeon(Units.degreesToRadians(rotationCruiseVelocity)),
+            radiansToPigeon(Units.degreesToRadians(rotationAcceleration)));
     State rotationStartState =
         new State(this.rotationMotor.getSelectedSensorPosition(SLOT_INDEX), 0);
     TrapezoidProfile rotationProfile =
@@ -389,9 +370,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             Conversions.metersToFalcon(
                 extensionCruiseVelocity, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
             Conversions.metersToFalcon(
-                extensionMotionProfileAcceleration.get(),
-                EXTENSION_PULLEY_CIRCUMFERENCE,
-                EXTENSION_GEAR_RATIO));
+                extensionAcceleration, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO));
     State extensionStartState =
         new State(this.extensionMotor.getSelectedSensorPosition(SLOT_INDEX), 0);
     TrapezoidProfile extensionProfile =
@@ -500,6 +479,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
       extensionBufferedStream.Write(point);
     }
+
+    Logger.getInstance()
+        .recordOutput(
+            "Elevator/motionProfileGenerationTime",
+            Logger.getInstance().getRealTimestamp() - startTime);
 
     rotationMotor.startMotionProfile(
         rotationBufferedStream, 10, TalonFXControlMode.MotionProfile.toControlMode());

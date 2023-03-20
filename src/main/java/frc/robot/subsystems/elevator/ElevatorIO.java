@@ -38,7 +38,11 @@ public interface ElevatorIO {
 
   public default void setPosition(
       double rotation,
+      double rotationCruiseVelocity,
+      double rotationAcceleration,
       double extension,
+      double extensionCruiseVelocity,
+      double extensionAcceleration,
       double rotationExtensionTimeOffset,
       boolean applyTimeOffsetAtStart) {}
 

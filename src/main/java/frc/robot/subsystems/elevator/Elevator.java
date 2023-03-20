@@ -120,13 +120,25 @@ public class Elevator extends SubsystemBase {
 
   public void setPosition(
       double rotation,
+      double rotationCruiseVelocity,
+      double rotationAcceleration,
       double extension,
+      double extensionCruiseVelocity,
+      double extensionAcceleration,
       double rotationExtensionTimeOffset,
       boolean applyTimeOffsetAtStart) {
     this.extensionSetpoint = extension;
     this.rotationSetpoint = rotation;
 
-    io.setPosition(rotation, extension, rotationExtensionTimeOffset, applyTimeOffsetAtStart);
+    io.setPosition(
+        rotation,
+        rotationCruiseVelocity,
+        rotationAcceleration,
+        extension,
+        extensionCruiseVelocity,
+        extensionAcceleration,
+        rotationExtensionTimeOffset,
+        applyTimeOffsetAtStart);
   }
 
   public void autoZeroExtension() {

@@ -25,6 +25,40 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class SetElevatorPosition extends CommandBase {
 
+  private final TunableNumber maxExtensionVelocity =
+      new TunableNumber("Elevator/MaxExtensionVel(mps)", MAX_EXTENSION_VELOCITY_METERS_PER_SECOND);
+  private final TunableNumber maxExtensionAcceleration =
+      new TunableNumber(
+          "Elevator/MaxExtensionAccel(mpsps)", EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND);
+  private final TunableNumber maxRetractionVelocity =
+      new TunableNumber(
+          "Elevator/MaxRetractionVel(mps)", MAX_RETRACTION_VELOCITY_METERS_PER_SECOND);
+  private final TunableNumber maxRetractionAcceleration =
+      new TunableNumber(
+          "Elevator/MaxRetractionAccel(mpsps)",
+          RETRACTION_ACCELERATION_METERS_PER_SECOND_PER_SECOND);
+
+  private final TunableNumber fastRotationVelocity =
+      new TunableNumber("Elevator/FastRotationVel(dps)", FAST_ROTATION_VELOCITY_DEGREES_PER_SECOND);
+  private final TunableNumber meidumRotationVelocity =
+      new TunableNumber(
+          "Elevator/MediumRotationVel(dps)", MEDIUM_ROTATION_VELOCITY_DEGREES_PER_SECOND);
+  private final TunableNumber slowRotationVelocity =
+      new TunableNumber("Elevator/SlowRotationVel(dps)", SLOW_ROTATION_VELOCITY_DEGREES_PER_SECOND);
+
+  private final TunableNumber fastRotationAcceleration =
+      new TunableNumber(
+          "Elevator/FastRotationAccel(dpsps)",
+          FAST_ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND);
+  private final TunableNumber mediumRotationAcceleration =
+      new TunableNumber(
+          "Elevator/MediumRotationAccel(dpsps)",
+          MEDIUM_ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND);
+  private final TunableNumber slowRotationAcceleration =
+      new TunableNumber(
+          "Elevator/SlowRotationAccel(dpsps)",
+          SLOW_ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND);
+
   // positive values rotation finishes after the extension
   // negative values: extension finishes after the rotation
   private final TunableNumber extensionRotationProfileOffsetIn =
@@ -112,6 +146,11 @@ public class SetElevatorPosition extends CommandBase {
         break;
     }
 
+    double extensionCruiseVelocity = maxExtensionVelocity.get();
+    double extensionAcceleration = maxExtensionAcceleration.get();
+    double rotationCruiseVelocity;
+    double rotationAcceleration;
+
     // positive values rotation starts/finishes after the extension
     // negative values: extension starts/finishes after the rotation
     double rotationExtensionTimeOffset;
@@ -121,13 +160,21 @@ public class SetElevatorPosition extends CommandBase {
       case CONE_STORAGE:
       case CUBE_STORAGE:
         this.extension = CUBE_STORAGE_EXTENSION_POSITION;
+        extensionCruiseVelocity = maxRetractionVelocity.get();
+        extensionAcceleration = maxRetractionAcceleration.get();
         this.rotation = CUBE_STORAGE_ROTATION_POSITION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetIn.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_IN;
         break;
       case AUTO_STORAGE:
         this.extension = AUTO_STORAGE_EXTENSION;
+        extensionCruiseVelocity = maxRetractionVelocity.get();
+        extensionAcceleration = maxRetractionAcceleration.get();
         this.rotation = AUTO_STORAGE_ROTATION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetIn.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_IN;
         this.finishImmediately = true;
@@ -135,6 +182,8 @@ public class SetElevatorPosition extends CommandBase {
       case CONE_INTAKE_FLOOR:
         this.extension = CONE_GROUND_INTAKE_EXTENSION_POSITION;
         this.rotation = CONE_GROUND_INTAKE_ROTATION_POSITION;
+        rotationCruiseVelocity = meidumRotationVelocity.get();
+        rotationAcceleration = mediumRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
@@ -142,6 +191,8 @@ public class SetElevatorPosition extends CommandBase {
       case CUBE_INTAKE_SHELF:
         this.extension = SHELF_EXTENSION_POSITION;
         this.rotation = SHELF_ROTATION_POSITION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
@@ -149,48 +200,64 @@ public class SetElevatorPosition extends CommandBase {
       case CUBE_INTAKE_CHUTE:
         this.extension = CUBE_CHUTE_EXTENSION_POSITION;
         this.rotation = CUBE_CHUTE_ROTATION_POSITION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_HYBRID_LEVEL:
         this.extension = CONE_HYBRID_EXTENSION_POSITION;
         this.rotation = CONE_HYBRID_ROTATION_POSITION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_MID_LEVEL:
         this.extension = CONE_MID_EXTENSION_POSITION;
         this.rotation = CONE_MID_ROTATION_POSITION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CONE_HIGH_LEVEL:
         this.extension = CONE_HIGH_EXTENSION_POSITION;
         this.rotation = CONE_HIGH_ROTATION_POSITION;
+        rotationCruiseVelocity = slowRotationVelocity.get();
+        rotationAcceleration = slowRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_INTAKE_BUMPER:
         this.extension = CUBE_HYBRID_EXTENSION_POSITION;
         this.rotation = CUBE_HYBRID_ROTATION_POSITION;
+        rotationCruiseVelocity = meidumRotationVelocity.get();
+        rotationAcceleration = mediumRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_HYBRID_LEVEL:
         this.extension = CUBE_HYBRID_EXTENSION_POSITION;
         this.rotation = CUBE_HYBRID_ROTATION_POSITION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_MID_LEVEL:
         this.extension = CUBE_MID_EXTENSION_POSITION;
         this.rotation = CUBE_MID_ROTATION_POSITION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
       case CUBE_HIGH_LEVEL:
         this.extension = CUBE_HIGH_EXTENSION_POSITION;
         this.rotation = CUBE_HIGH_ROTATION_POSITION;
+        rotationCruiseVelocity = meidumRotationVelocity.get();
+        rotationAcceleration = mediumRotationAcceleration.get();
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
@@ -198,6 +265,8 @@ public class SetElevatorPosition extends CommandBase {
       default:
         this.extension = this.elevator.getExtensionElevatorEncoderHeight();
         this.rotation = this.elevator.getRotationElevatorEncoderAngle();
+        rotationCruiseVelocity = slowRotationVelocity.get();
+        rotationAcceleration = slowRotationAcceleration.get();
         rotationExtensionTimeOffset = 0.0;
         applyTimeOffsetAtStart = false;
         break;
@@ -205,7 +274,14 @@ public class SetElevatorPosition extends CommandBase {
 
     elevator.initializePosition(this.rotation, this.extension);
     elevator.setPosition(
-        this.rotation, this.extension, rotationExtensionTimeOffset, applyTimeOffsetAtStart);
+        this.rotation,
+        rotationCruiseVelocity,
+        rotationAcceleration,
+        this.extension,
+        extensionCruiseVelocity,
+        extensionAcceleration,
+        rotationExtensionTimeOffset,
+        applyTimeOffsetAtStart);
   }
 
   /**

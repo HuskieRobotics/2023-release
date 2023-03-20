@@ -14,7 +14,7 @@ public class ManipulatorConstants {
   public static final int MANIPULATOR_MOTOR_ID = 1;
   public static final int MANIPULATOR_SENSOR_ID = 0;
   public static final StatorCurrentLimitConfiguration MANIPULATOR_CURRENT_LIMIT_CLOSE =
-      new StatorCurrentLimitConfiguration(true, 30, 50, 0.5);
+      new StatorCurrentLimitConfiguration(true, 20, 40, 0.5);
   public static final StatorCurrentLimitConfiguration MANIPULATOR_CURRENT_LIMIT_OPEN =
       new StatorCurrentLimitConfiguration(true, 10, 20, 0.5);
   public static final double MANIPULATOR_POWER = 1;

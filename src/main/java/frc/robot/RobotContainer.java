@@ -49,7 +49,6 @@ import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
 import frc.robot.commands.RotateToAngle;
 import frc.robot.commands.SetElevatorPosition;
-import frc.robot.commands.SetElevatorPositionBeforeRetraction;
 import frc.robot.commands.SetIntakeState;
 import frc.robot.commands.StallAgainstElement;
 import frc.robot.commands.TeleopSwerve;
@@ -1262,9 +1261,7 @@ public class RobotContainer {
                     () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()))),
         Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.BLINKGREEN)),
         Commands.parallel(
-            Commands.sequence(
-                new SetElevatorPositionBeforeRetraction(elevator, elevatorPosition, led),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
             Commands.runOnce(led::enableTeleopLED),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
         Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.WHITE)));

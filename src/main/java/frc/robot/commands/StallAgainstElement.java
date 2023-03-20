@@ -78,17 +78,9 @@ public class StallAgainstElement extends CommandBase {
   public void execute() {
     Rotation2d rotation = this.targetPose.getRotation();
 
-    // use different velocity, closed loop for stalling against substation
-    if (this.timeout == 6.0) {
-      double xVelocity = 0.2 * rotation.getCos();
-      double yVelocity = 0.2 * rotation.getSin();
-
-      drivetrain.drive(xVelocity, yVelocity, 0.0, false, true);
-    } else {
-      double xVelocity = 0.8 * rotation.getCos();
-      double yVelocity = 0.8 * rotation.getSin();
-      drivetrain.drive(xVelocity, yVelocity, 0.0, true, true);
-    }
+    double xVelocity = 0.8 * rotation.getCos();
+    double yVelocity = 0.8 * rotation.getSin();
+    drivetrain.drive(xVelocity, yVelocity, 0.0, true, true);
   }
 
   @Override

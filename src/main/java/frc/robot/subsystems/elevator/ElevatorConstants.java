@@ -38,28 +38,28 @@ public class ElevatorConstants {
   // FIXME: make tunable and tune
   public static final double ROTATION_EXTENSION_TIME_OFFSET_OUT = 0.25;
   public static final boolean APPLY_TIME_OFFSET_AT_START_OUT = false;
-  public static final double ROTATION_EXTENSION_TIME_OFFSET_IN = 0.25;
+  public static final double ROTATION_EXTENSION_TIME_OFFSET_IN = 0.5;
   public static final boolean APPLY_TIME_OFFSET_AT_START_IN = true;
 
-  public static final double CONE_HIGH_ROTATION_POSITION = Units.degreesToRadians(42.40);
-  public static final double CONE_HIGH_EXTENSION_POSITION = Units.inchesToMeters(64.5);
+  public static final double CONE_HIGH_ROTATION_POSITION = 0.7271;
+  public static final double CONE_HIGH_EXTENSION_POSITION = 1.6341;
 
-  public static final double CONE_MID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 44.0);
-  public static final double CONE_MID_EXTENSION_POSITION = Units.inchesToMeters(44);
+  public static final double CONE_MID_ROTATION_POSITION = 0.7777;
+  public static final double CONE_MID_EXTENSION_POSITION = 1.2103;
 
-  public static final double CONE_HYBRID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 60.0);
-  public static final double CONE_HYBRID_EXTENSION_POSITION = Units.inchesToMeters(19);
+  public static final double CONE_HYBRID_ROTATION_POSITION = 0.9832;
+  public static final double CONE_HYBRID_EXTENSION_POSITION = 0.6823;
 
-  public static final double CUBE_HIGH_ROTATION_POSITION = Units.degreesToRadians(90.0 - 53.0);
+  public static final double CUBE_HIGH_ROTATION_POSITION = Units.degreesToRadians(90.0 - 52.0);
   public static final double CUBE_HIGH_EXTENSION_POSITION = Units.inchesToMeters(58);
 
   public static final double CUBE_MID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 51.55);
   public static final double CUBE_MID_EXTENSION_POSITION = Units.inchesToMeters(40.63);
 
-  public static final double CUBE_HYBRID_ROTATION_POSITION = Units.degreesToRadians(90.0 - 53.88);
-  public static final double CUBE_HYBRID_EXTENSION_POSITION = Units.inchesToMeters(20.98);
+  public static final double CUBE_HYBRID_ROTATION_POSITION = CONE_HYBRID_ROTATION_POSITION;
+  public static final double CUBE_HYBRID_EXTENSION_POSITION = CONE_HYBRID_EXTENSION_POSITION;
 
-  public static final double CONE_STORAGE_ROTATION_POSITION = Units.degreesToRadians(68.755);
+  public static final double CONE_STORAGE_ROTATION_POSITION = 1.3;
   public static final double CONE_STORAGE_EXTENSION_POSITION = 0;
 
   public static final double CUBE_STORAGE_ROTATION_POSITION = CONE_STORAGE_ROTATION_POSITION;
@@ -128,14 +128,17 @@ public class ElevatorConstants {
   public static final int PIGEON_ID = 4;
   public static final double EXTENSION_SLOW_PEAK_OUTPUT = 0.15;
 
-  // FIXME: TUNE with game piece and weighted robot
   public static final double MAX_EXTENSION_VELOCITY_METERS_PER_SECOND = 1.5;
-  public static final double MAX_RETRACTION_VELOCITY_METERS_PER_SECOND = 1.5;
   public static final double EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 3.0;
+  public static final double MAX_RETRACTION_VELOCITY_METERS_PER_SECOND = 2.5;
+  public static final double RETRACTION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 7.0;
 
-  public static final double MAX_ROTATION_VELOCITY_DEGREES_PER_SECOND = 45.0; // ;50.0;//25.0
-  public static final double ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND =
-      75.0; // 100.0;//50.0
+  public static final double FAST_ROTATION_VELOCITY_DEGREES_PER_SECOND = 50.0;
+  public static final double MEDIUM_ROTATION_VELOCITY_DEGREES_PER_SECOND = 45.0;
+  public static final double SLOW_ROTATION_VELOCITY_DEGREES_PER_SECOND = 25.0;
+  public static final double FAST_ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND = 100.0;
+  public static final double MEDIUM_ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND = 75.0;
+  public static final double SLOW_ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND = 50.0;
 
   public static final double ELEVATOR_EXTENSION_POSITION_TOLERANCE = .02;
   public static final double MAX_MANUAL_POWER_EXTENSION = 0.2;

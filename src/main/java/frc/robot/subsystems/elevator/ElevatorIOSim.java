@@ -36,26 +36,6 @@ public class ElevatorIOSim implements ElevatorIO {
   private final TunableNumber rotationKd =
       new TunableNumber("Elevator/RotationKd", SIM_ROTATION_KD);
 
-  private final TunableNumber rotationMotionProfileAcceleration =
-      new TunableNumber(
-          "ElevatorRotation/acceleration(degpsps)",
-          ROTATION_ACCELERATION_DEGREES_PER_SECOND_PER_SECOND);
-  private final TunableNumber rotationMotionProfileExtensionCruiseVelocity =
-      new TunableNumber(
-          "ElevatorRotation/maxVelocity(degps)", MAX_ROTATION_VELOCITY_DEGREES_PER_SECOND);
-
-  private final TunableNumber extensionMotionProfileAcceleration =
-      new TunableNumber(
-          "ElevatorExtension/acceleration(mpsps)",
-          EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND);
-  private final TunableNumber extensionMotionProfileExtensionCruiseVelocity =
-      new TunableNumber(
-          "ElevatorExtension/maxExtensionVelocity(mps)", MAX_EXTENSION_VELOCITY_METERS_PER_SECOND);
-  private final TunableNumber extensionMotionProfileRetractionCruiseVelocity =
-      new TunableNumber(
-          "ElevatorExtension/maxRetractionVelocity(mps)",
-          MAX_RETRACTION_VELOCITY_METERS_PER_SECOND);
-
   private static final int LOOP_DT_MS = 10;
 
   /* Simulated Angle Motor PID Values */
@@ -173,7 +153,11 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void setPosition(
       double rotation,
+      double rotationCruiseVelocity,
+      double rotationAcceleration,
       double extension,
+      double extensionCruiseVelocity,
+      double extensionAcceleration,
       double rotationExtensionTimeOffset,
       boolean applyTimeOffsetAtStart) {
     try {
@@ -182,19 +166,10 @@ public class ElevatorIOSim implements ElevatorIO {
       this.rotationSetpointRadians = rotation;
       this.extensionSetpointMeters = extension;
 
-      // use different motion profiles for the extension based on direction
-      double extensionCruiseVelocity;
-      if (this.extensionSetpointMeters > elevatorSim.getPositionMeters()) {
-        extensionCruiseVelocity = extensionMotionProfileExtensionCruiseVelocity.get();
-      } else {
-        extensionCruiseVelocity = extensionMotionProfileRetractionCruiseVelocity.get();
-      }
-
       Constraints rotationConstraints =
           new Constraints(
-              radiansToPigeon(
-                  Units.degreesToRadians(rotationMotionProfileExtensionCruiseVelocity.get())),
-              radiansToPigeon(Units.degreesToRadians(rotationMotionProfileAcceleration.get())));
+              radiansToPigeon(Units.degreesToRadians(rotationCruiseVelocity)),
+              radiansToPigeon(Units.degreesToRadians(rotationAcceleration)));
       State rotationStartState = new State(radiansToPigeon(armSim.getAngleRads()), 0);
       TrapezoidProfile rotationProfile =
           new TrapezoidProfile(
@@ -205,9 +180,7 @@ public class ElevatorIOSim implements ElevatorIO {
               Conversions.metersToFalcon(
                   extensionCruiseVelocity, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO),
               Conversions.metersToFalcon(
-                  extensionMotionProfileAcceleration.get(),
-                  EXTENSION_PULLEY_CIRCUMFERENCE,
-                  EXTENSION_GEAR_RATIO));
+                  extensionAcceleration, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO));
       State extensionStartState =
           new State(
               Conversions.metersToFalcon(
@@ -332,19 +305,23 @@ public class ElevatorIOSim implements ElevatorIO {
                     Conversions.falconToMeters(
                         extensionVelocity, EXTENSION_PULLEY_CIRCUMFERENCE, EXTENSION_GEAR_RATIO))
                 + "\t"
-                + Units.metersToInches(
-                        Conversions.falconToMeters(
-                            extensionPosition,
-                            EXTENSION_PULLEY_CIRCUMFERENCE,
-                            EXTENSION_GEAR_RATIO))
-                    * Math.cos(pigeonToRadians(rotationPosition))
+                + (Units.metersToInches(
+                            Conversions.falconToMeters(
+                                extensionPosition,
+                                EXTENSION_PULLEY_CIRCUMFERENCE,
+                                EXTENSION_GEAR_RATIO))
+                        * Math.cos(pigeonToRadians(rotationPosition))
+                    - ((3.444 + 4.678)
+                        / 2.0)) // subtract distance from average end of manipulator to front frame
+                // perimeter
                 + "\t"
-                + Units.metersToInches(
-                        Conversions.falconToMeters(
-                            extensionPosition,
-                            EXTENSION_PULLEY_CIRCUMFERENCE,
-                            EXTENSION_GEAR_RATIO))
-                    * Math.sin(pigeonToRadians(rotationPosition))
+                + (Units.metersToInches(
+                            Conversions.falconToMeters(
+                                extensionPosition,
+                                EXTENSION_PULLEY_CIRCUMFERENCE,
+                                EXTENSION_GEAR_RATIO))
+                        * Math.sin(pigeonToRadians(rotationPosition))
+                    + 17.3) // add distance from top of manipulator to ground
                 + "\n");
       }
 

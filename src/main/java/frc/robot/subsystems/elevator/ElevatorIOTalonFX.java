@@ -287,7 +287,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     if (this.rotationSetpoint == CONE_STORAGE_ROTATION_POSITION
         && inputs.rotationPositionRadians
             > CONE_STORAGE_ROTATION_POSITION - STORAGE_ROTATION_POSITION_TOLERANCE) {
-      // setRotationMotorCurrent(rotationStorageHoldCurrent.get());
+      setRotationMotorCurrent(rotationStorageHoldCurrent.get());
+      Logger.getInstance().recordOutput("Elevator/rotationStall", true);
+    } else {
+      Logger.getInstance().recordOutput("Elevator/rotationStall", false);
     }
 
     // check if the elevator is stuck while trying to rotate; if so, stop the rotation
@@ -354,6 +357,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     this.rotationSetpoint = rotation;
     this.extensionSetpoint = extension;
+
+    // this may allow the current control mode to stop and switch to motion profiling
+    if (this.rotationMotor.getControlMode() == ControlMode.Current) {
+      this.rotationMotor.set(ControlMode.PercentOutput, 0.0);
+    }
 
     // use different motion profiles for the extension based on direction
     double extensionCruiseVelocity;

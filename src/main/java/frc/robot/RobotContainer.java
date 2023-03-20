@@ -36,6 +36,7 @@ import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
+import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPose;
@@ -276,12 +277,12 @@ public class RobotContainer {
             } catch (IOException e) {
               layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
             }
-            // vision =
-            //     new Vision(
-            //         new VisionIOSim(
-            //             layout,
-            //             drivetrain::getPose,
-            //             RobotConfig.getInstance().getRobotToCameraTransform()));
+            vision =
+                new Vision(
+                    new VisionIOSim(
+                        layout,
+                        drivetrain::getPose,
+                        RobotConfig.getInstance().getRobotToCameraTransforms()[0]));
             break;
           }
         default:

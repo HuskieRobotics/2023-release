@@ -36,6 +36,7 @@ import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
+import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPose;
@@ -49,8 +50,6 @@ import frc.robot.commands.ReleaseGamePiece;
 import frc.robot.commands.RotateToAngle;
 import frc.robot.commands.RotateToAngleWhileDriving;
 import frc.robot.commands.SetElevatorPosition;
-import frc.robot.commands.SetElevatorPositionBeforeRetraction;
-import frc.robot.commands.SetIntakeState;
 import frc.robot.commands.StallAgainstElement;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.MK4IRobotConfig;
@@ -262,12 +261,12 @@ public class RobotContainer {
             } catch (IOException e) {
               layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
             }
-            // vision =
-            //     new Vision(
-            //         new VisionIOSim(
-            //             layout,
-            //             drivetrain::getPose,
-            //             RobotConfig.getInstance().getRobotToCameraTransform()));
+            vision =
+                new Vision(
+                    new VisionIOSim(
+                        layout,
+                        drivetrain::getPose,
+                        RobotConfig.getInstance().getRobotToCameraTransforms()[0]));
             break;
           }
         default:

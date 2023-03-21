@@ -22,25 +22,25 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class RotateToAngle extends CommandBase {
-  private final Drivetrain drivetrain;
+  protected final Drivetrain drivetrain;
   private final Supplier<Pose2d> poseSupplier;
-  private Pose2d targetPose;
+  protected Pose2d targetPose;
 
-  private boolean running = false;
+  protected boolean running = false;
 
-  private static final TunableNumber thetaKp = new TunableNumber("RotateToAngle/ThetaKp", 2);
-  private static final TunableNumber thetaKd = new TunableNumber("RotateToAngle/ThetaKd", 0.1);
-  private static final TunableNumber thetaKi =
+  protected static final TunableNumber thetaKp = new TunableNumber("RotateToAngle/ThetaKp", 2);
+  protected static final TunableNumber thetaKd = new TunableNumber("RotateToAngle/ThetaKd", 0.1);
+  protected static final TunableNumber thetaKi =
       new TunableNumber("RotateToAngle/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
-  private static final TunableNumber thetaMaxVelocity =
+  protected static final TunableNumber thetaMaxVelocity =
       new TunableNumber("RotateToAngle/ThetaMaxVelocity", 8);
-  private static final TunableNumber thetaMaxAcceleration =
+  protected static final TunableNumber thetaMaxAcceleration =
       new TunableNumber("RotateToAngle/ThetaMaxAcceleration", 100);
-  private static final TunableNumber thetaTolerance =
+  protected static final TunableNumber thetaTolerance =
       new TunableNumber(
           "RotateToAngle/ThetaTolerance", RobotConfig.getInstance().getDriveToPoseThetaTolerance());
 
-  private final ProfiledPIDController thetaController =
+  protected final ProfiledPIDController thetaController =
       new ProfiledPIDController(
           thetaKp.get(),
           thetaKi.get(),

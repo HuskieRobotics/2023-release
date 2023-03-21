@@ -59,7 +59,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getMoveArmToChuteButton() {
+  public default Trigger getDisableArmBackupButton() {
     return new Trigger(() -> false);
   }
 
@@ -68,6 +68,10 @@ public interface OperatorInterface {
   }
 
   public default Trigger getMoveArmToStorageButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getMoveArmToStorageBackupButton() {
     return new Trigger(() -> false);
   }
 
@@ -119,6 +123,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getDisableArmButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getTurn180Button() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getVisionIsEnabledSwitch() {
     return new Trigger(() -> false);
   }
@@ -135,11 +147,19 @@ public interface OperatorInterface {
     return Node.NODE_INVALID;
   }
 
-  public default Trigger getIntakeShelfRightButton() {
+  public default Trigger getIntakeShelfGridSideButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getIntakeShelfLeftButton() {
+  public default Trigger getIntakeShelfWallSideButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeShelfGridSideBackupButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeShelfWallSideBackupButton() {
     return new Trigger(() -> false);
   }
 
@@ -167,12 +187,12 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default double getIntakeDeployPower() {
-    return 0.0;
+  public default Trigger getIntakeDeployButton() {
+    return new Trigger(() -> false);
   }
 
-  public default double getIntakeRetractPower() {
-    return 0.0;
+  public default Trigger getIntakeRetractButton() {
+    return new Trigger(() -> false);
   }
 
   public default Trigger getToggleIntakeRollerButton() {

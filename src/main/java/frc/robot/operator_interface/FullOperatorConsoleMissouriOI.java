@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two Xbox controllers. */
-public class FullOperatorConsoleOI implements OperatorInterface {
+public class FullOperatorConsoleMissouriOI implements OperatorInterface {
   private final CommandJoystick translateJoystick;
   private final Trigger[] translateJoystickButtons;
 
@@ -23,7 +23,7 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   private final CommandJoystick operatorPanel;
   private final Trigger[] operatorPanelButtons;
 
-  public FullOperatorConsoleOI(
+  public FullOperatorConsoleMissouriOI(
       int translatePort, int rotatePort, int operatorControllerPort, int operatorPanelPort) {
     translateJoystick = new CommandJoystick(translatePort);
     rotateJoystick = new CommandJoystick(rotatePort);
@@ -45,6 +45,7 @@ public class FullOperatorConsoleOI implements OperatorInterface {
     }
   }
 
+  // Translate Joystick
   @Override
   public double getTranslateX() {
     return -translateJoystick.getY();
@@ -56,8 +57,23 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
-  public double getRotate() {
-    return -rotateJoystick.getX();
+  public Trigger getTurn180Button() {
+    return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getIntakeShelfGridSideButton() {
+    return translateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getInterruptAll() {
+    return translateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getResetGyroButton() {
+    return translateJoystickButtons[4];
   }
 
   @Override
@@ -65,9 +81,26 @@ public class FullOperatorConsoleOI implements OperatorInterface {
     return translateJoystickButtons[5];
   }
 
+  // Rotate Joystick
+
   @Override
-  public Trigger getResetGyroButton() {
-    return translateJoystickButtons[1];
+  public double getRotate() {
+    return -rotateJoystick.getX();
+  }
+
+  @Override
+  public Trigger getReleaseTriggerButton() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getIntakeShelfWallSideButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getXStanceButton() {
+    return rotateJoystickButtons[3];
   }
 
   @Override
@@ -76,13 +109,28 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getXStanceButton() {
-    return rotateJoystickButtons[4];
+  public Trigger getAutoZeroExtensionButton() {
+    return rotateJoystickButtons[9];
+  }
+
+  // Operator Controller
+
+  @Override
+  public Trigger getIntakeDeployButton() {
+    return new Trigger(() -> getControllerLeftTrigger());
   }
 
   @Override
-  public Trigger getMoveArmToChuteButton() {
-    return new Trigger(operatorController::getLeftBumper);
+  public Trigger getIntakeRetractButton() {
+    return new Trigger(() -> getControllerRightTrigger());
+  }
+
+  public boolean getControllerLeftTrigger() {
+    return operatorController.getLeftTriggerAxis() > 0.5;
+  }
+
+  public boolean getControllerRightTrigger() {
+    return operatorController.getRightTriggerAxis() > 0.5;
   }
 
   @Override
@@ -91,13 +139,18 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getMoveArmToStorageButton() {
-    return new Trigger(operatorController::getBButton);
+  public Trigger getDisableArmBackupButton() {
+    return new Trigger(operatorController::getLeftBumper);
   }
 
   @Override
   public Trigger getMoveArmToLowButton() {
     return new Trigger(operatorController::getAButton);
+  }
+
+  @Override
+  public Trigger getMoveArmToStorageButton() {
+    return new Trigger(operatorController::getBButton);
   }
 
   @Override
@@ -121,6 +174,21 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
+  public Trigger getToggleIntakeRollerButton() {
+    return new Trigger(operatorController::getLeftStickButton);
+  }
+
+  @Override
+  public Trigger getToggleManipulatorOpenCloseButton() {
+    return new Trigger(operatorController::getRightStickButton);
+  }
+
+  @Override
+  public boolean getManualManipulatorClose() {
+    return operatorController.getBackButtonPressed();
+  }
+
+  @Override
   public Trigger getEnableManualElevatorControlButton() {
     return new Trigger(() -> operatorController.getPOV() == 0);
   }
@@ -140,19 +208,41 @@ public class FullOperatorConsoleOI implements OperatorInterface {
     return new Trigger(() -> operatorController.getPOV() == 90);
   }
 
+  // Operator Panel
+
   @Override
   public Trigger getConeCubeLEDTriggerButton() {
     return operatorPanelButtons[1];
   }
 
   @Override
-  public Trigger getTranslationSlowModeButton() {
-    return translateJoystickButtons[2];
+  public Trigger getDisableArmButton() {
+    return operatorPanelButtons[2];
   }
 
   @Override
-  public Trigger getRotationSlowModeButton() {
-    return rotateJoystickButtons[2];
+  public Trigger getMoveArmToStorageBackupButton() {
+    return operatorPanelButtons[5];
+  }
+
+  @Override
+  public Trigger getIntakeShelfWallSideBackupButton() {
+    return operatorPanelButtons[6];
+  }
+
+  @Override
+  public Trigger getIntakeShelfGridSideBackupButton() {
+    return operatorPanelButtons[7];
+  }
+
+  @Override
+  public Trigger getIntakeGroundConeButton() {
+    return operatorPanelButtons[8];
+  }
+
+  @Override
+  public Trigger getMoveToGridButton() {
+    return operatorPanelButtons[9];
   }
 
   @Override
@@ -161,8 +251,13 @@ public class FullOperatorConsoleOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getMoveToGridButton() {
-    return operatorPanelButtons[9];
+  public Trigger getMoveToGridEnabledSwitch() {
+    return operatorPanelButtons[11];
+  }
+
+  @Override
+  public Trigger getToggleManipulatorSensorButton() {
+    return operatorPanelButtons[12];
   }
 
   private double getScoringGridSwitchValue() {
@@ -237,89 +332,9 @@ public class FullOperatorConsoleOI implements OperatorInterface {
     }
   }
 
-  @Override
-  public Trigger getIntakeShelfRightButton() {
-    return operatorPanelButtons[7];
-  }
-
-  @Override
-  public Trigger getIntakeShelfLeftButton() {
-    return operatorPanelButtons[6];
-  }
-
-  @Override
-  public Trigger getIntakeChuteButton() {
-    return operatorPanelButtons[5];
-  }
-
-  @Override
-  public Trigger getTurboButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getToggleManipulatorOpenCloseButton() {
-    return new Trigger(operatorController::getRightStickButton);
-  }
-
-  @Override
-  public boolean getManualManipulatorClose() {
-    return operatorController.getBackButtonPressed();
-  }
-
-  @Override
-  public double getIntakeDeployPower() {
-    return operatorController.getLeftTriggerAxis();
-  }
-
-  @Override
-  public double getIntakeRetractPower() {
-    return operatorController.getRightTriggerAxis();
-  }
-
-  @Override
-  public Trigger getToggleIntakeRollerButton() {
-    return new Trigger(operatorController::getLeftStickButton);
-  }
-
-  @Override
-  public Trigger getPositionIntakeToPushCubeCone() {
-    return new Trigger(operatorController::getStartButton);
-  }
-
-  @Override
-  public Trigger getToggleManipulatorSensorButton() {
-    // FIXME: there are only 12 buttons on the operator panel(change to 12)?
-    return operatorPanelButtons[12];
-  }
-
-  @Override
-  public Trigger getMoveToGridEnabledSwitch() {
-    return operatorPanelButtons[11];
-  }
-
-  @Override
-  public Trigger getAutoBalanceButton() {
-    return operatorPanelButtons[2];
-  }
-
-  @Override
-  public Trigger getIntakeGroundConeButton() {
-    return operatorPanelButtons[8];
-  }
-
-  @Override
-  public Trigger getInterruptAll() {
-    return translateJoystickButtons[3];
-  }
-
-  @Override
-  public Trigger getAutoZeroExtensionButton() {
-    return rotateJoystickButtons[9];
-  }
-
-  @Override
-  public Trigger getReleaseTriggerButton() {
-    return rotateJoystickButtons[1];
-  }
+  // Not used anymore in reference sheet
+  // @Override
+  // public Trigger getIntakeChuteButton() {
+  //   return operatorPanelButtons[5];
+  // }
 }

@@ -79,7 +79,8 @@ public class OISelector {
     if (firstPort != null && secondPort != null && xBoxPort != null && thirdPort != null) {
       noOperatorInterfaceWarning.set(false);
       nonCompetitionOperatorInterfaceWarning.set(false);
-      return new FullOperatorConsoleOI(firstPort, secondPort, xBoxPort, thirdPort);
+      //FIXME: based on the operatorConsole we want to use
+      return new FullOperatorConsoleMissouriOI(firstPort, secondPort, xBoxPort, thirdPort);
     } else if (firstPort != null && secondPort != null) {
       noOperatorInterfaceWarning.set(false);
       nonCompetitionOperatorInterfaceWarning.set(true);

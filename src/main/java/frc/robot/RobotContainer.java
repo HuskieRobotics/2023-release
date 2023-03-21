@@ -47,7 +47,9 @@ import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
 import frc.robot.commands.RotateToAngle;
+import frc.robot.commands.RotateToAngleWhileDriving;
 import frc.robot.commands.SetElevatorPosition;
+import frc.robot.commands.SetElevatorPositionBeforeRetraction;
 import frc.robot.commands.SetIntakeState;
 import frc.robot.commands.StallAgainstElement;
 import frc.robot.commands.TeleopSwerve;
@@ -64,7 +66,6 @@ import frc.robot.subsystems.elevator.ElevatorConstants.Position;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.leds.LEDs;
@@ -1051,6 +1052,12 @@ public class RobotContainer {
   }
 
   private void configureDrivetrainCommands() {
+
+    oi.getTurn180Button()
+        .onTrue(
+            new RotateToAngleWhileDriving(
+                drivetrain, drivetrain::getPose, oi::getTranslateX, oi::getTranslateY));
+
     // field-relative toggle
     oi.getFieldRelativeButton()
         .toggleOnTrue(
@@ -1092,10 +1099,6 @@ public class RobotContainer {
     // oi.getTurboButton().onTrue(Commands.runOnce(drivetrain::enableTurbo, drivetrain));
     // oi.getTurboButton().onFalse(Commands.runOnce(drivetrain::disableTurbo, drivetrain));
     oi.getTurboButton().onTrue(new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
-
-    // auto balance
-    // NEW RELEASE GAME PIECE
-    oi.getAutoBalanceButton().onTrue(new ReleaseGamePiece(manipulator));
   }
 
   private void configureElevatorCommands() {
@@ -1108,12 +1111,16 @@ public class RobotContainer {
                     Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
                 elevator::getToggledToCone));
 
-    oi.getMoveArmToChuteButton().onTrue(Commands.runOnce(elevator::stopElevator));
+    oi.getDisableArmBackupButton().onTrue(Commands.runOnce(elevator::stopElevator));
     oi.getMoveArmToShelfButton()
         .onTrue(
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_SHELF, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToStorageButton()
+        .onTrue(
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led)
+                .unless(() -> !elevator.isManualPresetEnabled()));
+    oi.getMoveArmToStorageBackupButton()
         .onTrue(
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
@@ -1148,6 +1155,8 @@ public class RobotContainer {
     // auto zero the elevator's extension
     oi.getAutoZeroExtensionButton().onTrue(Commands.runOnce(elevator::autoZeroExtension, elevator));
 
+    oi.getDisableArmButton().onTrue(Commands.runOnce(elevator::stopElevator));
+
     elevator.setDefaultCommand(
         Commands.sequence(
             Commands.runOnce(
@@ -1180,26 +1189,27 @@ public class RobotContainer {
     //         Commands.runOnce(
     //             () -> intake.setRotationMotorPercentage(oi.getIntakeRetractPower()), intake)));
 
-    oi.getToggleIntakeRollerButton()
-        .toggleOnTrue(
-            Commands.either(
-                Commands.runOnce(intake::stopRoller, intake),
-                Commands.runOnce(intake::enableRoller, intake),
-                intake::isRollerSpinning));
+    // oi.getToggleIntakeRollerButton()
+    //     .toggleOnTrue(
+    //         Commands.either(
+    //             Commands.runOnce(intake::stopRoller, intake),
+    //             Commands.runOnce(intake::enableRoller, intake),
+    //             intake::isRollerSpinning));
 
-    oi.getPositionIntakeToPushCubeCone()
-        .onTrue(new SetIntakeState(intake, IntakeConstants.Position.PUSH_CONE_CUBE));
+    // oi.getPositionIntakeToPushCubeCone()
+    //     .onTrue(new SetIntakeState(intake, IntakeConstants.Position.PUSH_CONE_CUBE));
   }
 
   private void configureAutomatedSequenceCommands() {
     // move to grid / loading zone
-    oi.getIntakeShelfRightButton()
+    oi.getIntakeShelfGridSideButton()
         .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_SHELF, DOUBLE_SUBSTATION_LOWER));
-    oi.getIntakeShelfLeftButton()
+    oi.getIntakeShelfWallSideButton()
         .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_SHELF, DOUBLE_SUBSTATION_UPPER));
-    oi.getIntakeChuteButton()
-        .onTrue(new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led));
-
+    oi.getIntakeShelfGridSideBackupButton()
+        .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_SHELF, DOUBLE_SUBSTATION_LOWER));
+    oi.getIntakeShelfWallSideBackupButton()
+        .onTrue(moveAndGrabGamePiece(Position.CONE_INTAKE_SHELF, DOUBLE_SUBSTATION_UPPER));
     // move to grid
     oi.getMoveToGridButton().onTrue(moveAndScoreGamePiece());
 

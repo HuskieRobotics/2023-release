@@ -46,10 +46,10 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   // FIXME: remove after testing elevator
-  @Override
-  public Trigger getMoveArmToChuteButton() {
-    return new Trigger(controller::getLeftBumper);
-  }
+  // @Override
+  // public Trigger getMoveArmToChuteButton() {
+  //   return new Trigger(controller::getLeftBumper);
+  // }
 
   @Override
   public Trigger getMoveArmToShelfButton() {
@@ -140,13 +140,21 @@ public class SingleHandheldOI implements OperatorInterface {
   }
 
   @Override
-  public double getIntakeDeployPower() {
-    return controller.getLeftTriggerAxis();
+  public Trigger getIntakeDeployButton() {
+    return new Trigger(() -> getControllerLeftTrigger());
   }
 
   @Override
-  public double getIntakeRetractPower() {
-    return controller.getRightTriggerAxis();
+  public Trigger getIntakeRetractButton() {
+    return new Trigger(() -> getControllerRightTrigger());
+  }
+
+  public boolean getControllerLeftTrigger() {
+    return controller.getLeftTriggerAxis() > 0.5;
+  }
+
+  public boolean getControllerRightTrigger() {
+    return controller.getRightTriggerAxis() > 0.5;
   }
 
   @Override

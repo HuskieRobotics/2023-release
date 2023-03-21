@@ -40,6 +40,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private int rotationStuckCount;
   private double extensionSetpoint = -1.0;
   private double rotationSetpoint = 0.0;
+  private boolean isStalled = false;
   private BufferedTrajectoryPointStream rotationBufferedStream =
       new BufferedTrajectoryPointStream();
   private BufferedTrajectoryPointStream extensionBufferedStream =
@@ -273,9 +274,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     if (this.rotationSetpoint == CONE_STORAGE_ROTATION_POSITION
         && inputs.rotationPositionRadians
             > CONE_STORAGE_ROTATION_POSITION - STORAGE_ROTATION_POSITION_TOLERANCE) {
+      this.isStalled = true;
       setRotationMotorCurrent(rotationStorageHoldCurrent.get());
       Logger.getInstance().recordOutput("Elevator/rotationStall", true);
     } else {
+      this.isStalled = false;
       Logger.getInstance().recordOutput("Elevator/rotationStall", false);
     }
 
@@ -505,7 +508,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         pigeonToRadians(rotationMotor.getSelectedSensorPosition(SLOT_INDEX));
 
     if (this.rotationSetpoint == CONE_STORAGE_ROTATION_POSITION) {
-      rotationIsAtSetpoint = rotationPositionRadians > this.rotationSetpoint;
+      rotationIsAtSetpoint =
+          rotationPositionRadians > this.rotationSetpoint - ELEVATOR_ROTATION_POSITION_TOLERANCE;
     } else {
       rotationIsAtSetpoint =
           Math.abs(rotationPositionRadians - this.rotationSetpoint)
@@ -517,7 +521,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             < ELEVATOR_EXTENSION_POSITION_TOLERANCE;
 
     // return extensionIsAtSetpoint && rotationIsAtSetpoint;
-    return rotationMotor.isMotionProfileFinished() && extensionMotor.isMotionProfileFinished();
+    return (this.isStalled || rotationMotor.isMotionProfileFinished())
+        && extensionMotor.isMotionProfileFinished();
   }
 
   @Override

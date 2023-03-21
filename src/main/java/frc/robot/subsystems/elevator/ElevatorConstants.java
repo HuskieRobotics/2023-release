@@ -59,7 +59,7 @@ public class ElevatorConstants {
   public static final double CUBE_HYBRID_ROTATION_POSITION = CONE_HYBRID_ROTATION_POSITION;
   public static final double CUBE_HYBRID_EXTENSION_POSITION = CONE_HYBRID_EXTENSION_POSITION;
 
-  public static final double CONE_STORAGE_ROTATION_POSITION = 1.3;
+  public static final double CONE_STORAGE_ROTATION_POSITION = 1.2;
   public static final double CONE_STORAGE_EXTENSION_POSITION = 0;
 
   public static final double CUBE_STORAGE_ROTATION_POSITION = CONE_STORAGE_ROTATION_POSITION;

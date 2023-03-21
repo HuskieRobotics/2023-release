@@ -427,6 +427,7 @@ public class RobotContainer {
 
   /** Use this method to define your commands for autonomous mode. */
   private void configureAutoCommands() {
+    // Waypoints
     autoEventMap.put("event1", Commands.print("passed marker 1"));
     autoEventMap.put("event2", Commands.print("passed marker 2"));
     autoEventMap.put(
@@ -434,8 +435,44 @@ public class RobotContainer {
     autoEventMap.put("prepare to intake cone", collectGamePieceAuto());
     autoEventMap.put(
         "set elevator auto position",
-        new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led));
+
+    // AutoPath trajectories
+    PathPlannerTrajectory oneConeCenterRightPath =
+        PathPlanner.loadPath("1ConeCenterRight", overCableConnector);
+    PathPlannerTrajectory oneConeCenterLeftPath =
+        PathPlanner.loadPath("1ConeCenterLeft", overCableConnector);
+    PathPlannerTrajectory centerEngagePath =
+        PathPlanner.loadPath("CenterEngage", overCableConnector);
+    PathPlannerTrajectory mobilityCenterEngagePath =
+        PathPlanner.loadPath("MobilityEngageCenter", overCableConnector);
+    PathPlannerTrajectory oneConeCenterGrabEngage =
+        PathPlanner.loadPath("1ConeCenterGrabEngage", overCableConnector);
     autoEventMap.put("collect game piece", collectGamePieceAuto());
+    PathPlannerTrajectory cableSide1ConeStayPath =
+        PathPlanner.loadPath("cableSide1ConeStay", overCableConnector);
+    PathPlannerTrajectory loadingSide1ConeStayPath =
+        PathPlanner.loadPath("LoadingSide1ConeStay", overCableConnector);
+    PathPlannerTrajectory cableSide2ConePath = PathPlanner.loadPath("CableSide2Cone", 2.0, 2.0);
+    PathPlannerTrajectory loadingSide2ConePath =
+        PathPlanner.loadPath("LoadingSide2Cone", regularSpeed);
+    PathPlannerTrajectory cableSide2ConeHybridPath =
+        PathPlanner.loadPath("CableSideHybrid2Cone", 2.0, 2.0);
+    PathPlannerTrajectory loadingSide2ConeHybridPath =
+        PathPlanner.loadPath("LoadingSideHybrid2Cone", 2.0, 2.0);
+    PathPlannerTrajectory cableSideHybridPath =
+        PathPlanner.loadPath("CableSideHybridScore", 2.0, 2.0);
+    PathPlannerTrajectory loadingSideHybridPath =
+        PathPlanner.loadPath("LoadingSideHybridScore", 2.0, 2.0);
+    PathPlannerTrajectory cableSideGrabPath = PathPlanner.loadPath("CableSide0.5Cone", 2.0, 2.0);
+    PathPlannerTrajectory loadingSideGrabPath =
+        PathPlanner.loadPath("LoadingSide0.5Cone", 2.0, 2.0);
+    PathPlannerTrajectory loadingSide1ConeGrabPath =
+        PathPlanner.loadPath("LoadingSide1ConeGrab", 2.0, 2.0);
+    PathPlannerTrajectory cableSide1ConeGrabPath =
+        PathPlanner.loadPath("CableSide1ConeGrab", 2.0, 2.0);
+    PathPlannerTrajectory centerEngageBackwardsPath =
+        PathPlanner.loadPath("CenterEngageBackwards", engageSpeed);
 
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
@@ -488,197 +525,354 @@ public class RobotContainer {
         hybridConeCenterPositionMobilityEngageCommand);
 
     // ********************************************************************
-    // *************** 1 Cone + Engage (Center, Left) *********************
+    // *************** 1 Cone + Engage (Mid, Center, Right) ***************
     // ********************************************************************
 
-    PathPlannerTrajectory centerEngagePath = PathPlanner.loadPath("CenterEngage", engageSpeed);
-    Command oneConeEngageCenterLeftCommand =
-        Commands.sequence(
-            newOneConeCenterLeftCommand(),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new FollowPath(centerEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true, led));
-    autoChooser.addOption("1 Cone + Engage (Center, Left)", oneConeEngageCenterLeftCommand);
-
-    // ********************************************************************
-    // *************** 1 Cone + Engage (Center, Right) ********************
-    // ********************************************************************
-
-    Command oneConeEngageCenterRightCommand =
-        Commands.sequence(
-            newOneConeCenterRightCommand(),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new FollowPath(centerEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true, led));
-    autoChooser.addOption("1 Cone + Engage (Center, Right)", oneConeEngageCenterRightCommand);
-
-    // ********************************************************************
-    // ********* 1 Cone + Engage + Mobility (Center, Left) ****************
-    // ********************************************************************
-
-    PathPlannerTrajectory centerMobilityPath = PathPlanner.loadPath("MobilityCenter", engageSpeed);
-    Command oneConeEngageMobilityCenterLeftCommand =
-        Commands.sequence(
-            newOneConeCenterLeftCommand(),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new FollowPath(centerMobilityPath, drivetrain, false, true),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180.0))),
-            new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true, led, false));
+    Command oneConeEngageCenterRightMidCommand =
+        oneConeCenterEngage(Position.CONE_MID_LEVEL, oneConeCenterRightPath, centerEngagePath);
     autoChooser.addOption(
-        "1 Cone + Engage + Mobility (Center, Left)", oneConeEngageMobilityCenterLeftCommand);
+        "1 Cone + Engage (Mid, Center, Right)", oneConeEngageCenterRightMidCommand);
 
     // ********************************************************************
-    // ********* 1 Cone + Engage + Mobility (Center, Right, High) *********
+    // *************** 1 Cone + Engage (High, Center, Right) **************
     // ********************************************************************
 
-    Command oneConeEngageMobilityCenterRightCommand =
-        Commands.sequence(
-            newOneConeCenterRightCommand(),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new FollowPath(centerMobilityPath, drivetrain, false, true),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180.0))),
-            new FollowPath(farSideEngagePath, drivetrain, false, true),
-            new AutoBalance(drivetrain, true, led, false));
+    Command oneConeEngageCenterRightHighCommand =
+        oneConeCenterEngage(Position.CONE_HIGH_LEVEL, oneConeCenterRightPath, centerEngagePath);
     autoChooser.addOption(
-        "1 Cone + Engage + Mobility (Center, Right)", oneConeEngageMobilityCenterRightCommand);
+        "1 Cone + Engage (High, Center, Right)", oneConeEngageCenterRightHighCommand);
 
     // ********************************************************************
-    // ******************** Cable Side 2 Cone *************************
+    // *************** 1 Cone + Engage (Mid, Center, Left) ****************
     // ********************************************************************
 
-    autoChooser.addOption("Cable Side 2 Cone", newCableSide2ConeCommand());
+    Command oneConeEngageCenterLeftMidCommand =
+        oneConeCenterEngage(Position.CONE_MID_LEVEL, oneConeCenterLeftPath, centerEngagePath);
+    autoChooser.addOption("1 Cone + Engage (Mid, Center, Left)", oneConeEngageCenterLeftMidCommand);
 
     // ********************************************************************
-    // ************ Cable Side 2 Cone Rotate in Place *******************
+    // *************** 1 Cone + Engage (High, Center, Left) ***************
     // ********************************************************************
 
+    Command oneConeEngageCenterLeftHighCommand =
+        oneConeCenterEngage(Position.CONE_HIGH_LEVEL, oneConeCenterLeftPath, centerEngagePath);
     autoChooser.addOption(
-        "Cable Side 2 Cone Rotate-in-Place", newCableSide2ConeRotateInPlaceCommand());
+        "1 Cone + Engage (High, Center, Left)", oneConeEngageCenterLeftHighCommand);
 
     // ********************************************************************
-    // ******************** Cable Side 2 Cone + Engage ********************
+    // ********* 1 Cone + Engage + Mobility (Mid, Center, Right) **********
     // ********************************************************************
 
-    PathPlannerTrajectory cableSidePreRotatePath =
-        PathPlanner.loadPath("CableSidePreRotate", regularSpeed);
-    PathPlannerTrajectory cableSideEngagePath =
-        PathPlanner.loadPath("CableSideEngage", engageSpeed);
-    Command cableSide2ConeEngageCommand =
-        Commands.sequence(
-            newCableSide2ConeCommand(),
-            Commands.parallel(
-                new FollowPath(cableSidePreRotatePath, drivetrain, false, true),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(0.0))),
-            new FollowPath(cableSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new AutoBalance(drivetrain, true, led));
-    autoChooser.addOption("Cable Side 2 Cone Engage", cableSide2ConeEngageCommand);
+    Command oneConeEngageMobilityCenterRightMidCommand =
+        oneConeCenterMobilityEngage(
+            Position.CONE_MID_LEVEL, oneConeCenterRightPath, mobilityCenterEngagePath);
+    // autoChooser.addOption(
+    //     "1 Cone + Engage + Mobility (Mid, Center, Right)",
+    //     oneConeEngageMobilityCenterRightMidCommand);
 
     // ********************************************************************
-    // ******** Cable Side 2 Cone + Engage Rotate in Place ****************
+    // ********* 1 Cone + Engage + Mobility (High, Center, Right) *********
     // ********************************************************************
 
-    Command cableSide2ConeEngageRotateInPlaceCommand =
-        Commands.sequence(
-            newCableSide2ConeRotateInPlaceCommand(),
-            Commands.parallel(
-                new FollowPath(cableSidePreRotatePath, drivetrain, false, true),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(0.0))),
-            new FollowPath(cableSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new AutoBalance(drivetrain, true, led));
+    Command oneConeEngageMobilityCenterRightHighCommand =
+        oneConeCenterMobilityEngage(
+            Position.CONE_HIGH_LEVEL, oneConeCenterRightPath, mobilityCenterEngagePath);
+    // autoChooser.addOption(
+    //     "1 Cone + Engage + Mobility (High, Center, Right)",
+    //     oneConeEngageMobilityCenterRightHighCommand);
+
+    // ********************************************************************
+    // ********* 1 Cone + Engage + Mobility (Mid, Center, Left) ***********
+    // ********************************************************************
+
+    Command oneConeEngageMobilityCenterLeftMidCommand =
+        oneConeCenterMobilityEngage(
+            Position.CONE_MID_LEVEL, oneConeCenterLeftPath, mobilityCenterEngagePath);
+    // autoChooser.addOption(
+    //     "1 Cone + Engage + Mobility (Mid, Center, Left)",
+    //     oneConeEngageMobilityCenterLeftMidCommand);
+
+    // ********************************************************************
+    // ********* 1 Cone + Engage + Mobility (High, Center, Left) **********
+    // ********************************************************************
+
+    Command oneConeEngageMobilityCenterLeftHighCommand =
+        oneConeCenterMobilityEngage(
+            Position.CONE_HIGH_LEVEL, oneConeCenterLeftPath, mobilityCenterEngagePath);
+    // autoChooser.addOption(
+    //     "1 Cone + Engage + Mobility (High, Center, Left)",
+    //     oneConeEngageMobilityCenterLeftHighCommand);
+
+    // ********************************************************************
+    // ******************** Center 1.5 Cone (Mid,Center,Left) *************
+    // ********************************************************************
+
+    Command oneConeGrabEngageCenterLeftMidCommand =
+        oneConeGrabCenterEngage(
+            Position.CONE_MID_LEVEL, oneConeCenterLeftPath, oneConeCenterGrabEngage);
     autoChooser.addOption(
-        "Cable Side 2 Cone Engage Rotate-in-Place", cableSide2ConeEngageRotateInPlaceCommand);
+        "1 Cone + Grab + Engage (Mid, Center, Left)", oneConeGrabEngageCenterLeftMidCommand);
 
     // ********************************************************************
-    // ******************** Loading Side 2 Cone ***************************
+    // ******************** Center 1.5 Cone (High,Center,Left) ************
     // ********************************************************************
-
-    autoChooser.addOption("Loading Side 2 Cone", newLoadingSide2ConeCommand());
-
-    // ********************************************************************
-    // ************ Loading Side 2 Cone Rotate in Place *******************
-    // ********************************************************************
-
+    Command oneConeGrabEngageCenterLeftHighCommand =
+        oneConeGrabCenterEngage(
+            Position.CONE_HIGH_LEVEL, oneConeCenterLeftPath, oneConeCenterGrabEngage);
     autoChooser.addOption(
-        "Loading Side 2 Cone Rotate-in-Place", newLoadingSide2ConeRotateInPlaceCommand());
+        "1 Cone + Grab + Engage (High, Center, Left)", oneConeGrabEngageCenterLeftHighCommand);
 
     // ********************************************************************
-    // ***************** Loading Side 2 Cone + Engage *********************
+    // ******************** Center 1.5 Cone (Mid,Center,Right) ************
     // ********************************************************************
-
-    PathPlannerTrajectory loadingSidePreRotatePath =
-        PathPlanner.loadPath("LoadingSidePreRotate", regularSpeed);
-    PathPlannerTrajectory loadingSideEngagePath =
-        PathPlanner.loadPath("LoadingSideEngage", engageSpeed);
-    Command loadingSide2ConeEngageCommand =
-        Commands.sequence(
-            newLoadingSide2ConeCommand(),
-            Commands.parallel(
-                new FollowPath(loadingSidePreRotatePath, drivetrain, false, true),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(0.0))),
-            new FollowPath(loadingSideEngagePath, drivetrain, false, true),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new AutoBalance(drivetrain, true, led));
-    autoChooser.addOption("Loading Side 2 Cone + Engage", loadingSide2ConeEngageCommand);
-
-    // ********************************************************************
-    // ********** Loading Side 2 Cone + Engage Rotate in Place ************
-    // ********************************************************************
-
-    Command loadingSide2ConeEngageRotateInPlaceCommand =
-        Commands.sequence(
-            newLoadingSide2ConeRotateInPlaceCommand(),
-            Commands.parallel(
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
-                Commands.sequence(
-                    new FollowPath(loadingSidePreRotatePath, drivetrain, false, true),
-                    new RotateToAngle(
-                        drivetrain,
-                        () ->
-                            new Pose2d(
-                                drivetrain.getPose().getX(),
-                                drivetrain.getPose().getY(),
-                                Rotation2d.fromDegrees(0.0))),
-                    new FollowPath(loadingSideEngagePath, drivetrain, false, true))),
-            Commands.runOnce(elevator::stopElevator, elevator),
-            new AutoBalance(drivetrain, true, led));
+    Command oneConeGrabEngageCenterRightMidCommand =
+        oneConeGrabCenterEngage(
+            Position.CONE_MID_LEVEL, oneConeCenterRightPath, oneConeCenterGrabEngage);
     autoChooser.addOption(
-        "Loading Side 2 Cone + Engage Rotate-in-Place", loadingSide2ConeEngageRotateInPlaceCommand);
+        "1 Cone + Grab + Engage (Mid, Center, Right)", oneConeGrabEngageCenterRightMidCommand);
+
+    // ********************************************************************
+    // ******************** Center 1.5 Cone (High,Center,Right) ***********
+    // ********************************************************************
+    Command oneConeGrabEngageCenterRightHighCommand =
+        oneConeGrabCenterEngage(
+            Position.CONE_HIGH_LEVEL, oneConeCenterRightPath, oneConeCenterGrabEngage);
+    autoChooser.addOption(
+        "1 Cone + Grab + Engage (High, Center, Left)", oneConeGrabEngageCenterRightHighCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 1 cone (Mid, Stay) ******************
+    // ********************************************************************
+    Command oneConeCableSideMidStayCommand =
+        oneConeStayOrMobility(Position.CONE_MID_LEVEL, cableSide1ConeStayPath, false);
+    autoChooser.addOption("1 Cone cableSide(Mid, Stay)", oneConeCableSideMidStayCommand);
+
+    // ****************************************************************
+    // ******************** cableSide 1 cone (High, Stay) ******************
+    // ********************************************************************
+
+    Command oneConeCableSideHighStayCommand =
+        oneConeStayOrMobility(Position.CONE_HIGH_LEVEL, cableSide1ConeStayPath, false);
+    autoChooser.addOption("1 Cone cableSide(High, Stay)", oneConeCableSideHighStayCommand);
+
+    // *******************************************************************
+    // ******************** loadingSide 1 cone (Mid, Stay) ****************
+    // ********************************************************************
+
+    Command oneConeLoadingSideMidStayCommand =
+        oneConeStayOrMobility(Position.CONE_MID_LEVEL, loadingSide1ConeStayPath, false);
+    autoChooser.addOption("1 Cone loadingSide(Mid, Stay)", oneConeLoadingSideMidStayCommand);
+
+    // *******************************************************************
+    // ******************** loadingSide 1 cone (High, Stay) **************
+    // ********************************************************************
+
+    Command oneConeLoadingSideHighStayCommand =
+        oneConeStayOrMobility(Position.CONE_HIGH_LEVEL, loadingSide1ConeStayPath, false);
+    autoChooser.addOption("1 Cone loadingSide(High, Stay)", oneConeLoadingSideHighStayCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 1 cone (Mid, Mobility) **************
+    // ********************************************************************
+    Command oneConeCableSideMidMobilityCommand =
+        oneConeStayOrMobility(Position.CONE_MID_LEVEL, cableSide1ConeStayPath, true);
+    autoChooser.addOption("1 Cone cableSide(Mid,Mobility)", oneConeCableSideMidMobilityCommand);
+
+    // ****************************************************************
+    // ******************** cableSide 1 cone (High, Mobility) *************
+    // ********************************************************************
+
+    Command oneConeCableSideHighMobilityCommand =
+        oneConeStayOrMobility(Position.CONE_HIGH_LEVEL, cableSide1ConeStayPath, true);
+    autoChooser.addOption("1 Cone cableSide(High, Mobility)", oneConeCableSideHighMobilityCommand);
+
+    // *******************************************************************
+    // ******************** loadingSide 1 cone (Mid, Mobility) ***********
+    // *******************************************************************
+
+    Command oneConeLoadingSideMidMobilityCommand =
+        oneConeStayOrMobility(Position.CONE_MID_LEVEL, loadingSide1ConeStayPath, true);
+    autoChooser.addOption(
+        "1 Cone loadingSide(Mid, Mobility)", oneConeLoadingSideMidMobilityCommand);
+
+    // *******************************************************************
+    // ******************** loadingSide 1 cone (High, Mobility) ***********
+    // ********************************************************************
+
+    Command oneConeLoadingSideHighMobilityCommand =
+        oneConeStayOrMobility(Position.CONE_HIGH_LEVEL, loadingSide1ConeStayPath, true);
+    autoChooser.addOption(
+        "1 Cone loadingSide(High, Mobility)", oneConeLoadingSideHighMobilityCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 1.5 cone (High) *********************
+    // ********************************************************************
+
+    Command oneConeGrabCableSideHighCommand =
+        oneConeGrabCableOrLoadingCommand(
+            Position.CONE_HIGH_LEVEL, cableSide1ConeGrabPath, centerEngageBackwardsPath);
+    autoChooser.addOption("CableSide 1.5 Cone (High)", oneConeGrabCableSideHighCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 1.5 cone (Mid) **********************
+    // ********************************************************************
+
+    Command oneConeGrabCableSideMidCommand =
+        oneConeGrabCableOrLoadingCommand(
+            Position.CONE_MID_LEVEL, cableSide1ConeGrabPath, centerEngageBackwardsPath);
+    autoChooser.addOption("CableSide 1.5 Cone (Mid)", oneConeGrabCableSideMidCommand);
+
+    // ********************************************************************
+    // ******************** loadingSide 1.5 cone (High) *******************
+    // ********************************************************************
+
+    Command oneConeGrabLoadingSideHighCommand =
+        oneConeGrabCableOrLoadingCommand(
+            Position.CONE_HIGH_LEVEL, loadingSide1ConeGrabPath, centerEngageBackwardsPath);
+    autoChooser.addOption("LoadingSide 1.5 Cone (High)", oneConeGrabLoadingSideHighCommand);
+
+    // ********************************************************************
+    // ******************** loadingSide 1.5 cone (Mid) ********************
+    // ********************************************************************
+
+    Command oneConeGrabLoadingSideMidCommand =
+        oneConeGrabCableOrLoadingCommand(
+            Position.CONE_MID_LEVEL, loadingSide1ConeGrabPath, centerEngageBackwardsPath);
+    autoChooser.addOption("LoadingSide 1.5 Cone (Mid)", oneConeGrabLoadingSideMidCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 2 cone (High, High) *****************
+    // ********************************************************************
+
+    Command cableSideTwoConeHighHighCommand =
+        twoConeCommand(
+            Position.CONE_HIGH_LEVEL, cableSide2ConePath, GRID_1_NODE_3, Position.CONE_HIGH_LEVEL);
+    autoChooser.addOption("CableSide 2 Cone(High,High)", cableSideTwoConeHighHighCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 2 cone (Mid, Mid) *******************
+    // ********************************************************************
+
+    Command cableSideTwoConeMidMidCommand =
+        twoConeCommand(
+            Position.CONE_MID_LEVEL, cableSide2ConePath, GRID_1_NODE_3, Position.CONE_MID_LEVEL);
+    autoChooser.addOption("CableSide 2 Cone(Mid,Mid)", cableSideTwoConeMidMidCommand);
+
+    // ********************************************************************
+    // ******************** loadingSide 2 cone (High, High) ***************
+    // ********************************************************************
+
+    Command loadingSideTwoConeHighHighCommand =
+        twoConeCommand(
+            Position.CONE_HIGH_LEVEL,
+            loadingSide2ConePath,
+            GRID_3_NODE_1,
+            Position.CONE_HIGH_LEVEL);
+    autoChooser.addOption("LoadingSide 2 Cone(High,High)", loadingSideTwoConeHighHighCommand);
+
+    // ********************************************************************
+    // ******************** loadingSide 2 cone (Mid, Mid) *****************
+    // ********************************************************************
+
+    Command loadingSideTwoConeMidMidCommand =
+        twoConeCommand(
+            Position.CONE_MID_LEVEL, loadingSide2ConePath, GRID_3_NODE_1, Position.CONE_MID_LEVEL);
+    autoChooser.addOption("LoadingSide 2 Cone(Mid,Mid)", loadingSideTwoConeMidMidCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 2 cone (Hybrid, High) ***************
+    // ********************************************************************
+
+    Command cableSideTwoConeHybridHighCommand =
+        twoConeHybridStartCommand(
+            cableSideHybridPath, cableSide2ConeHybridPath, GRID_1_NODE_3, Position.CONE_HIGH_LEVEL);
+    autoChooser.addOption("CableSide 2 Cone(Hybrid,High)", cableSideTwoConeHybridHighCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 2 cone (Hybrid, Mid) ****************
+    // ********************************************************************
+
+    Command cableSideTwoConeHybridMidCommand =
+        twoConeHybridStartCommand(
+            cableSideHybridPath, cableSide2ConeHybridPath, GRID_1_NODE_3, Position.CONE_MID_LEVEL);
+    autoChooser.addOption("CableSide 2 Cone(Hybrid,Mid)", cableSideTwoConeHybridMidCommand);
+
+    // ********************************************************************
+    // ******************** loading 2 cone (Hybrid, High) *****************
+    // ********************************************************************
+
+    Command loadingSideTwoConeHybridHighCommand =
+        twoConeHybridStartCommand(
+            loadingSideHybridPath,
+            loadingSide2ConeHybridPath,
+            GRID_3_NODE_1,
+            Position.CUBE_HIGH_LEVEL);
+    autoChooser.addOption("LoadingSide 2 Cone(Hybrid,High)", loadingSideTwoConeHybridHighCommand);
+
+    // ********************************************************************
+    // ******************** loading 2 cone (Hybrid, Mid) ******************
+    // ********************************************************************
+
+    Command loadingSideTwoConeHybridMidCommand =
+        twoConeHybridStartCommand(
+            loadingSideHybridPath,
+            loadingSide2ConeHybridPath,
+            GRID_3_NODE_1,
+            Position.CONE_MID_LEVEL);
+    autoChooser.addDefaultOption(
+        "LoadingSide 2 Cone(Hybrid,Mid)", loadingSideTwoConeHybridMidCommand);
+
+    // ********************************************************************
+    // ******************** cable 2.5 cone (High, High) *******************
+    // ********************************************************************
+
+    Command cableSideTwoConeGrabHighHighCommand =
+        twoConeGrabCommand(
+            Position.CONE_HIGH_LEVEL,
+            cableSide2ConePath,
+            GRID_1_NODE_3,
+            Position.CONE_HIGH_LEVEL,
+            cableSideGrabPath);
+    autoChooser.addOption("CableSide 2.5 Cone(High,High)", cableSideTwoConeGrabHighHighCommand);
+
+    // ********************************************************************
+    // ******************** cable 2.5 cone (Mid, Mid) *********************
+    // ********************************************************************
+
+    Command cableSideTwoConeGrabMidMidCommand =
+        twoConeGrabCommand(
+            Position.CONE_MID_LEVEL,
+            cableSide2ConePath,
+            GRID_1_NODE_3,
+            Position.CONE_MID_LEVEL,
+            cableSideGrabPath);
+    autoChooser.addOption("CableSide 2.5 Cone(Mid,Mid)", cableSideTwoConeGrabMidMidCommand);
+
+    // ********************************************************************
+    // ******************** loading 2.5 cone (High, High) *****************
+    // ********************************************************************
+
+    Command loadingSideTwoConeGrabHighHighCommand =
+        twoConeGrabCommand(
+            Position.CONE_HIGH_LEVEL,
+            loadingSide2ConePath,
+            GRID_3_NODE_1,
+            Position.CONE_HIGH_LEVEL,
+            loadingSideGrabPath);
+    autoChooser.addOption("LoadingSide 2.5 Cone(High,High)", loadingSideTwoConeGrabHighHighCommand);
+
+    // ********************************************************************
+    // ******************** loading 2.5 cone (Mid, Mid) *******************
+    // ********************************************************************
+
+    Command loadingSideTwoConeGrabMidMidCommand =
+        twoConeGrabCommand(
+            Position.CONE_MID_LEVEL,
+            loadingSide2ConePath,
+            GRID_3_NODE_1,
+            Position.CONE_MID_LEVEL,
+            loadingSideGrabPath);
+    autoChooser.addOption("LoadingSide 2.5 Cone(Mid,Mid)", loadingSideTwoConeGrabMidMidCommand);
 
     // ********************************************************************
     // ****************** Loading Side Get out of the Way *****************
@@ -690,66 +884,12 @@ public class RobotContainer {
         Commands.sequence(new FollowPath(getOutTheWay, drivetrain, true, true));
     autoChooser.addOption("Loading Side Get out of the Way", loadingGetOutOfTheWay);
 
-    PathPlannerTrajectory loadingSide1ConeStay =
-        PathPlanner.loadPath("LoadingSide1ConeStay", 1.0, 1.0);
-    Command loadingSide1ConeStayCommand =
-        Commands.sequence(
-            Commands.runOnce(
-                () ->
-                    drivetrain.resetOdometry(
-                        PathPlannerTrajectory.transformStateForAlliance(
-                            loadingSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
-                drivetrain),
-            scoreGamePieceAuto(Position.CONE_MID_LEVEL));
-    autoChooser.addOption("loadingSide1ConeStay", loadingSide1ConeStayCommand);
-
-    PathPlannerTrajectory cableSide1ConeStay = PathPlanner.loadPath("cableSide1ConeStay", 1.0, 1.0);
-    Command cableSide1ConeStayCommand =
-        Commands.sequence(
-            Commands.runOnce(
-                () ->
-                    drivetrain.resetOdometry(
-                        PathPlannerTrajectory.transformStateForAlliance(
-                            cableSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
-                drivetrain),
-            scoreGamePieceAuto(Position.CONE_MID_LEVEL));
-    autoChooser.addOption("cableSide1ConeStay", cableSide1ConeStayCommand);
-
-    Command cableSide1ConeStayHighCommand =
-        Commands.sequence(
-            Commands.runOnce(
-                () ->
-                    drivetrain.resetOdometry(
-                        PathPlannerTrajectory.transformStateForAlliance(
-                            cableSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
-                drivetrain),
-            scoreGamePieceAutoHigh());
-    autoChooser.addOption("cableSide1ConeHighStay", cableSide1ConeStayHighCommand);
-
-    Command loadingSide1ConeStayHighCommand =
-        Commands.sequence(
-            Commands.runOnce(
-                () ->
-                    drivetrain.resetOdometry(
-                        PathPlannerTrajectory.transformStateForAlliance(
-                            loadingSide1ConeStay.getInitialState(), DriverStation.getAlliance())),
-                drivetrain),
-            scoreGamePieceAutoHigh());
-    autoChooser.addOption("loadingSide1ConeHighStay", loadingSide1ConeStayHighCommand);
-
     // "auto" path for Tuning auto turn PID
     PathPlannerTrajectory autoTurnPidTuningPath =
         PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
     Command autoTurnPidTuningCommand =
         new FollowPath(autoTurnPidTuningPath, drivetrain, true, true);
     autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
-
-    // "auto" path with no holonomic rotation
-    PathPlannerTrajectory noHolonomicRotationPath =
-        PathPlanner.loadPath("constantHolonomicRotationPath", 1.0, 1.0);
-    Command noHolonomicRotationCommand =
-        new FollowPath(noHolonomicRotationPath, drivetrain, true, true);
-    autoChooser.addOption("No Holonomic Rotation", noHolonomicRotationCommand);
 
     // start point auto
     PathPlannerTrajectory startPointPath =
@@ -786,13 +926,13 @@ public class RobotContainer {
     }
   }
 
-  private Command newOneConeCenterLeftCommand() {
-    PathPlannerTrajectory oneConeEngageCenterLeftPath =
-        PathPlanner.loadPath("1ConeEngageCenterLeft", overCableConnector);
+  private Command oneConeCenterEngage(
+      Position position, PathPlannerTrajectory path, PathPlannerTrajectory engagePath) {
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(position),
         new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
-        new FollowPath(oneConeEngageCenterLeftPath, drivetrain, true, true),
+        Commands.runOnce(elevator::stopElevator, elevator),
+        new FollowPath(path, drivetrain, true, true),
         new RotateToAngle(
             drivetrain,
             () ->
@@ -800,156 +940,113 @@ public class RobotContainer {
                     drivetrain.getPose().getX(),
                     drivetrain.getPose().getY(),
                     Rotation2d.fromDegrees(0.0))),
-        Commands.runOnce(elevator::stopElevator, elevator));
+        new AutoBalance(drivetrain, true, led, true));
   }
 
-  private Command newOneConeCenterRightCommand() {
-    PathPlannerTrajectory oneConeEngageCenterRightPath =
-        PathPlanner.loadPath("1ConeEngageCenterRight", overCableConnector);
+  private Command oneConeCenterMobilityEngage(
+      Position position, PathPlannerTrajectory path, PathPlannerTrajectory engagePath) {
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
+        scoreGamePieceAuto(position),
         new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
-        new FollowPath(oneConeEngageCenterRightPath, drivetrain, true, true),
-        new RotateToAngle(
-            drivetrain,
-            () ->
-                new Pose2d(
-                    drivetrain.getPose().getX(),
-                    drivetrain.getPose().getY(),
-                    Rotation2d.fromDegrees(0.0))),
-        Commands.runOnce(elevator::stopElevator, elevator));
+        Commands.runOnce(elevator::stopElevator, elevator),
+        new FollowPath(path, drivetrain, true, true),
+        new FollowPath(engagePath, drivetrain, false, true),
+        new AutoBalance(drivetrain, true, led, false));
   }
 
-  private Command newCableSide2ConeCommand() {
-    List<PathPlannerTrajectory> cableSide2ConePath =
-        PathPlanner.loadPathGroup(
-            "CableSide2Cone",
-            overCableConnector,
-            overCableConnector,
-            regularSpeed,
-            regularSpeed,
-            overCableConnector,
-            regularSpeed);
+  private Command oneConeGrabCenterEngage(
+      Position position, PathPlannerTrajectory path, PathPlannerTrajectory grabEngagePath) {
     return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        // new SetElevatorPosition(elevator, Position.AUTO_STORAGE),
-        new FollowPathWithEvents(
-            new FollowPath(cableSide2ConePath.get(0), drivetrain, true, true),
-            cableSide2ConePath.get(0).getMarkers(),
-            autoEventMap),
-        new FollowPathWithEvents(
-            new FollowPath(cableSide2ConePath.get(1), drivetrain, false, true),
-            cableSide2ConePath.get(1).getMarkers(),
-            autoEventMap),
-        new FollowPathWithEvents(
-            new FollowPath(cableSide2ConePath.get(2), drivetrain, false, true),
-            cableSide2ConePath.get(2).getMarkers(),
-            autoEventMap),
-        new FollowPathWithEvents(
-            new FollowPath(cableSide2ConePath.get(3), drivetrain, false, true),
-            cableSide2ConePath.get(3).getMarkers(),
-            autoEventMap),
-        new FollowPathWithEvents(
-            new FollowPath(cableSide2ConePath.get(4), drivetrain, false, true),
-            cableSide2ConePath.get(4).getMarkers(),
-            autoEventMap),
-        new FollowPathWithEvents(
-            new FollowPath(cableSide2ConePath.get(5), drivetrain, false, true),
-            cableSide2ConePath.get(5).getMarkers(),
-            autoEventMap),
+        scoreGamePieceAuto(position),
         Commands.parallel(
-            driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
-        new ReleaseGamePiece(manipulator));
-  }
-
-  private Command newLoadingSide2ConeCommand() {
-    PathPlannerTrajectory loadingSide2ConePath =
-        PathPlanner.loadPath("LoadingSide2Cone", regularSpeed);
-    return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        new FollowPathWithEvents(
-            new FollowPath(loadingSide2ConePath, drivetrain, true, true),
-            loadingSide2ConePath.getMarkers(),
-            autoEventMap),
-        Commands.parallel(
-            driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
-        new ReleaseGamePiece(manipulator));
-  }
-
-  private Command newLoadingSide2ConeRotateInPlaceCommand() {
-    PathPlannerTrajectory loadingSide2ConePreRotatePath =
-        PathPlanner.loadPath("LoadingSide2ConePreRotate", regularSpeed);
-    PathPlannerTrajectory loadingSide2ConeRotateInPlacePath =
-        PathPlanner.loadPath("LoadingSide2ConeRotateInPlace", regularSpeed);
-    PathPlannerTrajectory loadingSide2ConeRotateInPlaceReturnPath =
-        PathPlanner.loadPath("LoadingSide2ConeRotateInPlaceReturn", regularSpeed);
-    return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
-        Commands.sequence(
-            new FollowPath(loadingSide2ConePreRotatePath, drivetrain, true, true),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(0.0))),
-            new FollowPathWithEvents(
-                new FollowPath(loadingSide2ConeRotateInPlacePath, drivetrain, false, true),
-                loadingSide2ConeRotateInPlacePath.getMarkers(),
-                autoEventMap),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180.0))),
-            new FollowPath(loadingSide2ConeRotateInPlaceReturnPath, drivetrain, false, true)),
-        Commands.parallel(
-            driveAndStallCommand(FieldRegionConstants.GRID_3_NODE_1),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
-        new ReleaseGamePiece(manipulator));
-  }
-
-  private Command newCableSide2ConeRotateInPlaceCommand() {
-    PathPlannerTrajectory cableSide2ConePreRotatePath =
-        PathPlanner.loadPath("CableSide2ConePreRotate", regularSpeed);
-    PathPlannerTrajectory cableSide2ConeRotateInPlacePath =
-        PathPlanner.loadPath("CableSide2ConeRotateInPlace", regularSpeed);
-    PathPlannerTrajectory cableSide2ConeRotateInPlacePathReturn =
-        PathPlanner.loadPath("CableSide2ConeRotateInPlaceReturn", regularSpeed);
-    return Commands.sequence(
-        scoreGamePieceAuto(Position.CONE_MID_LEVEL),
-        new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
-        Commands.sequence(
-            new FollowPath(cableSide2ConePreRotatePath, drivetrain, true, true),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(0.0))),
-            new FollowPathWithEvents(
-                new FollowPath(cableSide2ConeRotateInPlacePath, drivetrain, false, true),
-                cableSide2ConeRotateInPlacePath.getMarkers(),
-                autoEventMap),
             new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180.0))),
-            new FollowPath(cableSide2ConeRotateInPlacePathReturn, drivetrain, false, true)),
+            new FollowPath(path, drivetrain, true, true)),
+        Commands.runOnce(elevator::stopElevator, elevator),
+        new RotateToAngle(
+            drivetrain,
+            () ->
+                new Pose2d(
+                    drivetrain.getPose().getX(),
+                    drivetrain.getPose().getY(),
+                    Rotation2d.fromDegrees(0.0))),
+        new FollowPathWithEvents(
+            new FollowPath(grabEngagePath, drivetrain, true, true),
+            grabEngagePath.getMarkers(),
+            autoEventMap),
+        Commands.runOnce(elevator::stopElevator, elevator),
+        new AutoBalance(drivetrain, true, led, false));
+  }
+
+  private Command oneConeStayOrMobility(
+      Position position, PathPlannerTrajectory path, boolean mobility) {
+    if (mobility) {
+      return Commands.sequence(
+          scoreGamePieceAuto(position),
+          new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
+          new FollowPath(path, drivetrain, true, true));
+    } else {
+      return Commands.sequence(
+          Commands.runOnce(
+              () ->
+                  drivetrain.resetOdometry(
+                      PathPlannerTrajectory.transformStateForAlliance(
+                          path.getInitialState(), DriverStation.getAlliance())),
+              drivetrain),
+          scoreGamePieceAuto(position),
+          new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
+    }
+  }
+
+  private Command twoConeCommand(
+      Position position, PathPlannerTrajectory path, Pose2d node, Position secondPosition) {
+    return Commands.sequence(
+        scoreGamePieceAuto(position),
+        new FollowPathWithEvents(
+            new FollowPath(path, drivetrain, true, true), path.getMarkers(), autoEventMap),
         Commands.parallel(
-            driveAndStallCommand(FieldRegionConstants.GRID_1_NODE_3),
-            new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led)),
+            driveAndStallCommand(node), new SetElevatorPosition(elevator, secondPosition, led)),
+        new ReleaseGamePiece(manipulator));
+  }
+
+  private Command twoConeGrabCommand(
+      Position position,
+      PathPlannerTrajectory path,
+      Pose2d node,
+      Position secondPosition,
+      PathPlannerTrajectory grabPath) {
+    return Commands.sequence(
+        scoreGamePieceAuto(position),
+        new FollowPathWithEvents(
+            new FollowPath(path, drivetrain, true, true), path.getMarkers(), autoEventMap),
+        Commands.parallel(
+            driveAndStallCommand(node), new SetElevatorPosition(elevator, secondPosition, led)),
+        new ReleaseGamePiece(manipulator),
+        new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
+        new FollowPathWithEvents(
+            new FollowPath(grabPath, drivetrain, false, true),
+            grabPath.getMarkers(),
+            autoEventMap));
+  }
+
+  private Command oneConeGrabCableOrLoadingCommand(
+      Position position, PathPlannerTrajectory path, PathPlannerTrajectory engagePath) {
+    return Commands.sequence(
+        scoreGamePieceAuto(position),
+        new FollowPathWithEvents(
+            new FollowPath(path, drivetrain, true, true), path.getMarkers(), autoEventMap));
+  }
+
+  private Command twoConeHybridStartCommand(
+      PathPlannerTrajectory hybridStartPath,
+      PathPlannerTrajectory path,
+      Pose2d node,
+      Position secondPosition) {
+    return Commands.sequence(
+        new FollowPath(hybridStartPath, drivetrain, true, true),
+        new FollowPathWithEvents(
+            new FollowPath(path, drivetrain, false, true), path.getMarkers(), autoEventMap),
+        Commands.parallel(
+            driveAndStallCommand(node), new SetElevatorPosition(elevator, secondPosition, led)),
         new ReleaseGamePiece(manipulator));
   }
 
@@ -1183,7 +1280,7 @@ public class RobotContainer {
     return Commands.sequence(
         stallOnGamePieceAuto,
         setElevatorPositionToScoreMidAuto,
-        Commands.waitSeconds(1.0),
+        Commands.waitSeconds(0.5),
         setElevatorPositionToScoreHighAuto,
         dropGamePieceAuto);
   }

@@ -14,16 +14,19 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team3061.vision.VisionIO.VisionIOInputs;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
   private VisionIO[] visionIOs;
   private Transform3d[] camerasToRobots;
-  private final VisionIOInputsAutoLogged[] ios;
+  private final VisionIOInputs[] ios;
   private double[] lastTimestamps;
 
   private AprilTagFieldLayout layout;
@@ -31,7 +34,6 @@ public class Vision extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator;
   private boolean isEnabled = true;
   private boolean isVisionUpdating = false;
-  private Pose3d lastRobotPose = new Pose3d();
 
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -42,9 +44,9 @@ public class Vision extends SubsystemBase {
     this.visionIOs = visionIO;
     this.camerasToRobots = RobotConfig.getInstance().getRobotToCameraTransforms();
     this.lastTimestamps = new double[visionIO.length];
-    this.ios = new VisionIOInputsAutoLogged[visionIO.length];
+    this.ios = new VisionIOInputs[visionIO.length];
     for (int i = 0; i < visionIO.length; i++) {
-      this.ios[i] = new VisionIOInputsAutoLogged();
+      this.ios[i] = new VisionIOInputs();
     }
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
@@ -93,33 +95,28 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     isVisionUpdating = false;
-    double mostRecentTimestamp = 0.0;
     for (int i = 0; i < visionIOs.length; i++) {
       visionIOs[i].updateInputs(ios[i]);
       Logger.getInstance().processInputs("Vision" + i, ios[i]);
 
       if (lastTimestamps[i] < ios[i].lastTimestamp) {
         lastTimestamps[i] = ios[i].lastTimestamp;
+        Pose3d robotPose = getRobotPose(i);
 
-        if (ios[i].lastTimestamp > mostRecentTimestamp) {
-          mostRecentTimestamp = ios[i].lastTimestamp;
-          lastRobotPose = ios[i].robotPose;
-        }
-
-        Logger.getInstance().recordOutput("Vision/NVRobotPose" + i, ios[i].robotPose.toPose2d());
+        if (robotPose == null) return;
 
         if (poseEstimator
                 .getEstimatedPosition()
-                .minus(ios[i].robotPose.toPose2d())
+                .minus(robotPose.toPose2d())
                 .getTranslation()
                 .getNorm()
             < MAX_POSE_DIFFERENCE_METERS) {
           if (isEnabled) {
-            poseEstimator.addVisionMeasurement(ios[i].robotPose.toPose2d(), ios[i].lastTimestamp);
+            poseEstimator.addVisionMeasurement(robotPose.toPose2d(), ios[i].lastTimestamp);
             isVisionUpdating = true;
           }
 
-          Logger.getInstance().recordOutput("Vision/RobotPose" + i, ios[i].robotPose.toPose2d());
+          Logger.getInstance().recordOutput("Vision/RobotPose" + i, robotPose.toPose2d());
           Logger.getInstance().recordOutput("Vision/isEnabled", isEnabled);
         }
       }
@@ -130,15 +127,60 @@ public class Vision extends SubsystemBase {
     return isEnabled;
   }
 
-  public Pose3d getBestRobotPose() {
-    if (isVisionUpdating) {
-      return lastRobotPose;
-    } else {
-      return null;
+  private Pose3d getRobotPose(int index) {
+    int targetCount = 0;
+    Pose3d robotPoseFromClosestTarget = null;
+    double closestTargetDistance = Double.MAX_VALUE;
+
+    for (PhotonTrackedTarget target : ios[index].lastResult.getTargets()) {
+      if (isValidTarget(target)) {
+        Transform3d cameraToTarget = target.getBestCameraToTarget();
+        Optional<Pose3d> tagPoseOptional = layout.getTagPose(target.getFiducialId());
+        if (tagPoseOptional.isPresent()) {
+          Pose3d tagPose = tagPoseOptional.get();
+          Logger.getInstance()
+              .recordOutput("Vision/TagPose" + index + "_" + targetCount, tagPose.toPose2d());
+
+          double targetDistance =
+              target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm();
+          if (targetDistance < closestTargetDistance) {
+            closestTargetDistance = targetDistance;
+            Pose3d cameraPose = tagPose.transformBy(cameraToTarget.inverse());
+            robotPoseFromClosestTarget = cameraPose.transformBy(camerasToRobots[index].inverse());
+          }
+        }
+      }
+      targetCount++;
     }
+
+    if (robotPoseFromClosestTarget != null) {
+      Logger.getInstance()
+          .recordOutput("Vision/NVRobotPose" + index, robotPoseFromClosestTarget.toPose2d());
+    }
+
+    return robotPoseFromClosestTarget;
+  }
+
+  public Pose3d getBestRobotPose() {
+    for (int i = 0; i < visionIOs.length; i++) {
+      Pose3d robotPose = getRobotPose(i);
+      if (robotPose != null) {
+        return robotPose;
+      }
+    }
+    return null;
   }
 
   public void enable(boolean enable) {
     isEnabled = enable;
+  }
+
+  public boolean isValidTarget(PhotonTrackedTarget target) {
+    return target.getFiducialId() != -1
+        && target.getPoseAmbiguity() != -1
+        && target.getPoseAmbiguity() < VisionConstants.MAXIMUM_AMBIGUITY
+        && layout.getTagPose(target.getFiducialId()).isPresent()
+        && target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm()
+            < VisionConstants.MAX_DISTANCE_TO_TARGET;
   }
 }

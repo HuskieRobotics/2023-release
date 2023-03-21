@@ -1,58 +1,54 @@
 package frc.lib.team3061.vision;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
-import java.util.Optional;
-import java.util.function.Supplier;
-import org.photonvision.EstimatedRobotPose;
+import java.util.EnumSet;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 public class VisionIOPhotonVision implements VisionIO {
   private Alert noCameraConnectedAlert =
       new Alert("specified camera not connected", AlertType.WARNING);
   private final PhotonCamera camera;
 
-  private Supplier<Pose2d> poseSupplier;
-  private AprilTagFieldLayout layout;
-  private PhotonPoseEstimator photonPoseEstimator;
+  private double lastTimestamp = 0;
+  private PhotonPipelineResult lastResult = new PhotonPipelineResult();
 
-  public VisionIOPhotonVision(
-      String cameraName,
-      AprilTagFieldLayout layout,
-      Supplier<Pose2d> poseSupplier,
-      Transform3d robotToCamera) {
-    this.camera = new PhotonCamera(cameraName);
-    this.poseSupplier = poseSupplier;
-    this.layout = layout;
-    this.photonPoseEstimator =
-        new PhotonPoseEstimator(
-            this.layout, PoseStrategy.MULTI_TAG_PNP, this.camera, robotToCamera);
-    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+  public VisionIOPhotonVision(String cameraName) {
+    camera = new PhotonCamera(cameraName);
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+
+    /*
+     * based on https://docs.wpilib.org/en/latest/docs/software/networktables/listening-for-change.html#listening-for-changes
+     * and https://github.com/Mechanical-Advantage/RobotCode2022/blob/main/src/main/java/frc/robot/subsystems/vision/VisionIOPhotonVision.java
+     */
+    DoubleArraySubscriber targetPoseSub =
+        inst.getTable("/photonvision/" + cameraName)
+            .getDoubleArrayTopic("targetPose")
+            .subscribe(new double[0]);
+
+    inst.addListener(
+        targetPoseSub,
+        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+        event -> {
+          PhotonPipelineResult result = camera.getLatestResult();
+          double timestamp = Timer.getFPGATimestamp() - (result.getLatencyMillis() / 1000.0);
+          synchronized (VisionIOPhotonVision.this) {
+            lastTimestamp = timestamp;
+            lastResult = result;
+          }
+        });
   }
 
   @Override
   public synchronized void updateInputs(VisionIOInputs inputs) {
-    this.photonPoseEstimator.setReferencePose(poseSupplier.get());
-    Optional<EstimatedRobotPose> robotPose = this.photonPoseEstimator.update();
-    if (robotPose.isPresent()) {
-      inputs.hasNewResult = true;
-      inputs.lastTimestamp = robotPose.get().timestampSeconds;
-      inputs.robotPose = robotPose.get().estimatedPose;
-    } else {
-      inputs.hasNewResult = false;
-    }
+    inputs.lastTimestamp = this.lastTimestamp;
+    inputs.lastResult = this.lastResult;
 
     noCameraConnectedAlert.set(!camera.isConnected());
-  }
-
-  @Override
-  public void setLayoutOrigin(OriginPosition origin) {
-    layout.setOrigin(origin);
   }
 }

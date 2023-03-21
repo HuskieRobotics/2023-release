@@ -36,7 +36,6 @@ import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
-import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DriveToPose;
@@ -200,24 +199,10 @@ public class RobotContainer {
 
             intake = new Intake(new IntakeIO() {});
 
-            AprilTagFieldLayout layout;
-            try {
-              layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-            } catch (IOException e) {
-              layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-            }
             vision =
                 new Vision(
-                    new VisionIOPhotonVision(
-                        config.getCameraName0(),
-                        layout,
-                        drivetrain::getPose,
-                        RobotConfig.getInstance().getRobotToCameraTransforms()[0]),
-                    new VisionIOPhotonVision(
-                        config.getCameraName1(),
-                        layout,
-                        drivetrain::getPose,
-                        RobotConfig.getInstance().getRobotToCameraTransforms()[1]));
+                    new VisionIOPhotonVision(config.getCameraName0()),
+                    new VisionIOPhotonVision(config.getCameraName1()));
 
             led = new LEDs();
 
@@ -276,12 +261,12 @@ public class RobotContainer {
             } catch (IOException e) {
               layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
             }
-            vision =
-                new Vision(
-                    new VisionIOSim(
-                        layout,
-                        drivetrain::getPose,
-                        RobotConfig.getInstance().getRobotToCameraTransforms()[0]));
+            // vision =
+            //     new Vision(
+            //         new VisionIOSim(
+            //             layout,
+            //             drivetrain::getPose,
+            //             RobotConfig.getInstance().getRobotToCameraTransform()));
             break;
           }
         default:

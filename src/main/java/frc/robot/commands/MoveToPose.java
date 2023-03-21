@@ -107,7 +107,7 @@ public abstract class MoveToPose extends CommandBase {
               this.drivetrain.getAutoThetaController(),
               this.drivetrain::setSwerveModuleStates);
       this.ppSwerveControllerCommand.initialize();
-      
+
       double afterCalc = Logger.getInstance().getRealTimestamp();
 
       Logger.getInstance().recordOutput("Odometry/trajectoryCalcTime", afterCalc - beforeCalc);

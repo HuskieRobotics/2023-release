@@ -27,7 +27,7 @@ public class ManipulatorConstants {
   public static final double MANIPULATOR_KI = 0.0;
   public static final double MANIPULATOR_KD = 0.0;
 
-  public static final double CLOSE_THRESHOLD_CURRENT = 29.0;
+  public static final double CLOSE_THRESHOLD_CURRENT = 19.0;
   public static final double OPEN_THRESHOLD_CURRENT = 9.0;
   public static final int OPEN_THRESHOLD_ITERATIONS = 10;
 }

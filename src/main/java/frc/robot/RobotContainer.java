@@ -933,13 +933,6 @@ public class RobotContainer {
         new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
         Commands.runOnce(elevator::stopElevator, elevator),
         new FollowPath(path, drivetrain, true, true),
-        new RotateToAngle(
-            drivetrain,
-            () ->
-                new Pose2d(
-                    drivetrain.getPose().getX(),
-                    drivetrain.getPose().getY(),
-                    Rotation2d.fromDegrees(0.0))),
         new AutoBalance(drivetrain, true, led, true));
   }
 
@@ -1120,9 +1113,7 @@ public class RobotContainer {
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led)
                 .unless(() -> !elevator.isManualPresetEnabled()));
     oi.getMoveArmToStorageBackupButton()
-        .onTrue(
-            new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led)
-                .unless(() -> !elevator.isManualPresetEnabled()));
+        .onTrue(new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_STORAGE, led));
     oi.getMoveArmToLowButton()
         .onTrue(
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_HYBRID_LEVEL, led)
@@ -1249,6 +1240,7 @@ public class RobotContainer {
                     new StallAgainstElement(
                         drivetrain,
                         moveToGridCommand.endPoseSupplier(),
+                        true,
                         SQUARING_GRID_TIMEOUT_SECONDS)),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
                 () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
@@ -1265,6 +1257,7 @@ public class RobotContainer {
         new StallAgainstElement(
             drivetrain,
             () -> Field2d.getInstance().mapPoseToCurrentAlliance(moveToGridPosition),
+            true,
             SQUARING_AUTO_TIMEOUT_SECONDS));
   }
 
@@ -1275,7 +1268,9 @@ public class RobotContainer {
     Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
 
     return Commands.sequence(
-        stallOnGamePieceAuto, setElevatorPositionToScoreAuto, dropGamePieceAuto);
+        stallOnGamePieceAuto,
+        setElevatorPositionToScoreAuto,
+        Commands.race(dropGamePieceAuto, Commands.waitSeconds(0.5)));
   }
 
   private Command scoreGamePieceAutoHigh() {
@@ -1347,6 +1342,7 @@ public class RobotContainer {
                         new StallAgainstElement(
                             drivetrain,
                             moveToLoadingZoneCommand.endPoseSupplier(),
+                            false,
                             SQUARING_LOADING_ZONE_TIMEOUT_SECONDS)),
                     Commands.none(),
                     () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()))),
@@ -1377,6 +1373,8 @@ public class RobotContainer {
 
   public void autonomousInit() {
     led.enableAutoLED();
+    CommandScheduler.getInstance()
+        .schedule(new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
   }
 
   public void teleopInit() {

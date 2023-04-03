@@ -87,7 +87,7 @@ public class NovaRobotConfig extends RobotConfig {
               Units.inchesToMeters(-10.406),
               Units.inchesToMeters(6.603),
               Units.inchesToMeters(49.240)),
-          new Rotation3d(0, Units.degreesToRadians(25), Units.degreesToRadians(42.5)));
+          new Rotation3d(0, Units.degreesToRadians(25), Units.degreesToRadians(30)));
 
   private static final Transform3d ROBOT_TO_CAMERA_1 =
       new Transform3d(
@@ -95,7 +95,7 @@ public class NovaRobotConfig extends RobotConfig {
               Units.inchesToMeters(-10.406),
               Units.inchesToMeters(-6.603),
               Units.inchesToMeters(49.240)),
-          new Rotation3d(0, Units.degreesToRadians(25), Units.degreesToRadians(-42.5)));
+          new Rotation3d(0, Units.degreesToRadians(25), Units.degreesToRadians(-30)));
 
   // FIXME: specify maximum velocity and acceleration and tune PID values for auto paths
 

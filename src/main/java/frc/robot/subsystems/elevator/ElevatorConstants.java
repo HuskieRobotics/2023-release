@@ -42,7 +42,7 @@ public class ElevatorConstants {
   public static final boolean APPLY_TIME_OFFSET_AT_START_IN = true;
 
   public static final double CONE_HIGH_ROTATION_POSITION = 0.7271;
-  public static final double CONE_HIGH_EXTENSION_POSITION = 1.6341;
+  public static final double CONE_HIGH_EXTENSION_POSITION = 1.6901;
 
   public static final double CONE_MID_ROTATION_POSITION = 0.7777;
   public static final double CONE_MID_EXTENSION_POSITION = 1.2103;
@@ -71,7 +71,7 @@ public class ElevatorConstants {
   public static final double CONE_GROUND_INTAKE_ROTATION_POSITION = Units.degreesToRadians(8.02);
   public static final double CONE_GROUND_INTAKE_EXTENSION_POSITION = Units.inchesToMeters(32);
 
-  public static final double SHELF_ROTATION_POSITION = Units.degreesToRadians(90.0 - 32.0);
+  public static final double SHELF_ROTATION_POSITION = Units.degreesToRadians(60);
   public static final double SHELF_EXTENSION_POSITION = Units.inchesToMeters(35);
 
   public static final double CONE_CHUTE_ROTATION_POSITION = Units.degreesToRadians(90.0 - 27.0);
@@ -130,8 +130,8 @@ public class ElevatorConstants {
 
   public static final double MAX_EXTENSION_VELOCITY_METERS_PER_SECOND = 1.5;
   public static final double EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 3.0;
-  public static final double MAX_RETRACTION_VELOCITY_METERS_PER_SECOND = 2.5;
-  public static final double RETRACTION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 7.0;
+  public static final double MAX_RETRACTION_VELOCITY_METERS_PER_SECOND = 1.5;
+  public static final double RETRACTION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 3.0;
 
   public static final double FAST_ROTATION_VELOCITY_DEGREES_PER_SECOND = 50.0;
   public static final double MEDIUM_ROTATION_VELOCITY_DEGREES_PER_SECOND = 45.0;

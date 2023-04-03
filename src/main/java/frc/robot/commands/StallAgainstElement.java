@@ -27,8 +27,8 @@ public class StallAgainstElement extends CommandBase {
   private Timer timer;
   private boolean isEndNode;
   private double timeout;
+  private boolean stopOnStall;
 
-  // FIXME: tune these values
   private static final double SQUARING_CURRENT_AMPS = 45.0;
 
   private static final TunableNumber squaringSpeed =
@@ -38,9 +38,11 @@ public class StallAgainstElement extends CommandBase {
       new TunableNumber("StallAgainstElement/SquaringCurrent", SQUARING_CURRENT_AMPS);
 
   /** Drives to the specified pose under full software control. */
-  public StallAgainstElement(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier, double timeout) {
+  public StallAgainstElement(
+      Drivetrain drivetrain, Supplier<Pose2d> poseSupplier, boolean endOnStall, double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
+    this.stopOnStall = endOnStall;
     this.timeout = timeout;
     this.timer = new Timer();
     this.isEndNode = false;
@@ -95,6 +97,6 @@ public class StallAgainstElement extends CommandBase {
     return !drivetrain.isMoveToGridEnabled()
         || isEndNode
         || this.timer.hasElapsed(this.timeout)
-        || (drivetrain.getAverageDriveCurrent() > squaringCurrent.get());
+        || (this.stopOnStall && (drivetrain.getAverageDriveCurrent() > squaringCurrent.get()));
   }
 }

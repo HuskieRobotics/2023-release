@@ -6,6 +6,7 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -132,30 +133,36 @@ public class Vision extends SubsystemBase {
     Pose3d robotPoseFromClosestTarget = null;
     double closestTargetDistance = Double.MAX_VALUE;
 
+    for (int i = 0; i < 2; i++) {
+      Logger.getInstance().recordOutput("Vision/TagPose" + index + "_" + i, new Pose2d());
+      Logger.getInstance().recordOutput("Vision/NVRobotPose" + index + "_" + i, new Pose2d());
+    }
+
     for (PhotonTrackedTarget target : ios[index].lastResult.getTargets()) {
       if (isValidTarget(target)) {
         Transform3d cameraToTarget = target.getBestCameraToTarget();
         Optional<Pose3d> tagPoseOptional = layout.getTagPose(target.getFiducialId());
         if (tagPoseOptional.isPresent()) {
           Pose3d tagPose = tagPoseOptional.get();
+          Pose3d cameraPose = tagPose.transformBy(cameraToTarget.inverse());
+          Pose3d robotPose = cameraPose.transformBy(camerasToRobots[index].inverse());
+
           Logger.getInstance()
               .recordOutput("Vision/TagPose" + index + "_" + targetCount, tagPose.toPose2d());
+          Logger.getInstance()
+              .recordOutput("Vision/NVRobotPose" + index + "_" + targetCount, robotPose.toPose2d());
 
           double targetDistance =
               target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm();
-          if (targetDistance < closestTargetDistance) {
+          if (targetDistance < VisionConstants.MAX_DISTANCE_TO_TARGET
+              && targetDistance < closestTargetDistance) {
             closestTargetDistance = targetDistance;
-            Pose3d cameraPose = tagPose.transformBy(cameraToTarget.inverse());
-            robotPoseFromClosestTarget = cameraPose.transformBy(camerasToRobots[index].inverse());
+
+            robotPoseFromClosestTarget = robotPose;
           }
         }
       }
       targetCount++;
-    }
-
-    if (robotPoseFromClosestTarget != null) {
-      Logger.getInstance()
-          .recordOutput("Vision/NVRobotPose" + index, robotPoseFromClosestTarget.toPose2d());
     }
 
     return robotPoseFromClosestTarget;
@@ -179,8 +186,6 @@ public class Vision extends SubsystemBase {
     return target.getFiducialId() != -1
         && target.getPoseAmbiguity() != -1
         && target.getPoseAmbiguity() < VisionConstants.MAXIMUM_AMBIGUITY
-        && layout.getTagPose(target.getFiducialId()).isPresent()
-        && target.getBestCameraToTarget().getTranslation().toTranslation2d().getNorm()
-            < VisionConstants.MAX_DISTANCE_TO_TARGET;
+        && layout.getTagPose(target.getFiducialId()).isPresent();
   }
 }

@@ -35,6 +35,7 @@ import frc.lib.team3061.swerve.SwerveModuleIOSim;
 import frc.lib.team3061.swerve.SwerveModuleIOTalonFX;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
+import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
@@ -62,6 +63,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants.Position;
+import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
@@ -274,6 +276,7 @@ public class RobotContainer {
       }
 
     } else {
+      config = new NovaRobotConfig();
       SwerveModule flModule =
           new SwerveModule(new SwerveModuleIO() {}, 0, config.getRobotMaxVelocity());
 
@@ -287,8 +290,10 @@ public class RobotContainer {
           new SwerveModule(new SwerveModuleIO() {}, 3, config.getRobotMaxVelocity());
       drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
       manipulator = new Manipulator(new ManipulatorIO() {});
+      elevator = new Elevator(new ElevatorIO() {});
       intake = new Intake(new IntakeIO() {});
-      //   vision = new Vision(new VisionIO() {});
+      vision = new Vision(new VisionIO() {}, new VisionIO() {});
+      led = new LEDs();
     }
 
     // tab for gyro

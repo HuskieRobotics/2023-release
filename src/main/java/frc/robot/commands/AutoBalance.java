@@ -5,9 +5,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.leds.LEDConstants.AnimationTypes;
+import frc.robot.subsystems.leds.LEDConstants.RobotStateColors;
 import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.AnimationTypes;
-import frc.robot.subsystems.leds.LEDs.RobotStateColors;
 import org.littletonrobotics.junction.Logger;
 
 public class AutoBalance extends CommandBase {

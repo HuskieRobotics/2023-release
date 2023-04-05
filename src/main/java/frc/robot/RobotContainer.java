@@ -69,8 +69,8 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.RobotStateColors;
+import frc.robot.subsystems.leds.*;
+import frc.robot.subsystems.leds.LEDConstants.RobotStateColors;
 import frc.robot.subsystems.manipulator.Manipulator;
 import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOSim;
@@ -206,7 +206,7 @@ public class RobotContainer {
                     new VisionIOPhotonVision(config.getCameraName0()),
                     new VisionIOPhotonVision(config.getCameraName1()));
 
-            led = new LEDs();
+            led = new LEDs(new LEDIOCANdle());
 
             if (Constants.getRobot() == Constants.RobotType.ROBOT_2022_SIERRA) {
               new Pneumatics(new PneumaticsIORev());
@@ -231,8 +231,8 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
+            led = new LEDs(new LEDIOCANdle());
             intake = new Intake(new IntakeIOTalonFX());
-            led = new LEDs();
             break;
           }
         case ROBOT_SIMBOT:
@@ -254,8 +254,8 @@ public class RobotContainer {
                 new SwerveModule(new SwerveModuleIOSim(), 3, config.getRobotMaxVelocity());
             drivetrain = new Drivetrain(new GyroIO() {}, flModule, frModule, blModule, brModule);
             manipulator = new Manipulator(new ManipulatorIOSim());
+            led = new LEDs(new LEDIOCANdle());
             intake = new Intake(new IntakeIO() {});
-            led = new LEDs();
             new Pneumatics(new PneumaticsIO() {});
             AprilTagFieldLayout layout;
             try {
@@ -293,7 +293,7 @@ public class RobotContainer {
       elevator = new Elevator(new ElevatorIO() {});
       intake = new Intake(new IntakeIO() {});
       vision = new Vision(new VisionIO() {}, new VisionIO() {});
-      led = new LEDs();
+      led = new LEDs(new LEDIO() {});
     }
 
     // tab for gyro
@@ -427,6 +427,7 @@ public class RobotContainer {
                 Commands.runOnce(elevator::stopElevator),
                 Commands.runOnce(intake::stopIntake),
                 Commands.runOnce(drivetrain::disableXstance),
+                Commands.runOnce(led::enableTeleopLED),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
@@ -1393,7 +1394,8 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    led.setBlueOrangeStaticLed();
+    // FIXME: no longer a method; what should replace it?
+    led.endMatchLEDs();
   }
 
   public static Pose2d adjustPoseForRobot(Pose2d pose) {

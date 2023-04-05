@@ -6,7 +6,9 @@ package frc.lib.team3061.gyro;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.Pigeon2;
+import edu.wpi.first.math.util.Units;
 import frc.lib.team3061.RobotConfig;
+import org.littletonrobotics.junction.Logger;
 
 public class GyroIOPigeon2 implements GyroIO {
   private final Pigeon2 gyro;
@@ -24,5 +26,8 @@ public class GyroIOPigeon2 implements GyroIO {
     inputs.pitch = gyro.getPitch();
     inputs.roll = gyro.getRoll();
     inputs.velocityDegPerSec = xyzDps[2]; // degrees per second
+
+    Logger.getInstance()
+        .recordOutput("Elevator/chassisRollRadians", Units.degreesToRadians(inputs.roll));
   }
 }

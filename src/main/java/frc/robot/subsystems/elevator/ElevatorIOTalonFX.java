@@ -6,7 +6,6 @@ import com.ctre.phoenix.motion.BufferedTrajectoryPointStream;
 import com.ctre.phoenix.motion.MotionProfileStatus;
 import com.ctre.phoenix.motion.TrajectoryPoint;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
@@ -84,8 +83,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     Pigeon2Configuration config = new Pigeon2Configuration();
 
     // set mount pose as rolled 90 degrees clockwise
-    config.MountPoseYaw = 0;
-    config.MountPoseRoll = -90.0;
+    config.MountPoseYaw = 88.559;
+    config.MountPoseRoll = -88.639;
+    config.MountPosePitch = -45.33;
     this.pigeon.configAllSettings(config);
     this.pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 9);
 
@@ -165,19 +165,26 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     rotationConfig.slot0.closedLoopPeakOutput = rkPeakOutput.get();
 
     rotationConfig.remoteFilter0.remoteSensorDeviceID = PIGEON_ID;
-    rotationConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.Pigeon_Pitch;
+    rotationConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.Pigeon_Roll;
+
+    rotationConfig.remoteFilter1.remoteSensorDeviceID = RobotConfig.getInstance().getGyroCANID();
+    rotationConfig.remoteFilter1.remoteSensorSource = RemoteSensorSource.Pigeon_Roll;
+
+    rotationConfig.diff0Term = TalonFXFeedbackDevice.RemoteSensor0.toFeedbackDevice();
+    rotationConfig.diff1Term = TalonFXFeedbackDevice.RemoteSensor1.toFeedbackDevice();
+    rotationConfig.primaryPID.selectedFeedbackSensor =
+        TalonFXFeedbackDevice.SensorDifference.toFeedbackDevice();
+
     rotationConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 30, 40, 1);
 
-    // rotationConfig.slot0.allowableClosedloopError // left default for this
-    // example
-    // rotationConfig.slot0.maxIntegralAccumulator; // left default for this example
-    // rotationConfig.slot0.closedLoopPeriod; // left default for this example
     rotationMotor.configAllSettings(rotationConfig);
 
-    rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
-    rotationMotor.setSensorPhase(true);
     rotationMotor.setNeutralMode(NeutralMode.Brake);
+    rotationMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 9);
+    rotationMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 9);
+    rotationMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 9);
     rotationMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 9);
+    rotationMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 19);
 
     /* pick the sensor phase and desired direction */
     rotationMotor.setInverted(TalonFXInvertType.CounterClockwise);
@@ -195,17 +202,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     extensionConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
 
-    // extensionConfig.slot0.allowableClosedloopError // left default for this
-    // example
-    // extensionConfig.slot0.maxIntegralAccumulator; // left default for this
-    // example
-    // extensionConfig.slot0.closedLoopPeriod; // left default for this example
     extensionMotor.configAllSettings(extensionConfig);
 
     /* pick the sensor phase and desired direction */
     extensionMotor.setInverted(TalonFXInvertType.CounterClockwise);
     extensionMotor.setNeutralMode(NeutralMode.Brake);
+    extensionMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 9);
+    extensionMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 9);
+    extensionMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 9);
     extensionMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 9);
+    extensionMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 19);
     extensionMotor.setSelectedSensorPosition(0.0);
   }
 

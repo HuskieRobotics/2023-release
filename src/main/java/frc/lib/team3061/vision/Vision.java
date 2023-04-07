@@ -18,6 +18,7 @@ import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.VisionIO.VisionIOInputs;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
+import frc.lib.team6328.util.TunableNumber;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -35,6 +36,8 @@ public class Vision extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator;
   private boolean isEnabled = true;
   private boolean isVisionUpdating = false;
+  private static double POSE_DIFFERENCE_THRESHOLD = 0.25;
+  private TunableNumber tunablePoseDifferenceThreshold;
 
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -51,6 +54,9 @@ public class Vision extends SubsystemBase {
     }
 
     this.poseEstimator = RobotOdometry.getInstance().getPoseEstimator();
+
+    this.tunablePoseDifferenceThreshold =
+        new TunableNumber("Vision/VisionPoseThreshold", POSE_DIFFERENCE_THRESHOLD);
 
     ShuffleboardTab tabMain = Shuffleboard.getTab("MAIN");
     tabMain
@@ -187,5 +193,21 @@ public class Vision extends SubsystemBase {
         && target.getPoseAmbiguity() != -1
         && target.getPoseAmbiguity() < VisionConstants.MAXIMUM_AMBIGUITY
         && layout.getTagPose(target.getFiducialId()).isPresent();
+  }
+
+  public boolean posesInLine() {
+    for (int i = 0; i < visionIOs.length; i++) {
+      Pose3d robotPose = getRobotPose(i);
+      if (robotPose != null
+          && poseEstimator
+                  .getEstimatedPosition()
+                  .minus(robotPose.toPose2d())
+                  .getTranslation()
+                  .getNorm()
+              < tunablePoseDifferenceThreshold.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 }

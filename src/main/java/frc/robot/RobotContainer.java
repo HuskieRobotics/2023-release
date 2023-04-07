@@ -40,7 +40,6 @@ import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance;
-import frc.robot.commands.DriveToPose;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
@@ -1235,37 +1234,34 @@ public class RobotContainer {
 
     return Commands.sequence(
         Commands.parallel(
-            Commands.either(
-                Commands.runOnce(led::enableAutoLED),
-                Commands.runOnce(led::enableTeleopLED),
-                () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()),
             setElevatorPositionCommand,
             Commands.either(
                 Commands.sequence(
+                    Commands.deadline(
+                        Commands.waitUntil(vision::posesInLine),
+                        new TeleopSwerve(
+                            drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+                    Commands.runOnce(led::enableAutoLED),
                     moveToGridCommand,
-                    new DriveToPose(drivetrain, moveToGridCommand.endPoseSupplier()),
                     new StallAgainstElement(
                         drivetrain,
                         moveToGridCommand.endPoseSupplier(),
                         true,
                         SQUARING_GRID_TIMEOUT_SECONDS)),
-                new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+                Commands.parallel(
+                    Commands.runOnce(led::enableTeleopLED),
+                    new TeleopSwerve(
+                        drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
                 () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
         Commands.runOnce(led::enableTeleopLED));
   }
 
   private Command driveAndStallCommand(Pose2d moveToGridPosition) {
-    return Commands.sequence(
-        new DriveToPose(
-            drivetrain,
-            () ->
-                Field2d.getInstance()
-                    .mapPoseToCurrentAlliance(adjustPoseForRobot(moveToGridPosition))),
-        new StallAgainstElement(
-            drivetrain,
-            () -> Field2d.getInstance().mapPoseToCurrentAlliance(moveToGridPosition),
-            true,
-            SQUARING_AUTO_TIMEOUT_SECONDS));
+    return new StallAgainstElement(
+        drivetrain,
+        () -> Field2d.getInstance().mapPoseToCurrentAlliance(moveToGridPosition),
+        true,
+        SQUARING_AUTO_TIMEOUT_SECONDS);
   }
 
   private Command scoreGamePieceAuto(Position elevatorPosition) {
@@ -1330,28 +1326,31 @@ public class RobotContainer {
 
         Commands.deadline(
             new GrabGamePiece(manipulator),
-            Commands.either(
-                Commands.runOnce(led::enableAutoLED),
-                Commands.runOnce(led::enableTeleopLED),
-                () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()),
             Commands.sequence(
                 Commands.parallel(
-                    Commands.print(
-                        "replace with command to set LED color after delay and pass reference to move to grid command from which the time can be queried"),
                     setElevatorPositionCommandCollection,
                     Commands.either(
-                        moveToLoadingZoneCommand,
-                        new TeleopSwerve(
-                            drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+                        Commands.sequence(
+                            Commands.deadline(
+                                Commands.waitUntil(vision::posesInLine),
+                                new TeleopSwerve(
+                                    drivetrain,
+                                    oi::getTranslateX,
+                                    oi::getTranslateY,
+                                    oi::getRotate)),
+                            Commands.runOnce(led::enableAutoLED),
+                            moveToLoadingZoneCommand),
+                        Commands.sequence(
+                            Commands.runOnce(led::enableTeleopLED),
+                            new TeleopSwerve(
+                                drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
                         () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
                 Commands.either(
-                    Commands.sequence(
-                        new DriveToPose(drivetrain, moveToLoadingZoneCommand.endPoseSupplier()),
-                        new StallAgainstElement(
-                            drivetrain,
-                            moveToLoadingZoneCommand.endPoseSupplier(),
-                            false,
-                            SQUARING_LOADING_ZONE_TIMEOUT_SECONDS)),
+                    new StallAgainstElement(
+                        drivetrain,
+                        moveToLoadingZoneCommand.endPoseSupplier(),
+                        false,
+                        SQUARING_LOADING_ZONE_TIMEOUT_SECONDS),
                     Commands.none(),
                     () -> oi.getMoveToGridEnabledSwitch().getAsBoolean()))),
         Commands.runOnce(() -> led.changeTopStateColor(RobotStateColors.BLINKGREEN)),

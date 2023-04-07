@@ -29,7 +29,7 @@ public class StallAgainstElement extends CommandBase {
   private double timeout;
   private boolean stopOnStall;
 
-  private static final double SQUARING_CURRENT_AMPS = 45.0;
+  private static final double SQUARING_CURRENT_AMPS = 100.0;
 
   private static final TunableNumber squaringSpeed =
       new TunableNumber(
@@ -80,9 +80,9 @@ public class StallAgainstElement extends CommandBase {
   public void execute() {
     Rotation2d rotation = this.targetPose.getRotation();
 
-    double xVelocity = 0.8 * rotation.getCos();
-    double yVelocity = 0.8 * rotation.getSin();
-    drivetrain.drive(xVelocity, yVelocity, 0.0, true, true);
+    double xVelocity = RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getCos();
+    double yVelocity = RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getSin();
+    drivetrain.drive(xVelocity, yVelocity, 0.0, false, true);
   }
 
   @Override

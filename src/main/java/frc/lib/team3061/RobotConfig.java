@@ -533,4 +533,8 @@ public abstract class RobotConfig {
   public int getLEDCount() {
     return 0;
   }
+
+  public double getStallAgainstElementVelocity() {
+    return 0;
+  }
 }

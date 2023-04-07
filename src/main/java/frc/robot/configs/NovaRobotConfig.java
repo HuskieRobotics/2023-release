@@ -414,4 +414,9 @@ public class NovaRobotConfig extends RobotConfig {
   public int getLEDCount() {
     return LED_COUNT;
   }
+
+  @Override
+  public double getStallAgainstElementVelocity() {
+    return 2.0;
+  }
 }

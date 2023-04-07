@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.FieldConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.ArrayList;
@@ -135,7 +136,10 @@ public class Field2d {
 
     points.add(
         new PathPoint(
-            pointLocations.get(pointLocations.size() - 1), lastHeading, end.getRotation()));
+            pointLocations.get(pointLocations.size() - 1),
+            end.getRotation(),
+            end.getRotation(),
+            RobotConfig.getInstance().getStallAgainstElementVelocity()));
 
     return PathPlanner.generatePath(pathConstants, points);
   }

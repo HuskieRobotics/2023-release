@@ -3,6 +3,7 @@ package frc.robot.subsystems.manipulator;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.ReleaseGamePiece;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,8 +23,8 @@ public class Manipulator extends SubsystemBase {
 
     if (TESTING) {
       ShuffleboardTab tab = Shuffleboard.getTab("Manipulator");
-      tab.add("Open Manipulator", new ReleaseGamePiece(this));
-      // tab.add("Close Manipulator", new GrabGamePiece(this, null));
+      tab.add("Open Manipulator", new ReleaseGamePiece(this, () -> false));
+      tab.add("Close Manipulator", new GrabGamePiece(this));
     }
   }
 

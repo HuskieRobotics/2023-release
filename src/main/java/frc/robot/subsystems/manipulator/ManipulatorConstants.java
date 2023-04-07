@@ -30,4 +30,7 @@ public class ManipulatorConstants {
   public static final double CLOSE_THRESHOLD_CURRENT = 19.0;
   public static final double OPEN_THRESHOLD_CURRENT = 9.0;
   public static final int OPEN_THRESHOLD_ITERATIONS = 10;
+
+  public static final double CUBE_OPEN_TIME = 0.75;
+  public static final double CONE_OPEN_TIME = 0.5;
 }

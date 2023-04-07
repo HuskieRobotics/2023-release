@@ -1,7 +1,6 @@
 package frc.robot.subsystems.leds;
 
 import frc.robot.subsystems.leds.LEDConstants.*;
-import org.littletonrobotics.junction.AutoLog;
 
 public interface LEDIO {
 

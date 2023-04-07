@@ -54,7 +54,6 @@ public class LEDIOCANdle implements LEDIO {
     // changeAnimationTo(AnimationTypes.RAINBOW);
   }
 
-
   // two for loops
   // one from current index to end
   // boolean called found next error

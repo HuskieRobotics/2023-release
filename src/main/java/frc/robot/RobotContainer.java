@@ -1004,7 +1004,7 @@ public class RobotContainer {
             new FollowPath(path, drivetrain, true, true), path.getMarkers(), autoEventMap),
         Commands.parallel(
             driveAndStallCommand(node), new SetElevatorPosition(elevator, secondPosition, led)),
-        new ReleaseGamePiece(manipulator));
+        new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()));
   }
 
   private Command twoConeGrabCommand(
@@ -1019,7 +1019,7 @@ public class RobotContainer {
             new FollowPath(path, drivetrain, true, true), path.getMarkers(), autoEventMap),
         Commands.parallel(
             driveAndStallCommand(node), new SetElevatorPosition(elevator, secondPosition, led)),
-        new ReleaseGamePiece(manipulator),
+        new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
         new FollowPathWithEvents(
             new FollowPath(grabPath, drivetrain, false, true),
@@ -1046,7 +1046,7 @@ public class RobotContainer {
             new FollowPath(path, drivetrain, false, true), path.getMarkers(), autoEventMap),
         Commands.parallel(
             driveAndStallCommand(node), new SetElevatorPosition(elevator, secondPosition, led)),
-        new ReleaseGamePiece(manipulator));
+        new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()));
   }
 
   private void configureDrivetrainCommands() {
@@ -1081,7 +1081,7 @@ public class RobotContainer {
     oi.getReleaseTriggerButton()
         .onTrue(
             Commands.sequence(
-                new ReleaseGamePiece(manipulator),
+                new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
                 new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)));
 
     // reset pose based on vision
@@ -1151,7 +1151,8 @@ public class RobotContainer {
     // auto zero the elevator's extension
     oi.getAutoZeroExtensionButton().onTrue(Commands.runOnce(elevator::autoZeroExtension, elevator));
 
-    oi.getDisableArmButton().onTrue(Commands.runOnce(elevator::stopElevator));
+    oi.getDisableArmButton()
+        .onTrue(Commands.sequence(Commands.runOnce(() -> elevator.stopElevator())));
 
     elevator.setDefaultCommand(
         Commands.sequence(
@@ -1268,21 +1269,21 @@ public class RobotContainer {
   }
 
   private Command scoreGamePieceAuto(Position elevatorPosition) {
+    Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
     Command setElevatorPositionToScoreAuto =
         new SetElevatorPosition(elevator, elevatorPosition, led);
-    Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
-    Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
+    Command dropGamePieceAuto =
+        new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone());
 
     return Commands.sequence(
-        stallOnGamePieceAuto,
-        setElevatorPositionToScoreAuto,
-        Commands.race(dropGamePieceAuto, Commands.waitSeconds(0.5)));
+        stallOnGamePieceAuto, setElevatorPositionToScoreAuto, dropGamePieceAuto);
   }
 
   private Command scoreGamePieceAutoHigh() {
     Command setElevatorPositionToScoreMidAuto =
         new SetElevatorPosition(elevator, Position.CONE_MID_LEVEL, led);
-    Command dropGamePieceAuto = new ReleaseGamePiece(manipulator);
+    Command dropGamePieceAuto =
+        new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone());
     Command stallOnGamePieceAuto = new GrabGamePiece(manipulator);
     Command setElevatorPositionToScoreHighAuto =
         new SetElevatorPosition(elevator, Position.CONE_HIGH_LEVEL, led);
@@ -1313,7 +1314,8 @@ public class RobotContainer {
         new MoveToLoadingZone(drivetrain, moveToGridPosition);
 
     return Commands.sequence(
-        new ReleaseGamePiece(manipulator),
+        new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
+        Commands.waitUntil(() -> manipulator.isOpened()),
         /*
          * If move-to-grid is enabled, automatically move the robot to the specified
          * substation location. This command group will complete as soon as the manipulator grabs a

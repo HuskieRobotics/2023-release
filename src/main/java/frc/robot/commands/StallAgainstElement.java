@@ -29,7 +29,7 @@ public class StallAgainstElement extends CommandBase {
   private double timeout;
   private boolean stopOnStall;
 
-  private static final double SQUARING_CURRENT_AMPS = 100.0;
+  private static final double SQUARING_CURRENT_AMPS = 80.0;
 
   private static final TunableNumber squaringSpeed =
       new TunableNumber(
@@ -48,7 +48,7 @@ public class StallAgainstElement extends CommandBase {
     this.isEndNode = false;
     addRequirements(drivetrain);
   }
-
+  // loading zone stall go at 2m/s and 95 stall limit
   @Override
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/StallAgainstElement", true);
@@ -80,10 +80,8 @@ public class StallAgainstElement extends CommandBase {
   public void execute() {
     Rotation2d rotation = this.targetPose.getRotation();
 
-    double xVelocity =
-        RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getCos();
-    double yVelocity =
-        RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getSin();
+    double xVelocity = squaringSpeed.get() * rotation.getCos();
+    double yVelocity = squaringSpeed.get() * rotation.getSin();
     drivetrain.drive(xVelocity, yVelocity, 0.0, false, true);
   }
 

@@ -26,8 +26,8 @@ public class IntakeConstants {
   public static final double INTAKE_DEFAULT_ROLLER_POWER = 0.3;
   public static final double INTAKE_ROTATION_MANUAL_CONTROL_POWER = 0.2;
 
-  public static final double ROTATION_POSITION_PID_F = 0;
-  public static final double ROTATION_POSITION_PID_P = 0;
+  public static final double ROTATION_POSITION_PID_F = 0.004;
+  public static final double ROTATION_POSITION_PID_P = 0.08;
   public static final double ROTATION_POSITION_PID_I = 0;
   public static final double ROTATION_POSITION_PID_D = 0;
   public static final double ROTATION_POSITION_PID_I_ZONE = 0;

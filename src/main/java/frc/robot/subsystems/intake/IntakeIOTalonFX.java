@@ -47,9 +47,11 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rotationPower = rotationMotor.getMotorOutputPercent();
     inputs.rotationAppliedPercentage = rotationMotor.getMotorOutputVoltage();
     inputs.rotationStatorCurrentAmps = new double[] {rotationMotor.getStatorCurrent()};
-
+    inputs.rotationSupplyCurrent = new double[] {rotationMotor.getSupplyCurrent()};
     inputs.rollerAppliedPercentage = rollerMotor.getMotorOutputVoltage();
     inputs.rollerStatorCurrentAmps = new double[] {rollerMotor.getStatorCurrent()};
+    inputs.rotationClosedLoopError = rotationMotor.getClosedLoopError();
+    inputs.rotationSetpoint = rotationMotor.getClosedLoopTarget();
 
     if (inputs.rollerAppliedPercentage > 0
         && Math.abs(inputs.rollerStatorCurrentAmps[0]) > IntakeConstants.ROLLER_THRESHOLD_CURRENT) {
@@ -63,13 +65,11 @@ public class IntakeIOTalonFX implements IntakeIO {
       inputs.atRollerCurrentThreshold = false;
     }
 
-   
-
     if (inputs.rotationAppliedPercentage > 0
         && Math.abs(inputs.rotationStatorCurrentAmps[0])
             > IntakeConstants.ROTATION_THRESHOLD_CURRENT
-        && inputs.rotationPositionDeg > 80) {
-          deployStallCount++;
+        && inputs.rotationPositionDeg > 40) {
+      deployStallCount++;
       if (deployStallCount > IntakeConstants.DEPLOY_THRESHOLD_ITERATIONS) {
         inputs.isDeployed = true;
         this.setRotationMotorPercentage(0.0);
@@ -92,7 +92,8 @@ public class IntakeIOTalonFX implements IntakeIO {
       stallCount++;
       if (stallCount > IntakeConstants.OPEN_THRESHOLD_ITERATIONS) {
         inputs.isRetracted = true;
-        this.setRotationMotorPercentage(0.0);
+        rotationMotor.setNeutralMode(NeutralMode.Brake);
+        rotationMotor.set(ControlMode.Current, -5.0);
         rotationMotor.setSelectedSensorPosition(0.0);
       }
     } else if (inputs.rotationAppliedPercentage > 0) {
@@ -157,7 +158,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     rotationMotor.setSelectedSensorPosition(0);
     rotationMotor.configClosedLoopPeakOutput(0, rkPeakOutput.get());
     rotationMotor.config_IntegralZone(0, rkIz.get());
-    rotationMotor.set(TalonFXControlMode.PercentOutput, 0);
+    rotationMotor.set(ControlMode.Current, -5.0);
 
     TalonFXFactory.Configuration intakeRollerMotorConfig = new TalonFXFactory.Configuration();
     intakeRollerMotorConfig.INVERTED = IntakeConstants.INTAKE_ROLLER_MOTOR_INVERTED;

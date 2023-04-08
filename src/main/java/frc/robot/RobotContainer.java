@@ -1251,7 +1251,6 @@ public class RobotContainer {
     return Commands.sequence(
         Commands.parallel(
             // FIXME change to setPosition so we do not have to worry about hitting game elements
-            new DeployIntake(intake),
             setElevatorPositionCommand,
             Commands.either(
                 Commands.sequence(

@@ -118,7 +118,7 @@ public class NovaRobotConfig extends RobotConfig {
   private static final double DRIVE_TO_POSE_DRIVE_TOLERANCE_METERS = 0.08;
   private static final double DRIVE_TO_POSE_THETA_TOLERANCE_RADIANS = 0.008;
 
-  private static final double SQUARING_SPEED_METERS_PER_SECOND = 0.2;
+  private static final double SQUARING_SPEED_METERS_PER_SECOND = 1.0;
   private static final double SQUARING_DURATION_SECONDS = 1;
 
   private static final int LED_COUNT = 200;
@@ -417,6 +417,6 @@ public class NovaRobotConfig extends RobotConfig {
 
   @Override
   public double getStallAgainstElementVelocity() {
-    return 2.0;
+    return SQUARING_SPEED_METERS_PER_SECOND;
   }
 }

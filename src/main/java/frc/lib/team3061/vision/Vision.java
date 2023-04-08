@@ -5,10 +5,14 @@ import static frc.lib.team3061.vision.VisionConstants.*;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -43,6 +47,19 @@ public class Vision extends SubsystemBase {
       new Alert(
           "No AprilTag layout file found. Update APRILTAG_FIELD_LAYOUT_PATH in VisionConstants.java",
           AlertType.WARNING);
+
+  private static final TunableNumber SDslope = new TunableNumber("Vision/stddev_Slope", 0.10);
+  private static final TunableNumber SDpower = new TunableNumber("AutoBalance/stddev_Power", 2.0);
+
+  private static class RobotPoseFromAprilTag {
+    public final Pose3d robotPose;
+    public final double distanceToAprilTag;
+
+    public RobotPoseFromAprilTag(Pose3d robotPose, double distance) {
+      this.robotPose = robotPose;
+      this.distanceToAprilTag = distance;
+    }
+  }
 
   public Vision(VisionIO... visionIO) {
     this.visionIOs = visionIO;
@@ -108,7 +125,8 @@ public class Vision extends SubsystemBase {
 
       if (lastTimestamps[i] < ios[i].lastTimestamp) {
         lastTimestamps[i] = ios[i].lastTimestamp;
-        Pose3d robotPose = getRobotPose(i);
+        RobotPoseFromAprilTag poseAndDistance = getRobotPose(i);
+        Pose3d robotPose = poseAndDistance.robotPose;
 
         if (robotPose == null) return;
 
@@ -119,7 +137,14 @@ public class Vision extends SubsystemBase {
                 .getNorm()
             < MAX_POSE_DIFFERENCE_METERS) {
           if (isEnabled) {
-            poseEstimator.addVisionMeasurement(robotPose.toPose2d(), ios[i].lastTimestamp);
+            // old
+            // poseEstimator.addVisionMeasurement(robotPose.toPose2d(), ios[i].lastTimestamp);
+
+            // new
+            poseEstimator.addVisionMeasurement(
+                robotPose.toPose2d(),
+                ios[i].lastTimestamp,
+                getStdDevs(poseAndDistance.distanceToAprilTag));
             isVisionUpdating = true;
           }
 
@@ -130,11 +155,19 @@ public class Vision extends SubsystemBase {
     }
   }
 
+  private Matrix<N3, N1> getStdDevs(double targetDistance) {
+    double stdDevTrust = SDslope.get() * (Math.pow(targetDistance, SDpower.get()));
+    return VecBuilder.fill(stdDevTrust, stdDevTrust, stdDevTrust);
+  }
+
+  // make a tunable number for the equation for standard deviation
+  // 1 meter is .2, 3 meters is .9, so then
+
   public boolean isEnabled() {
     return isEnabled;
   }
 
-  private Pose3d getRobotPose(int index) {
+  private RobotPoseFromAprilTag getRobotPose(int index) {
     int targetCount = 0;
     Pose3d robotPoseFromClosestTarget = null;
     double closestTargetDistance = Double.MAX_VALUE;
@@ -171,17 +204,22 @@ public class Vision extends SubsystemBase {
       targetCount++;
     }
 
-    return robotPoseFromClosestTarget;
+    return new RobotPoseFromAprilTag(robotPoseFromClosestTarget, closestTargetDistance);
   }
 
   public Pose3d getBestRobotPose() {
+    Pose3d robotPoseFromClosestTarget = null;
+    double closestTargetDistance = Double.MAX_VALUE;
     for (int i = 0; i < visionIOs.length; i++) {
-      Pose3d robotPose = getRobotPose(i);
-      if (robotPose != null) {
-        return robotPose;
+      RobotPoseFromAprilTag poseAndDistance = getRobotPose(i);
+      Pose3d robotPose = poseAndDistance.robotPose;
+      double distanceToAprilTag = poseAndDistance.distanceToAprilTag;
+      if (robotPose != null && distanceToAprilTag < closestTargetDistance) {
+        robotPoseFromClosestTarget = robotPose;
+        closestTargetDistance = distanceToAprilTag;
       }
     }
-    return null;
+    return robotPoseFromClosestTarget;
   }
 
   public void enable(boolean enable) {
@@ -197,7 +235,7 @@ public class Vision extends SubsystemBase {
 
   public boolean posesInLine() {
     for (int i = 0; i < visionIOs.length; i++) {
-      Pose3d robotPose = getRobotPose(i);
+      Pose3d robotPose = getRobotPose(i).robotPose;
       if (robotPose != null
           && poseEstimator
                   .getEstimatedPosition()

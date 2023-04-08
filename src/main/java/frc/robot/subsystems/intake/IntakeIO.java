@@ -10,14 +10,18 @@ public interface IntakeIO {
     double rotationPositionDeg = 0.0;
     double rotationVelocityDegPerSec = 0.0;
     double rotationClosedLoopError = 0.0;
-    double rotationAppliedVolts = 0.0;
+    double rotationAppliedPercentage = 0.0;
     double rotationPower = 0.0;
-    double[] rotationCurrentAmps = new double[] {};
+    double[] rotationStatorCurrentAmps = new double[] {};
     double[] rotationTempCelsius = new double[] {};
 
-    double rollerAppliedVolts = 0.0;
-    double[] rollerCurrentAmps = new double[] {};
+    double rollerAppliedPercentage = 0.0;
+    double[] rollerStatorCurrentAmps = new double[] {};
     double[] rollerTempCelsius = new double[] {};
+    boolean atRollerCurrentThreshold = false;
+
+    boolean isDeployed = false;
+    boolean isRetracted = true;
   }
 
   /** Updates the set of loggable inputs. */

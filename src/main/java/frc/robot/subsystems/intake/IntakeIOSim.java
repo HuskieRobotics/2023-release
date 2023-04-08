@@ -70,11 +70,11 @@ public class IntakeIOSim implements IntakeIO {
     inputs.rotationPositionDeg = this.armSim.getAngleRads() * 180.0 / Math.PI;
     inputs.rotationVelocityDegPerSec = this.armSim.getVelocityRadPerSec() * 180.0 / Math.PI;
     inputs.rotationClosedLoopError = rotationController.getPositionError();
-    inputs.rotationAppliedVolts = armAppliedVolts / 12.0;
-    inputs.rotationCurrentAmps = new double[] {this.armSim.getCurrentDrawAmps()};
+    inputs.rotationAppliedPercentage = armAppliedVolts / 12.0;
+    inputs.rotationStatorCurrentAmps = new double[] {this.armSim.getCurrentDrawAmps()};
     inputs.rotationTempCelsius = new double[] {};
 
-    inputs.rollerAppliedVolts = rollerAppliedVolts / 12.0;
+    inputs.rollerAppliedPercentage = rollerAppliedVolts / 12.0;
     inputs.rollerTempCelsius = new double[] {0.0};
 
     // update the Mechanism2d

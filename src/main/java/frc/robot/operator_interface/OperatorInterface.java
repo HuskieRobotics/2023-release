@@ -203,6 +203,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getToggleIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getAutoBalanceButton() {
     return new Trigger(() -> false);
   }
@@ -220,6 +224,10 @@ public interface OperatorInterface {
   }
 
   public default Trigger getReleaseTriggerButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getIntakeShootButton(){
     return new Trigger(() -> false);
   }
 }

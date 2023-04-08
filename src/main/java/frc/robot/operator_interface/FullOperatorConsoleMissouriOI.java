@@ -57,7 +57,7 @@ public class FullOperatorConsoleMissouriOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getTurn180Button() {
+  public Trigger getToggleIntakeButton() {
     return translateJoystickButtons[1];
   }
 
@@ -332,6 +332,10 @@ public class FullOperatorConsoleMissouriOI implements OperatorInterface {
     }
   }
 
+  @Override
+  public Trigger getIntakeShootButton() {
+    return new Trigger(() -> operatorController.getStartButton());
+  }
   // Not used anymore in reference sheet
   // @Override
   // public Trigger getIntakeChuteButton() {

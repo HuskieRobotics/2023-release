@@ -20,56 +20,43 @@ public class IntakeConstants {
 
   public static final int INTAKE_ROTATION_MOTOR_CAN_ID = 2;
   public static final int INTAKE_ROLLER_MOTOR_CAN_ID = 3;
-  public static final double INTAKE_ROTATION_GEAR_RATIO = 75.0 / 2.0;
+  // FIXME: get correct gear ratio
+  public static final double INTAKE_ROTATION_GEAR_RATIO = 16.0;
+
+  public static final double INTAKE_DEFAULT_ROLLER_POWER = 0.3;
+  public static final double INTAKE_ROTATION_MANUAL_CONTROL_POWER = 0.2;
 
   public static final double ROTATION_POSITION_PID_F = 0;
   public static final double ROTATION_POSITION_PID_P = 0;
   public static final double ROTATION_POSITION_PID_I = 0;
   public static final double ROTATION_POSITION_PID_D = 0;
   public static final double ROTATION_POSITION_PID_I_ZONE = 0;
-  public static final double ROTATION_POSITION_PID_PEAK_OUTPUT = 0;
-
-  public static final double ROTATION_ACCELERATION = 0;
-  public static final double MAX_ROTATION_VELOCITY = 0;
-  public static final int SCURVE_STRENGTH = 0;
-  public static final int TIMEOUT_MS = 0;
+  public static final double ROTATION_POSITION_PID_PEAK_OUTPUT = 0.5;
   public static final double ROTATION_FEEDFORWARD = 0;
-  public static final double INTAKE_DEFAULT_ROLLER_POWER = 0;
 
-  public static final double INTAKE_ROTATION_CUBE_POSITION = 0;
-  public static final double INTAKE_ROTATION_CONE_POSITION = 0;
-  public static final double INTAKE_ROTATION_NEUTRAL_POSITION = 0;
-  public static final double INTAKE_ROTATION_TOLERANCE = 0;
+  public static final double ROTATION_CURRENT_LIMIT = 40;
+  public static final double ROLLER_CURRENT_LIMIT = 40;
 
-  public static final double CUBE_INTAKE_ROLLER_POWER = 0;
-  public static final double CUBE_INTAKE_ROTATION = 0;
-
-  public static final double CHARGE_STATION_ROLLER_POWER = 0;
-  public static final double CHARGE_STATION_ROTATION = 0;
-
-  public static final double RETRACTED_ROLLER_POWER = 0;
-  public static final double RETRACTED_ROTATION = 0;
-
-  public static final double SCORING_ROLLER_POWER = 0;
-  public static final double SCORING_ROTATION = 0;
-
-  public static final double PUSH_CONE_CUBE_ROLLER_POWER = 0;
-  public static final double PUSH_CONE_CUBE_ROTATION = 0;
-
-  public static final double INTAKE_ROTATION_RETRACTION_POWER = 0;
-  public static final double INTAKE_ROTATION_MANUAL_CONTROL_POWER = 1;
-
-  public static final double INTAKE_ROTATION_DEFAULT_POSITION = 0;
+  public static final double ROLLER_THRESHOLD_ITERATIONS = 10;
+  public static final double DEPLOY_THRESHOLD_ITERATIONS = 10;
 
   public static final int SLOT_INDEX = 0;
 
-  public static final boolean INTAKE_ROLLER_MOTOR_INVERTED = true;
-  public static final boolean INTAKE_ROTATION_MOTOR_INVERTED = false;
-
-  // FIXME - change to 20 after testing if limit works
-  public static final int INTAKE_ROLLER_CURRENT_LIMIT = 20;
-  public static final double INTAKE_ROTATION_CURRENT_THRESHOLD = 29.5;
+  public static final boolean INTAKE_ROLLER_MOTOR_INVERTED = false;
+  public static final boolean INTAKE_ROTATION_MOTOR_INVERTED = true;
 
   public static final StatorCurrentLimitConfiguration INTAKE_ROTATION_CURRENT_LIMIT =
-      new StatorCurrentLimitConfiguration(true, 30, 50, 0.5);
+      new StatorCurrentLimitConfiguration(true, ROTATION_CURRENT_LIMIT, 50, 0.5);
+  public static final StatorCurrentLimitConfiguration INTAKE_ROLLER_CURRENT_LIMIT =
+      new StatorCurrentLimitConfiguration(true, ROLLER_CURRENT_LIMIT, 50, 0.5);
+
+  public static final double ROTATION_THRESHOLD_CURRENT = ROTATION_CURRENT_LIMIT - 0.5;
+  public static final double ROLLER_THRESHOLD_CURRENT = ROLLER_CURRENT_LIMIT - 0.5;
+  public static final int OPEN_THRESHOLD_ITERATIONS = 5;
+
+  public static final double DEPLOY_POWER = 0.5;
+
+  public static final double RETRACT_POWER = -0.5;
+
+  public static final double INTAKE_ROTATION_TOLERANCE = 1;
 }

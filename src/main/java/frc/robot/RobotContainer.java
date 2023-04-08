@@ -40,6 +40,7 @@ import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.DeployIntake;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
@@ -47,8 +48,8 @@ import frc.robot.commands.GrabGamePiece;
 import frc.robot.commands.MoveToGrid;
 import frc.robot.commands.MoveToLoadingZone;
 import frc.robot.commands.ReleaseGamePiece;
+import frc.robot.commands.RetractIntake;
 import frc.robot.commands.RotateToAngle;
-import frc.robot.commands.RotateToAngleWhileDriving;
 import frc.robot.commands.SetElevatorPosition;
 import frc.robot.commands.StallAgainstElement;
 import frc.robot.commands.TeleopSwerve;
@@ -198,7 +199,7 @@ public class RobotContainer {
 
             manipulator = new Manipulator(new ManipulatorIOTalonFX());
 
-            intake = new Intake(new IntakeIO() {});
+            intake = new Intake(new IntakeIOTalonFX());
 
             vision =
                 new Vision(
@@ -1050,10 +1051,15 @@ public class RobotContainer {
 
   private void configureDrivetrainCommands() {
 
-    oi.getTurn180Button()
-        .onTrue(
-            new RotateToAngleWhileDriving(
-                drivetrain, drivetrain::getPose, oi::getTranslateX, oi::getTranslateY));
+    oi.getToggleIntakeButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.sequence(
+                    new DeployIntake(intake),
+                    Commands.waitUntil(() -> intake.hasGamePiece()),
+                    new RetractIntake(intake)),
+                new RetractIntake(intake),
+                intake::isRetracted));
 
     // field-relative toggle
     oi.getFieldRelativeButton()
@@ -1081,7 +1087,9 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)));
+                Commands.parallel(
+                    new RetractIntake(intake),
+                    new SetElevatorPosition(elevator, Position.CONE_STORAGE, led))));
 
     // reset pose based on vision
     oi.getResetPoseToVisionButton()
@@ -1178,6 +1186,14 @@ public class RobotContainer {
   }
 
   private void configureIntakeButtons() {
+
+    oi.getIntakeShootButton()
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> intake.setRollerMotorPercentage(-1)),
+                Commands.waitSeconds(1),
+                new RetractIntake(intake)));
+
     // intake.setDefaultCommand(
     //     Commands.sequence(
     //         Commands.runOnce(
@@ -1234,6 +1250,8 @@ public class RobotContainer {
 
     return Commands.sequence(
         Commands.parallel(
+            // FIXME change to setPosition so we do not have to worry about hitting game elements
+            new DeployIntake(intake),
             setElevatorPositionCommand,
             Commands.either(
                 Commands.sequence(

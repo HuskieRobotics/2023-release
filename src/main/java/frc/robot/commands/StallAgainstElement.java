@@ -80,8 +80,10 @@ public class StallAgainstElement extends CommandBase {
   public void execute() {
     Rotation2d rotation = this.targetPose.getRotation();
 
-    double xVelocity = RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getCos();
-    double yVelocity = RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getSin();
+    double xVelocity =
+        RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getCos();
+    double yVelocity =
+        RobotConfig.getInstance().getStallAgainstElementVelocity() * rotation.getSin();
     drivetrain.drive(xVelocity, yVelocity, 0.0, false, true);
   }
 

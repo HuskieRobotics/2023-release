@@ -416,12 +416,13 @@ public class Drivetrain extends SubsystemBase {
 
     // update and log gyro inputs
     gyroIO.updateInputs(gyroInputs);
-    Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
+    Logger.getInstance().processInputs("Drivetrain/Gyro", gyroInputs);
 
     // update and log the swerve modules inputs
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.updateAndProcessInputs();
     }
+    Logger.getInstance().recordOutput("Drivetrain/AvgDriveCurrent", this.getAverageDriveCurrent());
 
     // update estimated poses
     SwerveModuleState[] states = new SwerveModuleState[4];
@@ -497,7 +498,7 @@ public class Drivetrain extends SubsystemBase {
     Logger.getInstance().recordOutput("Odometry/Robot", poseEstimatorPose);
     Logger.getInstance().recordOutput("3DField", new Pose3d(poseEstimatorPose));
     Logger.getInstance().recordOutput("SwerveModuleStates", states);
-    Logger.getInstance().recordOutput(SUBSYSTEM_NAME + "/gyroOffset", this.gyroOffset);
+    Logger.getInstance().recordOutput("Drivetrain/GyroOffset", this.gyroOffset);
   }
 
   /**

@@ -36,6 +36,7 @@ public class ElevatorConstants {
   }
 
   public static final double ROTATION_OFFSET = -Units.degreesToRadians(45.0);
+  public static final double EXTENSION_OFFSET = 0.2032;
 
   // FIXME: make tunable and tune
   public static final double ROTATION_EXTENSION_TIME_OFFSET_OUT = 0.25;
@@ -44,21 +45,23 @@ public class ElevatorConstants {
   public static final boolean APPLY_TIME_OFFSET_AT_START_IN = true;
 
   public static final double CONE_HIGH_ROTATION_POSITION = 0.7271 + ROTATION_OFFSET;
-  public static final double CONE_HIGH_EXTENSION_POSITION = 1.6901;
+  public static final double CONE_HIGH_EXTENSION_POSITION = 1.6901 - EXTENSION_OFFSET;
 
   public static final double CONE_MID_ROTATION_POSITION = 0.7777 + ROTATION_OFFSET;
-  public static final double CONE_MID_EXTENSION_POSITION = 1.2103;
+  public static final double CONE_MID_EXTENSION_POSITION = 1.2103 - EXTENSION_OFFSET;
 
   public static final double CONE_HYBRID_ROTATION_POSITION = 0.9832 + ROTATION_OFFSET;
-  public static final double CONE_HYBRID_EXTENSION_POSITION = 0.6823;
+  public static final double CONE_HYBRID_EXTENSION_POSITION = 0.6823 - EXTENSION_OFFSET;
 
   public static final double CUBE_HIGH_ROTATION_POSITION =
       Units.degreesToRadians(90.0 - 52.0) + ROTATION_OFFSET;
-  public static final double CUBE_HIGH_EXTENSION_POSITION = Units.inchesToMeters(58);
+  public static final double CUBE_HIGH_EXTENSION_POSITION =
+      Units.inchesToMeters(58) - EXTENSION_OFFSET;
 
   public static final double CUBE_MID_ROTATION_POSITION =
       Units.degreesToRadians(90.0 - 51.55) + ROTATION_OFFSET;
-  public static final double CUBE_MID_EXTENSION_POSITION = Units.inchesToMeters(40.63);
+  public static final double CUBE_MID_EXTENSION_POSITION =
+      Units.inchesToMeters(40.63) - EXTENSION_OFFSET;
 
   public static final double CUBE_HYBRID_ROTATION_POSITION = CONE_HYBRID_ROTATION_POSITION;
   public static final double CUBE_HYBRID_EXTENSION_POSITION = CONE_HYBRID_EXTENSION_POSITION;
@@ -74,18 +77,21 @@ public class ElevatorConstants {
 
   public static final double CONE_GROUND_INTAKE_ROTATION_POSITION =
       Units.degreesToRadians(8.02) + ROTATION_OFFSET;
-  public static final double CONE_GROUND_INTAKE_EXTENSION_POSITION = Units.inchesToMeters(32);
+  public static final double CONE_GROUND_INTAKE_EXTENSION_POSITION =
+      Units.inchesToMeters(32) - EXTENSION_OFFSET;
 
   public static final double SHELF_ROTATION_POSITION = Units.degreesToRadians(60) + ROTATION_OFFSET;
-  public static final double SHELF_EXTENSION_POSITION = Units.inchesToMeters(35);
+  public static final double SHELF_EXTENSION_POSITION = Units.inchesToMeters(35) - EXTENSION_OFFSET;
 
   public static final double CONE_CHUTE_ROTATION_POSITION =
       Units.degreesToRadians(90.0 - 27.0) + ROTATION_OFFSET;
-  public static final double CONE_CHUTE_EXTENSION_POSITION = Units.inchesToMeters(24);
+  public static final double CONE_CHUTE_EXTENSION_POSITION =
+      Units.inchesToMeters(24) - EXTENSION_OFFSET;
 
   public static final double CUBE_CHUTE_ROTATION_POSITION =
       Units.degreesToRadians(90.0 - 27.0) + ROTATION_OFFSET;
-  public static final double CUBE_CHUTE_EXTENSION_POSITION = Units.inchesToMeters(24);
+  public static final double CUBE_CHUTE_EXTENSION_POSITION =
+      Units.inchesToMeters(24) - EXTENSION_OFFSET;
 
   public static final double AUTO_STORAGE_ROTATION = CONE_STORAGE_ROTATION_POSITION;
   public static final double AUTO_STORAGE_EXTENSION = CONE_GROUND_INTAKE_EXTENSION_POSITION;

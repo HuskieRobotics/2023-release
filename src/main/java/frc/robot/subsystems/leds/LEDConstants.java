@@ -2,8 +2,9 @@ package frc.robot.subsystems.leds;
 
 public class LEDConstants {
   public enum DriveInfoStates {
-    CONE, // YELLOW LED COLOR ON 2nd and 4th sections of a-frame
-    CUBE, // PURPLE LED COLOR ON 2nd and 4th sections of a-frame
+    CONE_SHELF, // YELLOW LED COLOR ON 2nd and 4th sections of a-frame
+    CUBE_SHELF, // PURPLE LED COLOR ON 2nd and 4th sections of a-frame
+    CUBE_CHUTE, // RED LED COLOR ON 2nd and 4th sections of a-frame
     TELEOP, // BLUE LED COLOR ON 1st and 3rd sections of a-frame
     AUTO, // ORANGE LED COLOR ON 1st and 3rd sections of a-frame
   }

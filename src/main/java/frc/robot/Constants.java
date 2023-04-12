@@ -38,6 +38,12 @@ public final class Constants {
     TEST_BOARD
   }
 
+  public enum GamePieceAndSource {
+    CONE_SHELF,
+    CUBE_SHELF,
+    CUBE_CHUTE
+  };
+
   public static RobotType getRobot() {
     if (RobotBase.isReal()) {
       if (ROBOT == RobotType.ROBOT_SIMBOT) { // Invalid robot selected

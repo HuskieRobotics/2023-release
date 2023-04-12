@@ -176,17 +176,23 @@ public class LEDIOCANdle implements LEDIO {
 
   public void changePickupStateColors(DriveInfoStates coneCube) {
     switch (coneCube) {
-      case CONE:
+      case CONE_SHELF:
         candle.setLEDs(255, 215, 0, 0, 24, 16);
         candle.setLEDs(255, 215, 0, 0, 56, 15);
         candle.setLEDs(255, 215, 0, 0, 101, 15);
         candle.setLEDs(255, 215, 0, 0, 132, 16);
         break;
-      case CUBE:
+      case CUBE_SHELF:
         candle.setLEDs(75, 0, 130, 0, 24, 16);
         candle.setLEDs(75, 0, 130, 0, 56, 15);
         candle.setLEDs(75, 0, 130, 0, 101, 15);
         candle.setLEDs(75, 0, 130, 0, 132, 16);
+        break;
+      case CUBE_CHUTE:
+        candle.setLEDs(255, 0, 0, 0, 24, 16);
+        candle.setLEDs(255, 0, 0, 0, 56, 15);
+        candle.setLEDs(255, 0, 0, 0, 101, 15);
+        candle.setLEDs(255, 0, 0, 0, 132, 16);
         break;
       default:
         break;

@@ -3,6 +3,7 @@ package frc.robot.subsystems.leds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.GamePieceAndSource;
 import frc.robot.subsystems.leds.LEDConstants.*;
 
 public class LEDs extends SubsystemBase {
@@ -11,7 +12,8 @@ public class LEDs extends SubsystemBase {
   private boolean[] errors;
   private int nextError, currentError;
   private int timer;
-  private boolean cone, auto;
+  private boolean auto;
+  private GamePieceAndSource gamePieceAndSource;
 
   public LEDs(LEDIO io) {
     nextError = -1;
@@ -20,20 +22,12 @@ public class LEDs extends SubsystemBase {
     this.io = io;
     ShuffleboardTab tab = Shuffleboard.getTab("LEDs");
     errors = new boolean[6];
-    cone = true;
-    // auto = false;
+    this.auto = false;
+    this.gamePieceAndSource = gamePieceAndSource.CONE_SHELF;
   }
 
-  public void enableConeLED() {
-    cone = true;
-  }
-
-  public void enableCubeLED() {
-    cone = false;
-  }
-
-  public boolean pickupCone() {
-    return cone;
+  public void setGamePieceAndSource(GamePieceAndSource gamePieceAndSource) {
+    this.gamePieceAndSource = gamePieceAndSource;
   }
 
   public boolean autoEnabled() {
@@ -152,10 +146,12 @@ public class LEDs extends SubsystemBase {
   }
 
   public void configurePickupLEDs() {
-    if (this.pickupCone()) {
-      io.changePickupStateColors(DriveInfoStates.CONE);
+    if (this.gamePieceAndSource == GamePieceAndSource.CONE_SHELF) {
+      io.changePickupStateColors(DriveInfoStates.CONE_SHELF);
+    } else if (this.gamePieceAndSource == GamePieceAndSource.CUBE_SHELF) {
+      io.changePickupStateColors(DriveInfoStates.CUBE_SHELF);
     } else {
-      io.changePickupStateColors(DriveInfoStates.CUBE);
+      io.changePickupStateColors(DriveInfoStates.CUBE_CHUTE);
     }
   }
 

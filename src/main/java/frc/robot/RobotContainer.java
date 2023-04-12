@@ -114,6 +114,8 @@ public class RobotContainer {
   private static final double SQUARING_GRID_TIMEOUT_SECONDS = 1.0;
   private static final double SQUARING_LOADING_ZONE_TIMEOUT_SECONDS = 6.0;
 
+  private GamePieceAndSource gamePieceAndSource = GamePieceAndSource.CONE_SHELF;
+
   // FIXME: delete after testing
   private final LoggedDashboardChooser<ElevatorConstants.Position> armChooser =
       new LoggedDashboardChooser<>("Arm Position");
@@ -1111,10 +1113,26 @@ public class RobotContainer {
         .toggleOnTrue(
             Commands.either(
                 Commands.parallel(
-                    Commands.runOnce(elevator::toggleToCube), Commands.runOnce(led::enableCubeLED)),
-                Commands.parallel(
-                    Commands.runOnce(elevator::toggleToCone), Commands.runOnce(led::enableConeLED)),
-                elevator::getToggledToCone));
+                    Commands.runOnce(elevator::toggleToCube),
+                    Commands.runOnce(
+                        () -> led.setGamePieceAndSource(GamePieceAndSource.CUBE_SHELF)),
+                    Commands.runOnce(
+                        () -> this.gamePieceAndSource = GamePieceAndSource.CUBE_SHELF)),
+                Commands.either(
+                    Commands.parallel(
+                        Commands.runOnce(elevator::toggleToCone),
+                        Commands.runOnce(
+                            () -> led.setGamePieceAndSource(GamePieceAndSource.CUBE_CHUTE)),
+                        Commands.runOnce(
+                            () -> this.gamePieceAndSource = GamePieceAndSource.CUBE_CHUTE)),
+                    Commands.parallel(
+                        Commands.runOnce(elevator::toggleToCone),
+                        Commands.runOnce(
+                            () -> led.setGamePieceAndSource(GamePieceAndSource.CONE_SHELF)),
+                        Commands.runOnce(
+                            () -> this.gamePieceAndSource = GamePieceAndSource.CONE_SHELF)),
+                    () -> this.gamePieceAndSource == GamePieceAndSource.CUBE_SHELF),
+                () -> this.gamePieceAndSource == GamePieceAndSource.CONE_SHELF));
 
     oi.getDisableArmBackupButton().onTrue(Commands.runOnce(elevator::stopElevator));
     oi.getMoveArmToShelfButton()

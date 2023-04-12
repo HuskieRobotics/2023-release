@@ -44,22 +44,19 @@ public class ElevatorConstants {
   public static final double ROTATION_EXTENSION_TIME_OFFSET_IN = 0.5;
   public static final boolean APPLY_TIME_OFFSET_AT_START_IN = true;
 
-  public static final double CONE_HIGH_ROTATION_POSITION = 0.7271 + ROTATION_OFFSET;
+  public static final double CONE_HIGH_ROTATION_POSITION = -0.0383;
   public static final double CONE_HIGH_EXTENSION_POSITION = 1.6901 - EXTENSION_OFFSET;
 
   public static final double CONE_MID_ROTATION_POSITION = 0.7777 + ROTATION_OFFSET;
-  public static final double CONE_MID_EXTENSION_POSITION = 1.2103 - EXTENSION_OFFSET;
+  public static final double CONE_MID_EXTENSION_POSITION = 0.94084;
 
-  public static final double CONE_HYBRID_ROTATION_POSITION = 0.9832 + ROTATION_OFFSET;
-  public static final double CONE_HYBRID_EXTENSION_POSITION = 0.6823 - EXTENSION_OFFSET;
+  public static final double CONE_HYBRID_ROTATION_POSITION = -0.0383;
+  public static final double CONE_HYBRID_EXTENSION_POSITION = 0.3498;
 
-  public static final double CUBE_HIGH_ROTATION_POSITION =
-      Units.degreesToRadians(90.0 - 52.0) + ROTATION_OFFSET;
-  public static final double CUBE_HIGH_EXTENSION_POSITION =
-      Units.inchesToMeters(58) - EXTENSION_OFFSET;
+  public static final double CUBE_HIGH_ROTATION_POSITION = -0.0383;
+  public static final double CUBE_HIGH_EXTENSION_POSITION = 1.35529;
 
-  public static final double CUBE_MID_ROTATION_POSITION =
-      Units.degreesToRadians(90.0 - 51.55) + ROTATION_OFFSET;
+  public static final double CUBE_MID_ROTATION_POSITION = -0.0383;
   public static final double CUBE_MID_EXTENSION_POSITION =
       Units.inchesToMeters(40.63) - EXTENSION_OFFSET;
 

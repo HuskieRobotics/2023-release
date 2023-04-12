@@ -227,7 +227,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getIntakeShootButton(){
+  public default Trigger getIntakeShootButton() {
     return new Trigger(() -> false);
   }
 }

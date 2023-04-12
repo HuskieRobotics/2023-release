@@ -594,6 +594,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       0.05; // FIXME: tune
 
   private static double calculateRotationFeedForward(double extension, double rotation) {
+
+    // adjust for extension offset and rotated coordinated system
+    extension += EXTENSION_OFFSET;
+    rotation -= ROTATION_OFFSET;
+
     double r =
         Math.sqrt(
             Math.pow((D2 - D1 * Math.sin(rotation)), 2)
@@ -624,6 +629,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   }
 
   private static double calculateExtensionFeedForward(double extension, double rotation) {
+    // adjust for extension offset and rotated coordinated system
+    extension += EXTENSION_OFFSET;
+    rotation -= ROTATION_OFFSET;
+
     double mass;
     if (extension <= MAX_EXTENSION_BEFORE_MOVING_STAGE_ENGAGEMENT) {
       mass = CARRIAGE_MASS;

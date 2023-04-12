@@ -24,7 +24,6 @@ public interface IntakeIO {
 
     boolean isDeployed = false;
     boolean isRetracted = true;
-
   }
 
   /** Updates the set of loggable inputs. */

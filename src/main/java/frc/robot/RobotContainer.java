@@ -425,9 +425,9 @@ public class RobotContainer {
     oi.getInterruptAll()
         .onTrue(
             Commands.parallel(
-                Commands.runOnce(manipulator::stop),
-                Commands.runOnce(elevator::stopElevator),
-                Commands.runOnce(intake::stopIntake),
+                Commands.runOnce(manipulator::stop, manipulator),
+                Commands.runOnce(elevator::stopElevator, elevator),
+                Commands.runOnce(intake::stopIntake, intake),
                 Commands.runOnce(drivetrain::disableXstance),
                 Commands.runOnce(led::enableTeleopLED),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
@@ -1134,7 +1134,7 @@ public class RobotContainer {
                     () -> this.gamePieceAndSource == GamePieceAndSource.CUBE_SHELF),
                 () -> this.gamePieceAndSource == GamePieceAndSource.CONE_SHELF));
 
-    oi.getDisableArmBackupButton().onTrue(Commands.runOnce(elevator::stopElevator));
+    oi.getDisableArmBackupButton().onTrue(Commands.runOnce(elevator::stopElevator, elevator));
     oi.getMoveArmToShelfButton()
         .onTrue(
             new SetElevatorPosition(elevator, ElevatorConstants.Position.CONE_INTAKE_SHELF, led)
@@ -1177,7 +1177,7 @@ public class RobotContainer {
     oi.getAutoZeroExtensionButton().onTrue(Commands.runOnce(elevator::autoZeroExtension, elevator));
 
     oi.getDisableArmButton()
-        .onTrue(Commands.sequence(Commands.runOnce(() -> elevator.stopElevator())));
+        .onTrue(Commands.sequence(Commands.runOnce(() -> elevator.stopElevator(), elevator)));
 
     elevator.setDefaultCommand(
         Commands.sequence(
@@ -1192,8 +1192,8 @@ public class RobotContainer {
     oi.getToggleManipulatorOpenCloseButton()
         .toggleOnTrue(
             Commands.either(
-                Commands.runOnce(manipulator::close),
-                Commands.runOnce(manipulator::open),
+                Commands.runOnce(manipulator::close, manipulator),
+                Commands.runOnce(manipulator::open, manipulator),
                 manipulator::isOpened));
 
     // toggle manipulator sensor enable/disable
@@ -1208,7 +1208,7 @@ public class RobotContainer {
     oi.getIntakeShootButton()
         .onTrue(
             Commands.sequence(
-                Commands.runOnce(() -> intake.setRollerMotorPercentage(-1)),
+                Commands.runOnce(() -> intake.setRollerMotorPercentage(-1), intake),
                 Commands.waitSeconds(1),
                 new RetractIntake(intake)));
 
@@ -1345,8 +1345,13 @@ public class RobotContainer {
         new MoveToLoadingZone(drivetrain, moveToGridPosition);
 
     return Commands.sequence(
-        new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
-        Commands.waitUntil(() -> manipulator.isOpened()),
+        Commands.deadline(
+            Commands.sequence(
+                // since the manipulator is probably already open, don't invoke ReleaseGamePiece,
+                // which waits a fixed amount of time regardless of the state of the manipulator
+                Commands.runOnce(manipulator::open, manipulator),
+                Commands.waitUntil(() -> manipulator.isOpened())),
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
         /*
          * If move-to-grid is enabled, automatically move the robot to the specified
          * substation location. This command group will complete as soon as the manipulator grabs a

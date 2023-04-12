@@ -125,8 +125,6 @@ public class TeleopSwerve extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    this.drivetrain.stop();
-
     super.end(interrupted);
 
     Logger.getInstance().recordOutput("ActiveCommands/TeleopSwerve", false);

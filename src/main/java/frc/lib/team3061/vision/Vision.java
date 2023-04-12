@@ -243,9 +243,11 @@ public class Vision extends SubsystemBase {
                   .getTranslation()
                   .getNorm()
               < tunablePoseDifferenceThreshold.get()) {
+        Logger.getInstance().recordOutput("Vision/posesInLine", true);
         return true;
       }
     }
+    Logger.getInstance().recordOutput("Vision/posesInLine", false);
     return false;
   }
 }

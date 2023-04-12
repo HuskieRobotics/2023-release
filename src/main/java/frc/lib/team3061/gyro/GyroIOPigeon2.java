@@ -6,6 +6,7 @@ package frc.lib.team3061.gyro;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import edu.wpi.first.math.util.Units;
 import frc.lib.team3061.RobotConfig;
 import org.littletonrobotics.junction.Logger;
@@ -16,6 +17,7 @@ public class GyroIOPigeon2 implements GyroIO {
 
   public GyroIOPigeon2(int id) {
     gyro = new Pigeon2(id, RobotConfig.getInstance().getCANBusName());
+    this.gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 9);
   }
 
   @Override

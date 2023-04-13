@@ -1251,44 +1251,41 @@ public class RobotContainer {
   }
 
   private Command moveAndScoreGamePiece() {
-    // The move to grid command needs to know how long it will take to position the elevator to
-    // optimize when it starts moving the robot and to ensure that the held game piece is not
-    // smashed into a field element because the elevator isn't in the final position.
-    Command setElevatorPositionCommand =
-        new SetElevatorPosition(
-            elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led);
-    MoveToGrid moveToGridCommand =
-        new MoveToGrid(drivetrain); // , 2.0), // replace 2.0 with the time to position the elevator
-    // (e.g., setElevatorPosition.getTimeToPosition())
+    MoveToGrid moveToGridCommand = new MoveToGrid(drivetrain);
 
     /*
      * If move-to-grid is disabled, this command will never finish since TeleopSwerve never finishes.
      * In this case, the operator will have to manually drop the game piece, which will interrupt this command.
      */
 
-    return Commands.sequence(
-        Commands.parallel(
-            // FIXME change to setPosition so we do not have to worry about hitting game elements
-            setElevatorPositionCommand,
-            Commands.either(
-                Commands.sequence(
-                    Commands.deadline(
-                        Commands.waitUntil(vision::posesInLine),
-                        new TeleopSwerve(
-                            drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
-                    Commands.runOnce(led::enableAutoLED),
-                    moveToGridCommand,
+    return Commands.either(
+        Commands.sequence(
+            Commands.deadline(
+                new SetElevatorPosition(elevator, ElevatorConstants.Position.GRID_PREPARE, led),
+                new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+            Commands.sequence(
+                Commands.deadline(
+                    Commands.waitUntil(vision::posesInLine),
+                    new TeleopSwerve(
+                        drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+                Commands.runOnce(led::enableAutoLED),
+                moveToGridCommand,
+                Commands.parallel(
+                    new SetElevatorPosition(
+                        elevator,
+                        () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()),
+                        led),
                     new StallAgainstElement(
                         drivetrain,
                         moveToGridCommand.endPoseSupplier(),
                         true,
-                        SQUARING_GRID_TIMEOUT_SECONDS)),
-                Commands.parallel(
-                    Commands.runOnce(led::enableTeleopLED),
-                    new TeleopSwerve(
-                        drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
-                () -> oi.getMoveToGridEnabledSwitch().getAsBoolean())),
-        Commands.runOnce(led::enableTeleopLED));
+                        SQUARING_GRID_TIMEOUT_SECONDS))),
+            Commands.runOnce(led::enableTeleopLED)),
+        Commands.parallel(
+            new SetElevatorPosition(
+                elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led),
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
+        () -> oi.getMoveToGridEnabledSwitch().getAsBoolean());
   }
 
   private Command driveAndStallCommand(Pose2d moveToGridPosition) {

@@ -40,7 +40,7 @@ public class Vision extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator;
   private boolean isEnabled = true;
   private boolean isVisionUpdating = false;
-  private static double POSE_DIFFERENCE_THRESHOLD = 0.25;
+  private static double POSE_DIFFERENCE_THRESHOLD = 0.5;
   private TunableNumber tunablePoseDifferenceThreshold;
 
   private Alert noAprilTagLayoutAlert =

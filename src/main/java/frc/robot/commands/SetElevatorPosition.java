@@ -261,6 +261,14 @@ public class SetElevatorPosition extends CommandBase {
         rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
         applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
         break;
+      case GRID_PREPARE:
+        this.extension = GRID_PREEXTENSION;
+        this.rotation = GRID_PREROTATION;
+        rotationCruiseVelocity = fastRotationVelocity.get();
+        rotationAcceleration = fastRotationAcceleration.get();
+        rotationExtensionTimeOffset = extensionRotationProfileOffsetOut.get();
+        applyTimeOffsetAtStart = APPLY_TIME_OFFSET_AT_START_OUT;
+        break;
 
       default:
         this.extension = this.elevator.getExtensionElevatorEncoderHeight();

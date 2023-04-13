@@ -33,6 +33,8 @@ public class ElevatorConstants {
     CUBE_HYBRID_LEVEL,
     CUBE_MID_LEVEL,
     CUBE_HIGH_LEVEL,
+
+    GRID_PREPARE
   }
 
   public static final double ROTATION_OFFSET = -Units.degreesToRadians(45.0);
@@ -52,6 +54,9 @@ public class ElevatorConstants {
 
   public static final double CONE_HYBRID_ROTATION_POSITION = -0.0383;
   public static final double CONE_HYBRID_EXTENSION_POSITION = 0.3498;
+
+  public static final double GRID_PREROTATION = 0.1362;
+  public static final double GRID_PREEXTENSION = 0.3498;
 
   public static final double CUBE_HIGH_ROTATION_POSITION = -0.0383;
   public static final double CUBE_HIGH_EXTENSION_POSITION = 1.35529;

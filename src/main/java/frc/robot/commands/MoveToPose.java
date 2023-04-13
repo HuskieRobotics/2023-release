@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team6328.util.Alert;
 import frc.lib.team6328.util.Alert.AlertType;
+import frc.lib.team6328.util.TunableNumber;
 import frc.robot.Field2d;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import org.littletonrobotics.junction.Logger;
@@ -30,9 +31,10 @@ public abstract class MoveToPose extends CommandBase {
   private PathPlannerTrajectory trajectory;
   private PPSwerveControllerCommand ppSwerveControllerCommand;
   private Alert noPathAlert = new Alert("No path between start and end pose", AlertType.WARNING);
+  private final TunableNumber timeOffset = new TunableNumber("MoveToPose/TIME_OFFSET", 0.1);
 
   // FIXME: replace with "predict into future" time closer to actual for robot
-  private static final double TIME_OFFSET = 0.2;
+  // private static final double TIME_OFFSET = 0.2;
 
   /**
    * Constructs a new MoveToPose command object.
@@ -73,8 +75,8 @@ public abstract class MoveToPose extends CommandBase {
     Pose2d endPose = endPose();
     Pose2d startingPose =
         new Pose2d(
-            this.drivetrain.getPose().getX() + this.drivetrain.getVelocityX() * TIME_OFFSET,
-            this.drivetrain.getPose().getY() + this.drivetrain.getVelocityY() * TIME_OFFSET,
+            this.drivetrain.getPose().getX() + this.drivetrain.getVelocityX() * timeOffset.get(),
+            this.drivetrain.getPose().getY() + this.drivetrain.getVelocityY() * timeOffset.get(),
             this.drivetrain.getPose().getRotation());
 
     double distance = endPose.minus(this.drivetrain.getPose()).getTranslation().getNorm();

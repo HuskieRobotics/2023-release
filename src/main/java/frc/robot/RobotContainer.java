@@ -496,13 +496,11 @@ public class RobotContainer {
     PathPlannerTrajectory threeCubeLoadingSideTwoPath =
         PathPlanner.loadPath("3CubeLoadingSide2", 2.5, 3.0);
     PathPlannerTrajectory threeCubeCableSideV2Path =
-        PathPlanner.loadPath("3ConeCableSideV2", 2.0,2.0);
-    
+        PathPlanner.loadPath("3ConeCableSideV2", 2.0, 2.0);
 
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
     // build auto path commands
-   
 
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
@@ -916,8 +914,7 @@ public class RobotContainer {
     // ******************** cableSide 3 cube ******************************
     // ********************************************************************
 
-    Command cableSideThreeCubeV2Command = 
-        threeCubeCommand(threeCubeCableSideV2Path);
+    Command cableSideThreeCubeV2Command = threeCubeCommand(threeCubeCableSideV2Path);
     autoChooser.addOption("CableSide 3 Cube Version 2", cableSideThreeCubeV2Command);
 
     // ********************************************************************
@@ -977,12 +974,10 @@ public class RobotContainer {
     // Command autoTurnPidTuningCommand =
     //     new FollowPath(autoTurnPidTuningPath, drivetrain, true, true);
     // autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
-    
+
     // "auto" path for Tuning auto PIDs
-    PathPlannerTrajectory tuningPath =
-        PathPlanner.loadPath("Tuning", 2.0,3.0);
-    Command tuningCommand =
-        new FollowPath(tuningPath, drivetrain, true, true);
+    PathPlannerTrajectory tuningPath = PathPlanner.loadPath("Tuning", 2.0, 3.0);
+    Command tuningCommand = new FollowPath(tuningPath, drivetrain, true, true);
     autoChooser.addOption("Auto Tuning Path", tuningCommand);
 
     // start point auto
@@ -1216,9 +1211,7 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
-                Commands.parallel(
-                    new RetractIntake(intake),
-                    new SetElevatorPosition(elevator, Position.CONE_STORAGE, led))));
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)));
 
     // reset pose based on vision
     oi.getResetPoseToVisionButton()
@@ -1339,22 +1332,15 @@ public class RobotContainer {
                 Commands.waitSeconds(1),
                 new RetractIntake(intake)));
 
-    // intake.setDefaultCommand(
-    //     Commands.sequence(
-    //         Commands.runOnce(
-    //             () -> intake.setRotationMotorPercentage(oi.getIntakeDeployPower()), intake),
-    //         Commands.runOnce(
-    //             () -> intake.setRotationMotorPercentage(oi.getIntakeRetractPower()), intake)));
+    oi.getIntakeDeployButton().onTrue(new DeployIntake(intake));
+    oi.getIntakeRetractButton().onTrue(new RetractIntake(intake));
 
-    // oi.getToggleIntakeRollerButton()
-    //     .toggleOnTrue(
-    //         Commands.either(
-    //             Commands.runOnce(intake::stopRoller, intake),
-    //             Commands.runOnce(intake::enableRoller, intake),
-    //             intake::isRollerSpinning));
-
-    // oi.getPositionIntakeToPushCubeCone()
-    //     .onTrue(new SetIntakeState(intake, IntakeConstants.Position.PUSH_CONE_CUBE));
+    oi.getToggleIntakeRollerButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(intake::disableRoller, intake),
+                Commands.runOnce(intake::enableRoller, intake),
+                intake::isIntakeRollerSpinning));
   }
 
   private void configureAutomatedSequenceCommands() {

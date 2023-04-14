@@ -45,15 +45,16 @@ public class IntakeIOTalonFX implements IntakeIO {
         Conversions.falconToDegrees(
             rotationMotor.getSelectedSensorPosition(SLOT_INDEX), INTAKE_ROTATION_GEAR_RATIO);
     inputs.rotationPower = rotationMotor.getMotorOutputPercent();
-    inputs.rotationAppliedPercentage = rotationMotor.getMotorOutputVoltage();
+    inputs.rotationAppliedVoltage = rotationMotor.getMotorOutputVoltage();
     inputs.rotationStatorCurrentAmps = new double[] {rotationMotor.getStatorCurrent()};
     inputs.rotationSupplyCurrent = new double[] {rotationMotor.getSupplyCurrent()};
-    inputs.rollerAppliedPercentage = rollerMotor.getMotorOutputVoltage();
+
+    inputs.rollerAppliedVoltage = rollerMotor.getMotorOutputVoltage();
     inputs.rollerStatorCurrentAmps = new double[] {rollerMotor.getStatorCurrent()};
     inputs.rotationClosedLoopError = rotationMotor.getClosedLoopError();
     inputs.rotationSetpoint = rotationMotor.getClosedLoopTarget();
 
-    if (inputs.rollerAppliedPercentage > 0
+    if (inputs.rollerAppliedVoltage > 0
         && Math.abs(inputs.rollerStatorCurrentAmps[0]) > IntakeConstants.ROLLER_THRESHOLD_CURRENT) {
       rollerStallCount++;
       if (rollerStallCount > IntakeConstants.ROLLER_THRESHOLD_ITERATIONS) {
@@ -65,7 +66,7 @@ public class IntakeIOTalonFX implements IntakeIO {
       inputs.atRollerCurrentThreshold = false;
     }
 
-    if (inputs.rotationAppliedPercentage > 0
+    if (inputs.rotationAppliedVoltage > 0
         && Math.abs(inputs.rotationStatorCurrentAmps[0])
             > IntakeConstants.ROTATION_THRESHOLD_CURRENT
         && inputs.rotationPositionDeg > 40) {
@@ -74,7 +75,7 @@ public class IntakeIOTalonFX implements IntakeIO {
         inputs.isDeployed = true;
         this.setRotationMotorPercentage(0.0);
       }
-    } else if (inputs.rotationAppliedPercentage < 0) {
+    } else if (inputs.rotationAppliedVoltage < 0) {
       deployStallCount = 0;
       inputs.isDeployed = false;
     } else {
@@ -85,7 +86,7 @@ public class IntakeIOTalonFX implements IntakeIO {
       rotationMotor.setNeutralMode(NeutralMode.Coast);
     }
 
-    if (inputs.rotationAppliedPercentage < 0
+    if (inputs.rotationAppliedVoltage < 0
         && Math.abs(inputs.rotationStatorCurrentAmps[0])
             > IntakeConstants.ROTATION_THRESHOLD_CURRENT
         && inputs.rotationPositionDeg < 10) {
@@ -96,7 +97,7 @@ public class IntakeIOTalonFX implements IntakeIO {
         rotationMotor.set(ControlMode.Current, -20.0);
         rotationMotor.setSelectedSensorPosition(0.0);
       }
-    } else if (inputs.rotationAppliedPercentage > 0) {
+    } else if (inputs.rotationAppliedVoltage > 0) {
       stallCount = 0;
       inputs.isRetracted = false;
     } else {

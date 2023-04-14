@@ -35,7 +35,7 @@ public class IntakeConstants {
   public static final double ROTATION_FEEDFORWARD = 0;
 
   public static final double ROTATION_CURRENT_LIMIT = 40;
-  public static final double ROLLER_CURRENT_LIMIT = 40;
+  public static final double ROLLER_CURRENT_LIMIT = 50;
 
   public static final double ROLLER_THRESHOLD_ITERATIONS = 10;
   public static final double DEPLOY_THRESHOLD_ITERATIONS = 10;

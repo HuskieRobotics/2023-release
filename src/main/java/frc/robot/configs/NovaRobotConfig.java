@@ -101,12 +101,12 @@ public class NovaRobotConfig extends RobotConfig {
 
   private static final double AUTO_MAX_SPEED_METERS_PER_SECOND = 2.0;
   private static final double AUTO_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 2.0;
-  private static final double AUTO_DRIVE_P_CONTROLLER = 6.0;
+  private static final double AUTO_DRIVE_P_CONTROLLER = 8.0;
   private static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
   private static final double AUTO_DRIVE_D_CONTROLLER = 0.0;
-  private static final double AUTO_TURN_P_CONTROLLER = 0.4;
-  private static final double AUTO_TURN_I_CONTROLLER = 1.6;
-  private static final double AUTO_TURN_D_CONTROLLER = 1.0;
+  private static final double AUTO_TURN_P_CONTROLLER = 0.2;
+  private static final double AUTO_TURN_I_CONTROLLER = 0.0;
+  private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
   // FIXME: tune all drive to pose constants
   // Drive to Pose constants

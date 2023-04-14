@@ -26,14 +26,31 @@ public class IntakeIOTalonFX implements IntakeIO {
   private int rollerStallCount;
   private int deployStallCount;
 
-  private final TunableNumber rkP = new TunableNumber("IntakeRotation/kP", ROTATION_POSITION_PID_P);
-  private final TunableNumber rkI = new TunableNumber("IntakeRotation/kI", ROTATION_POSITION_PID_I);
-  private final TunableNumber rkD = new TunableNumber("IntakeRotation/kD", ROTATION_POSITION_PID_D);
-  private final TunableNumber rkF = new TunableNumber("IntakeRotation/kF", ROTATION_POSITION_PID_F);
-  private final TunableNumber rkIz =
+  private final TunableNumber RotationrkP =
+      new TunableNumber("IntakeRotation/kP", ROTATION_POSITION_PID_P);
+  private final TunableNumber RotationrkI =
+      new TunableNumber("IntakeRotation/kI", ROTATION_POSITION_PID_I);
+  private final TunableNumber RotationrkD =
+      new TunableNumber("IntakeRotation/kD", ROTATION_POSITION_PID_D);
+  private final TunableNumber RotationrkF =
+      new TunableNumber("IntakeRotation/kF", ROTATION_POSITION_PID_F);
+  private final TunableNumber RotationrkIz =
       new TunableNumber("IntakeRotation/kIz", ROTATION_POSITION_PID_I_ZONE);
-  private final TunableNumber rkPeakOutput =
+  private final TunableNumber RotationrkPeakOutput =
       new TunableNumber("IntakeRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
+
+  private final TunableNumber RollerkP =
+      new TunableNumber("IntakeRotation/kP", ROLLER_POSITION_PID_P);
+  private final TunableNumber RollerkI =
+      new TunableNumber("IntakeRotation/kI", ROLLER_POSITION_PID_I);
+  private final TunableNumber RollerkD =
+      new TunableNumber("IntakeRotation/kD", ROLLER_POSITION_PID_D);
+  private final TunableNumber RollerkF =
+      new TunableNumber("IntakeRotation/kF", ROLLER_POSITION_PID_F);
+  private final TunableNumber RollerkIz =
+      new TunableNumber("IntakeRotation/kIz", ROLLER_POSITION_PID_I_ZONE);
+  private final TunableNumber RollerkPeakOutput =
+      new TunableNumber("IntakeRotation/kPeakOutput", ROLLER_POSITION_PID_PEAK_OUTPUT);
 
   public IntakeIOTalonFX() {
     configIntakeMotor(INTAKE_ROTATION_MOTOR_CAN_ID, INTAKE_ROLLER_MOTOR_CAN_ID);
@@ -58,7 +75,7 @@ public class IntakeIOTalonFX implements IntakeIO {
       rollerStallCount++;
       if (rollerStallCount > IntakeConstants.ROLLER_THRESHOLD_ITERATIONS) {
         inputs.atRollerCurrentThreshold = true;
-        this.setRollerMotorPercentage(0.0);
+        rollerMotor.set(ControlMode.Current, ROLLER_HOLD_CURRENT);
       }
     } else {
       rollerStallCount = 0;
@@ -93,7 +110,7 @@ public class IntakeIOTalonFX implements IntakeIO {
       if (stallCount > IntakeConstants.OPEN_THRESHOLD_ITERATIONS) {
         inputs.isRetracted = true;
         rotationMotor.setNeutralMode(NeutralMode.Brake);
-        rotationMotor.set(ControlMode.Current, -20.0);
+        rotationMotor.set(ControlMode.Current, ROTATION_RETRACT_HOLD_CURRENT);
         rotationMotor.setSelectedSensorPosition(0.0);
       }
     } else if (inputs.rotationAppliedPercentage > 0) {
@@ -103,18 +120,31 @@ public class IntakeIOTalonFX implements IntakeIO {
       stallCount = 0;
     }
 
-    if (rkP.hasChanged()
-        || rkI.hasChanged()
-        || rkD.hasChanged()
-        || rkF.hasChanged()
-        || rkIz.hasChanged()
-        || rkPeakOutput.hasChanged()) {
-      rotationMotor.config_kF(0, rkF.get());
-      rotationMotor.config_kP(0, rkP.get());
-      rotationMotor.config_kI(0, rkI.get());
-      rotationMotor.config_kD(0, rkD.get());
-      rotationMotor.config_IntegralZone(0, rkIz.get());
-      rotationMotor.configClosedLoopPeakOutput(0, rkPeakOutput.get());
+    if (RotationrkP.hasChanged()
+        || RotationrkI.hasChanged()
+        || RotationrkD.hasChanged()
+        || RotationrkF.hasChanged()
+        || RotationrkIz.hasChanged()
+        || RotationrkPeakOutput.hasChanged()) {
+      rotationMotor.config_kF(0, RotationrkF.get());
+      rotationMotor.config_kP(0, RotationrkP.get());
+      rotationMotor.config_kI(0, RotationrkI.get());
+      rotationMotor.config_kD(0, RotationrkD.get());
+      rotationMotor.config_IntegralZone(0, RotationrkIz.get());
+      rotationMotor.configClosedLoopPeakOutput(0, RotationrkPeakOutput.get());
+    }
+    if (RollerkP.hasChanged()
+        || RollerkI.hasChanged()
+        || RollerkD.hasChanged()
+        || RollerkF.hasChanged()
+        || RollerkIz.hasChanged()
+        || RollerkPeakOutput.hasChanged()) {
+      rollerMotor.config_kF(0, RollerkF.get());
+      rollerMotor.config_kP(0, RollerkP.get());
+      rollerMotor.config_kI(0, RollerkI.get());
+      rollerMotor.config_kD(0, RollerkD.get());
+      rollerMotor.config_IntegralZone(0, RollerkIz.get());
+      rollerMotor.configClosedLoopPeakOutput(0, RollerkPeakOutput.get());
     }
   }
 
@@ -145,10 +175,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     intakeRotationMotorConfig.BRUSHLESS_CURRENT_STATUS_FRAME_RATE_MS = 9;
     intakeRotationMotorConfig.NEUTRAL_MODE = NeutralMode.Brake;
     intakeRotationMotorConfig.STATOR_CURRENT_LIMIT = INTAKE_ROTATION_CURRENT_LIMIT;
-    intakeRotationMotorConfig.SLOT0_KP = rkP.get();
-    intakeRotationMotorConfig.SLOT0_KI = rkI.get();
-    intakeRotationMotorConfig.SLOT0_KD = rkD.get();
-    intakeRotationMotorConfig.SLOT0_KF = rkF.get();
+    intakeRotationMotorConfig.SLOT0_KP = RotationrkP.get();
+    intakeRotationMotorConfig.SLOT0_KI = RotationrkI.get();
+    intakeRotationMotorConfig.SLOT0_KD = RotationrkD.get();
+    intakeRotationMotorConfig.SLOT0_KF = RotationrkF.get();
     intakeRotationMotorConfig.NEUTRAL_DEADBAND = 0.001;
     rotationMotor =
         TalonFXFactory.createTalon(
@@ -156,19 +186,26 @@ public class IntakeIOTalonFX implements IntakeIO {
             RobotConfig.getInstance().getCANBusName(),
             intakeRotationMotorConfig);
     rotationMotor.setSelectedSensorPosition(0);
-    rotationMotor.configClosedLoopPeakOutput(0, rkPeakOutput.get());
-    rotationMotor.config_IntegralZone(0, rkIz.get());
-    rotationMotor.set(ControlMode.Current, -20.0);
+    rotationMotor.configClosedLoopPeakOutput(0, RotationrkPeakOutput.get());
+    rotationMotor.config_IntegralZone(0, RotationrkIz.get());
+    rotationMotor.set(ControlMode.Current, ROTATION_RETRACT_HOLD_CURRENT);
 
     TalonFXFactory.Configuration intakeRollerMotorConfig = new TalonFXFactory.Configuration();
     intakeRollerMotorConfig.INVERTED = IntakeConstants.INTAKE_ROLLER_MOTOR_INVERTED;
     intakeRollerMotorConfig.BRUSHLESS_CURRENT_STATUS_FRAME_RATE_MS = 9;
     intakeRollerMotorConfig.NEUTRAL_MODE = NeutralMode.Brake;
     intakeRollerMotorConfig.STATOR_CURRENT_LIMIT = IntakeConstants.INTAKE_ROLLER_CURRENT_LIMIT;
+    intakeRollerMotorConfig.SLOT0_KP = RollerkP.get();
+    intakeRollerMotorConfig.SLOT0_KI = RollerkI.get();
+    intakeRollerMotorConfig.SLOT0_KD = RollerkD.get();
+    intakeRollerMotorConfig.SLOT0_KF = RollerkF.get();
+    intakeRollerMotorConfig.NEUTRAL_DEADBAND = 0.001;
     rollerMotor =
         TalonFXFactory.createTalon(
             intakeRollerMotorID,
             RobotConfig.getInstance().getCANBusName(),
             intakeRollerMotorConfig);
+    rollerMotor.configClosedLoopPeakOutput(0, RollerkPeakOutput.get());
+    rollerMotor.config_IntegralZone(0, RollerkIz.get());
   }
 }

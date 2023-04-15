@@ -444,6 +444,9 @@ public class RobotContainer {
     autoEventMap.put(
         "set elevator auto position",
         new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led));
+    autoEventMap.put("Intake Cube", autoCubeIntakeCommand());
+    autoEventMap.put("Shoot Cube", autoCubeShootCommand());
+    autoEventMap.put("Retract Intake", new RetractIntake(intake));
 
     // AutoPath trajectories
     PathPlannerTrajectory oneConeCenterRightPath =
@@ -481,6 +484,19 @@ public class RobotContainer {
         PathPlanner.loadPath("CableSide1ConeGrab", 2.0, 2.0);
     PathPlannerTrajectory centerEngageBackwardsPath =
         PathPlanner.loadPath("CenterEngageBackwards", engageSpeed);
+    PathPlannerTrajectory threeCubeCableSidePath = PathPlanner.loadPath("3CubeCableSide", 1.0, 1.0);
+    // PathPlannerTrajectory threeCubeLoadingSidePath =
+    //     PathPlanner.loadPath("3CubeLoadingSide", 1.0, 1.0);
+    PathPlannerTrajectory oneCubeCenterHybridPath =
+        PathPlanner.loadPath("1CubeCenterHybrid", 1.0, 1.0);
+    PathPlannerTrajectory oneConeTwoCubeLoadingSidePath =
+        PathPlanner.loadPath("1Cone2CubeLoadingSide", 1.0, 1.0);
+    PathPlannerTrajectory oneConeTwoCubeCableSidePath =
+        PathPlanner.loadPath("1Cone2CubeCableSide", 1.0, 1.0);
+    PathPlannerTrajectory threeCubeLoadingSideTwoPath =
+        PathPlanner.loadPath("3CubeLoadingSide2", 2.5, 3.0);
+    PathPlannerTrajectory threeCubeCableSideV2Path =
+        PathPlanner.loadPath("3ConeCableSideV2", 2.0, 2.0);
 
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
@@ -488,6 +504,11 @@ public class RobotContainer {
 
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
+
+    PathPlannerTrajectory straightPath = PathPlanner.loadPath("distanceTest", 2, 2);
+
+    Command straightPathCommand = new FollowPath(straightPath, drivetrain, true, true);
+    autoChooser.addOption("Straight Path", straightPathCommand);
 
     // ********************************************************************
     // *************** Hybrid Cone Center Position + Engage ***************
@@ -883,6 +904,61 @@ public class RobotContainer {
     autoChooser.addOption("LoadingSide 2.5 Cone(Mid,Mid)", loadingSideTwoConeGrabMidMidCommand);
 
     // ********************************************************************
+    // ******************** cableSide 3 cube ******************************
+    // ********************************************************************
+
+    Command cableSideThreeCubeCommand = threeCubeCommand(threeCubeCableSidePath);
+    autoChooser.addOption("CableSide 3 Cube", cableSideThreeCubeCommand);
+
+    // ********************************************************************
+    // ******************** cableSide 3 cube ******************************
+    // ********************************************************************
+
+    Command cableSideThreeCubeV2Command = threeCubeCommand(threeCubeCableSideV2Path);
+    autoChooser.addOption("CableSide 3 Cube Version 2", cableSideThreeCubeV2Command);
+
+    // ********************************************************************
+    // ******************** loadingSide 3 Cube ****************************
+    // ********************************************************************
+
+    // Command loadingSideThreeCubeCommand = threeCubeCommand(threeCubeLoadingSidePath);
+    // autoChooser.addOption("LoadingSide 3 Cube", loadingSideThreeCubeCommand);
+
+    // ********************************************************************
+    // ******************** loadingSide 3 Cube v2 ****************************
+    // ********************************************************************
+
+    Command loadingSideThreeCubeTwoCommand = threeCubeCommand(threeCubeLoadingSideTwoPath);
+    autoChooser.addOption("LoadingSide 3 Cube Version 2", loadingSideThreeCubeTwoCommand);
+
+    // ********************************************************************
+    // ******************** 1 Cube Mobility + Engage (Center) *************
+    // ********************************************************************
+
+    Command oneCubeMobilityEngageCenterCommand =
+        oneCubeMobilityEngageCommand(oneCubeCenterHybridPath, mobilityCenterEngagePath);
+    autoChooser.addOption(
+        "1 Cube Mobility + Engage (Center, Center)", oneCubeMobilityEngageCenterCommand);
+
+    // ********************************************************************
+    // *************** LoadingSide 1 Cone (High) 2 Cone (Hybrid) **********
+    // ********************************************************************
+
+    Command oneConeTwoCubeLoadingSideCommand =
+        oneConeTwoCubeCommand(Position.CONE_HIGH_LEVEL, oneConeTwoCubeLoadingSidePath);
+    autoChooser.addOption(
+        "LoadingSide 1 Cone (High) 2 Cube (Hybrid)", oneConeTwoCubeLoadingSideCommand);
+
+    // ********************************************************************
+    // *************** CableSide 1 Cone (High) 2 Cone (Hybrid) ************
+    // ********************************************************************
+
+    Command oneConeTwoCubeCableSideCommand =
+        oneConeTwoCubeCommand(Position.CONE_HIGH_LEVEL, oneConeTwoCubeCableSidePath);
+    autoChooser.addOption(
+        ("CableSide 1 Cone (High) 2 Cube (Hybrid)"), oneConeTwoCubeCableSideCommand);
+
+    // ********************************************************************
     // ****************** Loading Side Get out of the Way *****************
     // ********************************************************************
 
@@ -893,11 +969,16 @@ public class RobotContainer {
     autoChooser.addOption("Loading Side Get out of the Way", loadingGetOutOfTheWay);
 
     // "auto" path for Tuning auto turn PID
-    PathPlannerTrajectory autoTurnPidTuningPath =
-        PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
-    Command autoTurnPidTuningCommand =
-        new FollowPath(autoTurnPidTuningPath, drivetrain, true, true);
-    autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
+    // PathPlannerTrajectory autoTurnPidTuningPath =
+    //     PathPlanner.loadPath("autoTurnPidTuning", 1.0, 1.0);
+    // Command autoTurnPidTuningCommand =
+    //     new FollowPath(autoTurnPidTuningPath, drivetrain, true, true);
+    // autoChooser.addOption("Auto Turn PID Tuning", autoTurnPidTuningCommand);
+
+    // "auto" path for Tuning auto PIDs
+    PathPlannerTrajectory tuningPath = PathPlanner.loadPath("Tuning", 2.0, 3.0);
+    Command tuningCommand = new FollowPath(tuningPath, drivetrain, true, true);
+    autoChooser.addOption("Auto Tuning Path", tuningCommand);
 
     // start point auto
     PathPlannerTrajectory startPointPath =
@@ -1051,6 +1132,47 @@ public class RobotContainer {
         new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()));
   }
 
+  private Command autoCubeShootCommand() {
+    return Commands.sequence(
+        Commands.runOnce(() -> intake.setRollerMotorPercentage(-0.5)),
+        Commands.waitSeconds(1),
+        new RetractIntake(intake));
+  }
+
+  private Command autoCubeIntakeCommand() {
+    return Commands.sequence(
+        new DeployIntake(intake),
+        Commands.waitUntil(() -> intake.hasGamePiece()),
+        new RetractIntake(intake));
+  }
+
+  private Command threeCubeCommand(PathPlannerTrajectory threeCubePath) {
+    return Commands.sequence(
+        // autoCubeShootCommand(),
+        new FollowPathWithEvents(
+            new FollowPath(threeCubePath, drivetrain, true, true),
+            threeCubePath.getMarkers(),
+            autoEventMap));
+    // autoCubeShootCommand());
+  }
+
+  private Command oneConeTwoCubeCommand(Position position, PathPlannerTrajectory path) {
+    return Commands.sequence(
+        scoreGamePieceAuto(position),
+        new FollowPathWithEvents(
+            new FollowPath(path, drivetrain, true, true), path.getMarkers(), autoEventMap),
+        autoCubeShootCommand());
+  }
+
+  private Command oneCubeMobilityEngageCommand(
+      PathPlannerTrajectory path, PathPlannerTrajectory engagePath) {
+    return Commands.sequence(
+        autoCubeShootCommand(),
+        new FollowPath(path, drivetrain, true, true),
+        new FollowPath(engagePath, drivetrain, false, true),
+        new AutoBalance(drivetrain, true, led, false));
+  }
+
   private void configureDrivetrainCommands() {
 
     oi.getToggleIntakeButton()
@@ -1089,9 +1211,8 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
-                Commands.parallel(
-                    new RetractIntake(intake),
-                    new SetElevatorPosition(elevator, Position.CONE_STORAGE, led))));
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
+                new RetractIntake(intake)));
 
     // reset pose based on vision
     oi.getResetPoseToVisionButton()
@@ -1212,22 +1333,15 @@ public class RobotContainer {
                 Commands.waitSeconds(1),
                 new RetractIntake(intake)));
 
-    // intake.setDefaultCommand(
-    //     Commands.sequence(
-    //         Commands.runOnce(
-    //             () -> intake.setRotationMotorPercentage(oi.getIntakeDeployPower()), intake),
-    //         Commands.runOnce(
-    //             () -> intake.setRotationMotorPercentage(oi.getIntakeRetractPower()), intake)));
+    oi.getIntakeDeployButton().onTrue(new DeployIntake(intake));
+    oi.getIntakeRetractButton().onTrue(new RetractIntake(intake));
 
-    // oi.getToggleIntakeRollerButton()
-    //     .toggleOnTrue(
-    //         Commands.either(
-    //             Commands.runOnce(intake::stopRoller, intake),
-    //             Commands.runOnce(intake::enableRoller, intake),
-    //             intake::isRollerSpinning));
-
-    // oi.getPositionIntakeToPushCubeCone()
-    //     .onTrue(new SetIntakeState(intake, IntakeConstants.Position.PUSH_CONE_CUBE));
+    oi.getToggleIntakeRollerButton()
+        .toggleOnTrue(
+            Commands.either(
+                Commands.runOnce(intake::disableRoller, intake),
+                Commands.runOnce(intake::enableRoller, intake),
+                intake::isIntakeRollerSpinning));
   }
 
   private void configureAutomatedSequenceCommands() {
@@ -1261,7 +1375,10 @@ public class RobotContainer {
     return Commands.either(
         Commands.sequence(
             Commands.deadline(
-                new SetElevatorPosition(elevator, ElevatorConstants.Position.GRID_PREPARE, led),
+                Commands.parallel(
+                    Commands.runOnce(intake::deploy, intake),
+                    new SetElevatorPosition(
+                        elevator, ElevatorConstants.Position.GRID_PREPARE, led)),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
             Commands.sequence(
                 Commands.deadline(

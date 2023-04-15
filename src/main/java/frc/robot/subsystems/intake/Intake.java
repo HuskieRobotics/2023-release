@@ -63,7 +63,7 @@ public class Intake extends SubsystemBase {
     this.setRollerMotorPercentage(IntakeConstants.INTAKE_DEFAULT_ROLLER_POWER);
   }
 
-  public void stopRoller() {
+  public void disableRoller() {
     this.setRollerMotorPercentage(0);
   }
 
@@ -89,7 +89,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void stopIntake() {
-    this.stopRoller();
+    this.disableRoller();
     this.stopRotation();
   }
 
@@ -104,5 +104,13 @@ public class Intake extends SubsystemBase {
 
   public boolean hasGamePiece() {
     return inputs.atRollerCurrentThreshold;
+  }
+
+  public boolean isIntakeRollerSpinning() {
+    if (inputs.rotationAppliedVoltage > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

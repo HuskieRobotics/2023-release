@@ -1225,7 +1225,8 @@ public class RobotContainer {
         .onTrue(
             Commands.sequence(
                 new ReleaseGamePiece(manipulator, () -> elevator.getToggledToCone()),
-                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led)));
+                new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
+                new RetractIntake(intake)));
 
     // reset pose based on vision
     oi.getResetPoseToVisionButton()
@@ -1388,7 +1389,10 @@ public class RobotContainer {
     return Commands.either(
         Commands.sequence(
             Commands.deadline(
-                new SetElevatorPosition(elevator, ElevatorConstants.Position.GRID_PREPARE, led),
+                Commands.parallel(
+                    Commands.runOnce(intake::deploy, intake),
+                    new SetElevatorPosition(
+                        elevator, ElevatorConstants.Position.GRID_PREPARE, led)),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
             Commands.sequence(
                 Commands.deadline(

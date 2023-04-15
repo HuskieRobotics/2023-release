@@ -94,7 +94,7 @@ public class IntakeIOTalonFX implements IntakeIO {
       if (stallCount > IntakeConstants.OPEN_THRESHOLD_ITERATIONS) {
         inputs.isRetracted = true;
         rotationMotor.setNeutralMode(NeutralMode.Brake);
-        rotationMotor.set(ControlMode.Current, -20.0);
+        rotationMotor.set(ControlMode.Current, -30.0);
         rotationMotor.setSelectedSensorPosition(0.0);
       }
     } else if (inputs.rotationAppliedVoltage > 0) {
@@ -159,7 +159,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     rotationMotor.setSelectedSensorPosition(0);
     rotationMotor.configClosedLoopPeakOutput(0, rkPeakOutput.get());
     rotationMotor.config_IntegralZone(0, rkIz.get());
-    rotationMotor.set(ControlMode.Current, -20.0);
+    rotationMotor.set(ControlMode.Current, -30.0);
 
     TalonFXFactory.Configuration intakeRollerMotorConfig = new TalonFXFactory.Configuration();
     intakeRollerMotorConfig.INVERTED = IntakeConstants.INTAKE_ROLLER_MOTOR_INVERTED;

@@ -38,9 +38,12 @@ import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
+import frc.lib.team6328.util.FieldConstants;
+import frc.lib.team6328.util.TunableNumber;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.DeployIntake;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 import frc.robot.commands.FollowPath;
@@ -108,13 +111,15 @@ public class RobotContainer {
   private PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
   private PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
   private PathConstraints hybridConeSpeed = new PathConstraints(2.0, 2.0);
-  private PathConstraints engageSpeed = new PathConstraints(1.5, 2.0);
+  private PathConstraints engageSpeed = new PathConstraints(2.0, 2.0);
 
   private static final double SQUARING_AUTO_TIMEOUT_SECONDS = 0.5;
   private static final double SQUARING_GRID_TIMEOUT_SECONDS = 1.0;
   private static final double SQUARING_LOADING_ZONE_TIMEOUT_SECONDS = 6.0;
 
   private GamePieceAndSource gamePieceAndSource = GamePieceAndSource.CONE_SHELF;
+
+  private TunableNumber driveToPoseOffset = new TunableNumber("Buttons/DriveToPoseOffset", 0);
 
   // FIXME: delete after testing
   private final LoggedDashboardChooser<ElevatorConstants.Position> armChooser =
@@ -456,7 +461,7 @@ public class RobotContainer {
     PathPlannerTrajectory centerEngagePath =
         PathPlanner.loadPath("CenterEngage", overCableConnector);
     PathPlannerTrajectory mobilityCenterEngagePath =
-        PathPlanner.loadPath("MobilityEngageCenter", overCableConnector);
+        PathPlanner.loadPath("MobilityEngageCenter", engageSpeed);
     PathPlannerTrajectory oneConeCenterGrabEngage =
         PathPlanner.loadPath("1ConeCenterGrabEngage", overCableConnector);
     autoEventMap.put("collect game piece", collectGamePieceAuto());
@@ -1170,7 +1175,16 @@ public class RobotContainer {
         autoCubeShootCommand(),
         new FollowPath(path, drivetrain, true, true),
         new FollowPath(engagePath, drivetrain, false, true),
-        new AutoBalance(drivetrain, true, led, false));
+        new DriveToPose(
+            drivetrain,
+            () ->
+                new Pose2d(
+                    FieldConstants.Community.chargingStationOuterX
+                        - (FieldConstants.Community.chargingStationLength / 2.0)
+                        - driveToPoseOffset.get(),
+                    FieldConstants.Community.chargingStationLeftY
+                        - (FieldConstants.Community.chargingStationWidth / 2.0),
+                    Rotation2d.fromDegrees(180))));
   }
 
   private void configureDrivetrainCommands() {

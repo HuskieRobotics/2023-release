@@ -33,7 +33,7 @@ public class IntakeConstants {
   public static final double ROTATION_FEEDFORWARD = 0;
 
   public static final double ROLLER_POSITION_PID_F = 0.0;
-  public static final double ROLLER_POSITION_PID_P = 0.0;
+  public static final double ROLLER_POSITION_PID_P = 0.4;
   public static final double ROLLER_POSITION_PID_I = 0;
   public static final double ROLLER_POSITION_PID_D = 0;
   public static final double ROLLER_POSITION_PID_I_ZONE = 0;
@@ -44,7 +44,7 @@ public class IntakeConstants {
   public static final double ROLLER_CURRENT_LIMIT = 50;
 
   public static final double ROTATION_RETRACT_HOLD_CURRENT = -20.0;
-  public static final double ROLLER_HOLD_CURRENT = 10.0;
+  public static final double ROLLER_HOLD_CURRENT = 15.0;
 
   public static final double ROLLER_THRESHOLD_ITERATIONS = 10;
   public static final double DEPLOY_THRESHOLD_ITERATIONS = 10;

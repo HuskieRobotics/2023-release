@@ -40,17 +40,17 @@ public class IntakeIOTalonFX implements IntakeIO {
       new TunableNumber("IntakeRotation/kPeakOutput", ROTATION_POSITION_PID_PEAK_OUTPUT);
 
   private final TunableNumber RollerkP =
-      new TunableNumber("IntakeRotation/kP", ROLLER_POSITION_PID_P);
+      new TunableNumber("IntakeRoller/kP", ROLLER_POSITION_PID_P);
   private final TunableNumber RollerkI =
-      new TunableNumber("IntakeRotation/kI", ROLLER_POSITION_PID_I);
+      new TunableNumber("IntakeRoller/kI", ROLLER_POSITION_PID_I);
   private final TunableNumber RollerkD =
-      new TunableNumber("IntakeRotation/kD", ROLLER_POSITION_PID_D);
+      new TunableNumber("IntakeRoller/kD", ROLLER_POSITION_PID_D);
   private final TunableNumber RollerkF =
-      new TunableNumber("IntakeRotation/kF", ROLLER_POSITION_PID_F);
+      new TunableNumber("IntakeRoller/kF", ROLLER_POSITION_PID_F);
   private final TunableNumber RollerkIz =
-      new TunableNumber("IntakeRotation/kIz", ROLLER_POSITION_PID_I_ZONE);
+      new TunableNumber("IntakeRoller/kIz", ROLLER_POSITION_PID_I_ZONE);
   private final TunableNumber RollerkPeakOutput =
-      new TunableNumber("IntakeRotation/kPeakOutput", ROLLER_POSITION_PID_PEAK_OUTPUT);
+      new TunableNumber("IntakeRoller/kPeakOutput", ROLLER_POSITION_PID_PEAK_OUTPUT);
 
   public IntakeIOTalonFX() {
     configIntakeMotor(INTAKE_ROTATION_MOTOR_CAN_ID, INTAKE_ROLLER_MOTOR_CAN_ID);

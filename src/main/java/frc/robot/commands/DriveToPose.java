@@ -35,6 +35,7 @@ public class DriveToPose extends CommandBase {
   private static final TunableNumber driveKd =
       new TunableNumber("DriveToPose/DriveKd", RobotConfig.getInstance().getDriveToPoseDriveKD());
   private static final TunableNumber driveKi = new TunableNumber("DriveToPose/DriveKi", 0);
+  private static final TunableNumber driveMaxKf = new TunableNumber("DriveToPose/DriveMaxKf", 6.0);
   private static final TunableNumber thetaKp =
       new TunableNumber("DriveToPose/ThetaKp", RobotConfig.getInstance().getDriveToPoseThetaKP());
   private static final TunableNumber thetaKd =
@@ -159,6 +160,12 @@ public class DriveToPose extends CommandBase {
     double thetaVelocity =
         thetaController.calculate(
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+
+    double xVelocityFeedForward =
+        -Math.sin(Math.toRadians(drivetrain.getRoll())) * driveMaxKf.get();
+    Logger.getInstance().recordOutput("DriveToPose/xVelFF", xVelocityFeedForward);
+    xVelocity += xVelocityFeedForward;
+
     if (xController.atGoal()) xVelocity = 0.0;
     if (yController.atGoal()) yVelocity = 0.0;
     if (thetaController.atGoal()) thetaVelocity = 0.0;

@@ -34,6 +34,7 @@ public class DeployIntake extends CommandBase {
   @Override
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/DeployIntake", true);
+    intake.enableRoller();
     intake.deploy();
   }
 
@@ -45,7 +46,6 @@ public class DeployIntake extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Logger.getInstance().recordOutput("ActiveCommands/DeployIntake", false);
-    intake.enableRoller();
     intake.stopRotation();
   }
 

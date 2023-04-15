@@ -12,7 +12,6 @@ public class IntakeConstants {
     SCORING
   }
 
-  // FIXME: tune all of these
   public static final boolean DEBUGGING = false;
 
   public static final boolean TESTING = false;
@@ -20,7 +19,6 @@ public class IntakeConstants {
 
   public static final int INTAKE_ROTATION_MOTOR_CAN_ID = 2;
   public static final int INTAKE_ROLLER_MOTOR_CAN_ID = 3;
-  // FIXME: get correct gear ratio
   public static final double INTAKE_ROTATION_GEAR_RATIO = 16.0;
 
   public static final double INTAKE_DEFAULT_ROLLER_POWER = 0.3;
@@ -34,8 +32,19 @@ public class IntakeConstants {
   public static final double ROTATION_POSITION_PID_PEAK_OUTPUT = 0.5;
   public static final double ROTATION_FEEDFORWARD = 0;
 
+  public static final double ROLLER_POSITION_PID_F = 0.0;
+  public static final double ROLLER_POSITION_PID_P = 0.4;
+  public static final double ROLLER_POSITION_PID_I = 0;
+  public static final double ROLLER_POSITION_PID_D = 0;
+  public static final double ROLLER_POSITION_PID_I_ZONE = 0;
+  public static final double ROLLER_POSITION_PID_PEAK_OUTPUT = 1.0;
+  public static final double ROLLER_FEEDFORWARD = 0;
+
   public static final double ROTATION_CURRENT_LIMIT = 40;
   public static final double ROLLER_CURRENT_LIMIT = 50;
+
+  public static final double ROTATION_RETRACT_HOLD_CURRENT = -30.0;
+  public static final double ROLLER_HOLD_CURRENT = 15.0;
 
   public static final double ROLLER_THRESHOLD_ITERATIONS = 10;
   public static final double DEPLOY_THRESHOLD_ITERATIONS = 10;

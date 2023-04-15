@@ -34,7 +34,6 @@ public class RetractIntake extends CommandBase {
   public void initialize() {
     Logger.getInstance().recordOutput("ActiveCommands/RetractIntake", true);
     intake.retract();
-    intake.disableRoller();
   }
 
   /**

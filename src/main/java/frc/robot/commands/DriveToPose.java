@@ -64,7 +64,7 @@ public class DriveToPose extends CommandBase {
   private static final TunableNumber thetaTolerance =
       new TunableNumber(
           "DriveToPose/ThetaTolerance", RobotConfig.getInstance().getDriveToPoseThetaTolerance());
-  private static final TunableNumber timeout = new TunableNumber("DriveToPose/timeout", 2.0);
+  private static final TunableNumber timeout = new TunableNumber("DriveToPose/timeout", 100);
 
   private final ProfiledPIDController xController =
       new ProfiledPIDController(

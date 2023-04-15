@@ -109,6 +109,7 @@ public class RobotContainer {
   private final Map<String, Command> autoEventMap = new HashMap<>();
 
   private PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
+  private PathConstraints overChargeStation = new PathConstraints(1.0, 1.0);
   private PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
   private PathConstraints hybridConeSpeed = new PathConstraints(2.0, 2.0);
   private PathConstraints engageSpeed = new PathConstraints(2.0, 2.0);
@@ -461,7 +462,7 @@ public class RobotContainer {
     PathPlannerTrajectory centerEngagePath =
         PathPlanner.loadPath("CenterEngage", overCableConnector);
     PathPlannerTrajectory mobilityCenterEngagePath =
-        PathPlanner.loadPath("MobilityEngageCenter", engageSpeed);
+        PathPlanner.loadPath("MobilityEngageCenter", overChargeStation);
     PathPlannerTrajectory oneConeCenterGrabEngage =
         PathPlanner.loadPath("1ConeCenterGrabEngage", overCableConnector);
     autoEventMap.put("collect game piece", collectGamePieceAuto());

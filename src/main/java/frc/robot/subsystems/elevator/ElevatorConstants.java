@@ -46,10 +46,10 @@ public class ElevatorConstants {
   public static final double ROTATION_EXTENSION_TIME_OFFSET_IN = 0.5;
   public static final boolean APPLY_TIME_OFFSET_AT_START_IN = true;
 
-  public static final double CONE_HIGH_ROTATION_POSITION = -0.0383;
+  public static final double CONE_HIGH_ROTATION_POSITION = -0.0383 + .02;
   public static final double CONE_HIGH_EXTENSION_POSITION = 1.6901 - EXTENSION_OFFSET;
 
-  public static final double CONE_MID_ROTATION_POSITION = 0.7777 + ROTATION_OFFSET;
+  public static final double CONE_MID_ROTATION_POSITION = 0.7777 + ROTATION_OFFSET + .02;
   public static final double CONE_MID_EXTENSION_POSITION = 0.94084;
 
   public static final double CONE_HYBRID_ROTATION_POSITION = -0.0383;

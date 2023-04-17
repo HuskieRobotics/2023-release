@@ -28,6 +28,7 @@ public class StallAgainstElement extends CommandBase {
   private boolean isEndNode;
   private double timeout;
   private boolean stopOnStall;
+  private double stallCount;
 
   private static final double SQUARING_CURRENT_AMPS = 80.0;
 
@@ -36,6 +37,8 @@ public class StallAgainstElement extends CommandBase {
           "StallAgainstElement/SquaringSpeed", RobotConfig.getInstance().getSquaringSpeed());
   private static final TunableNumber squaringCurrent =
       new TunableNumber("StallAgainstElement/SquaringCurrent", SQUARING_CURRENT_AMPS);
+  private static final TunableNumber stallCountThreshold =
+      new TunableNumber("StallAgainstElement/stallCountThreshold", 4);
 
   /** Drives to the specified pose under full software control. */
   public StallAgainstElement(
@@ -74,6 +77,7 @@ public class StallAgainstElement extends CommandBase {
       isEndNode = true;
     }
     this.timer.restart();
+    stallCount = 0.0;
   }
 
   @Override
@@ -83,6 +87,11 @@ public class StallAgainstElement extends CommandBase {
     double xVelocity = squaringSpeed.get() * rotation.getCos();
     double yVelocity = squaringSpeed.get() * rotation.getSin();
     drivetrain.drive(xVelocity, yVelocity, 0.0, false, true);
+    if (drivetrain.getAverageDriveCurrent() > squaringCurrent.get()) {
+      stallCount++;
+    } else {
+      stallCount = 0.0;
+    }
   }
 
   @Override
@@ -97,6 +106,6 @@ public class StallAgainstElement extends CommandBase {
     return !drivetrain.isMoveToGridEnabled()
         || isEndNode
         || this.timer.hasElapsed(this.timeout)
-        || (this.stopOnStall && (drivetrain.getAverageDriveCurrent() > squaringCurrent.get()));
+        || (this.stopOnStall && (stallCount > stallCountThreshold.get()));
   }
 }

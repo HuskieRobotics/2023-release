@@ -105,7 +105,7 @@ public class RobotContainer {
   private final Map<String, Command> autoEventMap = new HashMap<>();
 
   private PathConstraints overCableConnector = new PathConstraints(1.0, 1.0);
-  private PathConstraints regularSpeed = new PathConstraints(2.0, 2.0);
+  private PathConstraints regularSpeed = new PathConstraints(2.5, 3.0);
   private PathConstraints hybridConeSpeed = new PathConstraints(2.0, 2.0);
   private PathConstraints engageSpeed = new PathConstraints(1.5, 2.0);
 
@@ -483,7 +483,8 @@ public class RobotContainer {
         PathPlanner.loadPath("CableSide1ConeGrab", 2.0, 2.0);
     PathPlannerTrajectory centerEngageBackwardsPath =
         PathPlanner.loadPath("CenterEngageBackwards", engageSpeed);
-    PathPlannerTrajectory threeCubeCableSidePath = PathPlanner.loadPath("3CubeCableSide", 1.0, 1.0);
+    // PathPlannerTrajectory threeCubeCableSidePath = PathPlanner.loadPath("3CubeCableSide", 1.0,
+    // 1.0);
     // PathPlannerTrajectory threeCubeLoadingSidePath =
     //     PathPlanner.loadPath("3CubeLoadingSide", 1.0, 1.0);
     PathPlannerTrajectory oneCubeCenterHybridPath =
@@ -494,8 +495,12 @@ public class RobotContainer {
         PathPlanner.loadPath("1Cone2CubeCableSide", 1.0, 1.0);
     PathPlannerTrajectory threeCubeLoadingSideTwoPath =
         PathPlanner.loadPath("3CubeLoadingSide2", 2.5, 3.0);
+    PathPlannerTrajectory twoPointFiveCubeLoadingSidePath =
+        PathPlanner.loadPath("2.5CubeLoadingSide", 2.5, 3.0);
     PathPlannerTrajectory threeCubeCableSideV2Path =
-        PathPlanner.loadPath("3ConeCableSideV2", 2.0, 2.0);
+        PathPlanner.loadPath("3CubeCableSideV2", 2.5, 3.0);
+    PathPlannerTrajectory threeCubeCableSideV3Path =
+        PathPlanner.loadPath("3CubeCableSidev3", 2.5, 3.0);
 
     // autoEventMap.put("Bring In Elevator", Commands.print("brining in collector"));
 
@@ -727,6 +732,32 @@ public class RobotContainer {
         "1 Cone loadingSide(High, Mobility)", oneConeLoadingSideHighMobilityCommand);
 
     // ********************************************************************
+    // ********************  Center 1 Cone (High, Left, Stay) ************
+    // ********************************************************************
+
+    Command oneConeCenterLeftHighStayCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () -> drivetrain.resetOdometry(oneConeCenterLeftPath.getInitialState()),
+                drivetrain),
+            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
+    autoChooser.addOption("Center 1 Cone (High, Left, Stay)", oneConeCenterLeftHighStayCommand);
+
+    // ********************************************************************
+    // ********************  Center 1 Cone (High, Right, Stay) ************
+    // ********************************************************************
+
+    Command oneConeCenterRightHighStayCommand =
+        Commands.sequence(
+            Commands.runOnce(
+                () -> drivetrain.resetOdometry(oneConeCenterRightPath.getInitialState()),
+                drivetrain),
+            scoreGamePieceAuto(Position.CONE_HIGH_LEVEL),
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
+    autoChooser.addOption("Center 1 Cone (High, Right, Stay)", oneConeCenterRightHighStayCommand);
+
+    // ********************************************************************
     // ******************** cableSide 1.5 cone (High) *********************
     // ********************************************************************
 
@@ -900,15 +931,33 @@ public class RobotContainer {
     // ******************** cableSide 3 cube ******************************
     // ********************************************************************
 
-    Command cableSideThreeCubeCommand = threeCubeCommand(threeCubeCableSidePath);
-    autoChooser.addOption("CableSide 3 Cube", cableSideThreeCubeCommand);
+    // Command cableSideThreeCubeCommand = threeCubeCommand(threeCubeCableSidePath);
+    // autoChooser.addOption("CableSide 3 Cube", cableSideThreeCubeCommand);
 
     // ********************************************************************
-    // ******************** cableSide 3 cube ******************************
+    // ******************** cableSide 3 cube v2******************************
     // ********************************************************************
 
-    Command cableSideThreeCubeV2Command = threeCubeCommand(threeCubeCableSideV2Path);
+    Command cableSideThreeCubeV2Command =
+        Commands.sequence(
+            Commands.runOnce(() -> intake.setRollerMotorPercentage(-0.5)),
+            Commands.waitSeconds(0.5),
+            threeCubeCommand(threeCubeCableSideV2Path));
     autoChooser.addOption("CableSide 3 Cube Version 2", cableSideThreeCubeV2Command);
+
+    // ********************************************************************
+    // ******************** cableSide 3 cube v3****************************
+    // ********************************************************************
+
+    Command cableSideThreeCubeV3Command =
+        Commands.sequence(
+            Commands.runOnce(() -> intake.setRollerMotorPercentage(-0.5)),
+            Commands.waitSeconds(0.5),
+            new FollowPathWithEvents(
+                new FollowPath(threeCubeCableSideV3Path, drivetrain, true, true),
+                threeCubeCableSideV3Path.getMarkers(),
+                autoEventMap));
+    autoChooser.addOption("CableSide 3 Cube Version 3", cableSideThreeCubeV3Command);
 
     // ********************************************************************
     // ******************** loadingSide 3 Cube ****************************
@@ -921,8 +970,23 @@ public class RobotContainer {
     // ******************** loadingSide 3 Cube v2 ****************************
     // ********************************************************************
 
-    Command loadingSideThreeCubeTwoCommand = threeCubeCommand(threeCubeLoadingSideTwoPath);
+    Command loadingSideThreeCubeTwoCommand =
+        Commands.sequence(
+            Commands.runOnce(() -> intake.setRollerMotorPercentage(-0.5)),
+            Commands.waitSeconds(0.5),
+            threeCubeCommand(threeCubeLoadingSideTwoPath));
     autoChooser.addOption("LoadingSide 3 Cube Version 2", loadingSideThreeCubeTwoCommand);
+
+    // ********************************************************************
+    // ******************** loadingSide 2.5 Cube ****************************
+    // ********************************************************************
+
+    Command loadingSideTwoPointFiveCubeCommand =
+        Commands.sequence(
+            Commands.runOnce(() -> intake.setRollerMotorPercentage(-0.5)),
+            threeCubeCommand(twoPointFiveCubeLoadingSidePath),
+            Commands.runOnce(drivetrain::enableXstance, drivetrain));
+    autoChooser.addOption("LoadingSide 2.5 Cube Version", loadingSideTwoPointFiveCubeCommand);
 
     // ********************************************************************
     // ******************** 1 Cube Mobility + Engage (Center) *************
@@ -1121,7 +1185,7 @@ public class RobotContainer {
 
   private Command autoCubeShootCommand() {
     return Commands.sequence(
-        Commands.runOnce(() -> intake.setRollerMotorPercentage(-0.5)),
+        Commands.runOnce(() -> intake.setRollerMotorPercentage(-0.2)),
         Commands.waitSeconds(1),
         new RetractIntake(intake));
   }
@@ -1538,7 +1602,9 @@ public class RobotContainer {
   public void teleopInit() {
     led.enableTeleopLED();
     CommandScheduler.getInstance()
-        .schedule(new SetElevatorPosition(elevator, Position.CONE_STORAGE, led));
+        .schedule(
+            new SetElevatorPosition(elevator, Position.CONE_STORAGE, led),
+            new RetractIntake(intake));
   }
 
   public void robotInit() {

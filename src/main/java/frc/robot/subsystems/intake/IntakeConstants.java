@@ -43,7 +43,7 @@ public class IntakeConstants {
   public static final double ROTATION_CURRENT_LIMIT = 40;
   public static final double ROLLER_CURRENT_LIMIT = 50;
 
-  public static final double ROTATION_RETRACT_HOLD_CURRENT = -30.0;
+  public static final double ROTATION_RETRACT_HOLD_CURRENT = -25.0;
   public static final double ROLLER_HOLD_CURRENT = 15.0;
 
   public static final double ROLLER_THRESHOLD_ITERATIONS = 10;

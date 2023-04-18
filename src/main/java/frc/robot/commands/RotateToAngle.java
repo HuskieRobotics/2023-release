@@ -14,19 +14,22 @@ import static frc.robot.Constants.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.team3061.RobotConfig;
+import frc.lib.team6328.util.FieldConstants;
 import frc.lib.team6328.util.TunableNumber;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class RotateToAngle extends CommandBase {
-  protected final Drivetrain drivetrain;
-  private final Supplier<Pose2d> poseSupplier;
-  protected Pose2d targetPose;
-
-  protected boolean running = false;
+  private final Drivetrain drivetrain;
+  private double angle;
+  private boolean running = false;
+  private final DoubleSupplier translationXSupplier;
+  private final DoubleSupplier translationYSupplier;
+  private final boolean determineShelfOrGrid;
 
   protected static final TunableNumber thetaKp = new TunableNumber("RotateToAngle/ThetaKp", 2);
   protected static final TunableNumber thetaKd = new TunableNumber("RotateToAngle/ThetaKd", 0.1);
@@ -49,11 +52,26 @@ public class RotateToAngle extends CommandBase {
           LOOP_PERIOD_SECS);
 
   /** Drives to the specified pose under full software control. */
-  public RotateToAngle(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier) {
+  public RotateToAngle(Drivetrain drivetrain, double desiredAngle) {
     this.drivetrain = drivetrain;
-    this.poseSupplier = poseSupplier;
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    this.translationXSupplier = () -> 0.0;
+    this.translationYSupplier = () -> 0.0;
+    this.angle = desiredAngle;
+    this.determineShelfOrGrid = false;
+  }
+
+  public RotateToAngle(
+      Drivetrain drivetrain,
+      DoubleSupplier translationXSupplier,
+      DoubleSupplier translationYSupplier) {
+    this.drivetrain = drivetrain;
+    addRequirements(drivetrain);
+    this.translationXSupplier = translationXSupplier;
+    this.translationYSupplier = translationYSupplier;
+    this.determineShelfOrGrid = true;
+    this.angle = 0.0;
   }
 
   @Override
@@ -64,9 +82,18 @@ public class RotateToAngle extends CommandBase {
     Pose2d currentPose = drivetrain.getPose();
     thetaController.reset(currentPose.getRotation().getRadians());
     thetaController.setTolerance(thetaTolerance.get());
-    this.targetPose = poseSupplier.get();
+    if (determineShelfOrGrid) {
+      if (drivetrain.getPose().getX() > (FieldConstants.fieldLength / 2)) {
+        this.angle = 0;
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    Logger.getInstance().recordOutput("RotateToAngle/targetPose", targetPose);
+      } else {
+        this.angle = 180;
+        thetaController.enableContinuousInput(0, 2 * Math.PI);
+      }
+    }
+
+    Logger.getInstance().recordOutput("RotateToAngle/angle", angle);
   }
 
   @Override
@@ -93,15 +120,21 @@ public class RotateToAngle extends CommandBase {
     // Command speeds
     double thetaVelocity =
         thetaController.calculate(
-            currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
-    if (thetaController.atGoal()) thetaVelocity = 0.0;
+            currentPose.getRotation().getRadians(), Units.degreesToRadians(this.angle));
+    if (thetaController.atGoal()) {
+      thetaVelocity = 0.0;
+    }
+    double xPercentage = modifyAxis(translationXSupplier.getAsDouble(), 2.0);
+    double yPercentage = modifyAxis(translationYSupplier.getAsDouble(), 2.0);
 
-    drivetrain.drive(0.0, 0.0, thetaVelocity, true, true);
+    double xVelocity = xPercentage * RobotConfig.getInstance().getRobotMaxVelocity();
+    double yVelocity = yPercentage * RobotConfig.getInstance().getRobotMaxVelocity();
+
+    drivetrain.drive(xVelocity, yVelocity, thetaVelocity, true, false);
   }
 
   @Override
   public void end(boolean interrupted) {
-    drivetrain.stop();
     running = false;
     Logger.getInstance().recordOutput("ActiveCommands/RotateToAngle", false);
   }
@@ -111,5 +144,27 @@ public class RotateToAngle extends CommandBase {
     Logger.getInstance().recordOutput("RotateToAngle/tErr", thetaController.atGoal());
 
     return (running && thetaController.atGoal());
+  }
+
+  private static double modifyAxis(double value, double power) {
+    // Deadband
+    value = deadband(value, 0.1);
+
+    // Square the axis
+    value = Math.copySign(Math.pow(value, power), value);
+
+    return value;
+  }
+
+  private static double deadband(double value, double deadband) {
+    if (Math.abs(value) > deadband) {
+      if (value > 0.0) {
+        return (value - deadband) / (1.0 - deadband);
+      } else {
+        return (value + deadband) / (1.0 - deadband);
+      }
+    } else {
+      return 0.0;
+    }
   }
 }

@@ -227,6 +227,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getFinishExtensionButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getIntakeShootButton() {
     return new Trigger(() -> false);
   }

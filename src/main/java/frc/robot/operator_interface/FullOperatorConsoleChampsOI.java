@@ -62,12 +62,12 @@ public class FullOperatorConsoleChampsOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getIntakeShelfGridSideButton() {
+  public Trigger getIntakeShootButton() {
     return translateJoystickButtons[2];
   }
 
   @Override
-  public Trigger getInterruptAll() {
+  public Trigger getTurn180Button() {
     return translateJoystickButtons[3];
   }
 
@@ -77,8 +77,13 @@ public class FullOperatorConsoleChampsOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getFieldRelativeButton() {
+  public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
+  }
+
+  @Override
+  public Trigger getFieldRelativeButton() {
+    return translateJoystickButtons[9];
   }
 
   // Rotate Joystick
@@ -94,12 +99,12 @@ public class FullOperatorConsoleChampsOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getIntakeShelfWallSideButton() {
+  public Trigger getFinishExtensionButton() {
     return rotateJoystickButtons[2];
   }
 
   @Override
-  public Trigger getIntakeShootButton() {
+  public Trigger getIntakeShelfGridSideButton() {
     return rotateJoystickButtons[3];
   }
 

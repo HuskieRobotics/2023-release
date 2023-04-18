@@ -14,7 +14,6 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -540,13 +539,7 @@ public class RobotContainer {
             Commands.runOnce(elevator::stopElevator, elevator),
             new FollowPath(
                 hybridConeCenterPositionMobilityEngagePath.get(1), drivetrain, false, true),
-            new RotateToAngle(
-                drivetrain,
-                () ->
-                    new Pose2d(
-                        drivetrain.getPose().getX(),
-                        drivetrain.getPose().getY(),
-                        Rotation2d.fromDegrees(180.0))),
+            new RotateToAngle(drivetrain, 180.0),
             new FollowPath(farSideEngagePath, drivetrain, false, true),
             new AutoBalance(drivetrain, true, led, false));
     autoChooser.addOption(
@@ -1044,13 +1037,7 @@ public class RobotContainer {
             new SetElevatorPosition(elevator, Position.AUTO_STORAGE, led),
             new FollowPath(path, drivetrain, true, true)),
         Commands.runOnce(elevator::stopElevator, elevator),
-        new RotateToAngle(
-            drivetrain,
-            () ->
-                new Pose2d(
-                    drivetrain.getPose().getX(),
-                    drivetrain.getPose().getY(),
-                    Rotation2d.fromDegrees(0.0))),
+        new RotateToAngle(drivetrain, 0.0),
         new FollowPathWithEvents(
             new FollowPath(grabEngagePath, drivetrain, true, true),
             grabEngagePath.getMarkers(),
@@ -1174,6 +1161,9 @@ public class RobotContainer {
   }
 
   private void configureDrivetrainCommands() {
+
+    oi.getTurn180Button()
+        .onTrue(new RotateToAngle(drivetrain, oi::getTranslateX, oi::getTranslateY));
 
     oi.getToggleIntakeButton()
         .toggleOnTrue(
@@ -1300,6 +1290,13 @@ public class RobotContainer {
     oi.getDisableArmButton()
         .onTrue(Commands.sequence(Commands.runOnce(() -> elevator.stopElevator(), elevator)));
 
+    oi.getFinishExtensionButton()
+        .onTrue(
+            new SetElevatorPosition(
+                elevator,
+                () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()),
+                led));
+
     elevator.setDefaultCommand(
         Commands.sequence(
             Commands.runOnce(
@@ -1331,7 +1328,8 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.runOnce(() -> intake.setRollerMotorPercentage(-1), intake),
                 Commands.waitSeconds(1),
-                new RetractIntake(intake)));
+                new RetractIntake(intake),
+                Commands.runOnce(intake::disableRoller, intake)));
 
     oi.getIntakeDeployButton().onTrue(new DeployIntake(intake));
     oi.getIntakeRetractButton().onTrue(new RetractIntake(intake));
@@ -1399,8 +1397,7 @@ public class RobotContainer {
                         SQUARING_GRID_TIMEOUT_SECONDS))),
             Commands.runOnce(led::enableTeleopLED)),
         Commands.parallel(
-            new SetElevatorPosition(
-                elevator, () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()), led),
+            new SetElevatorPosition(elevator, ElevatorConstants.Position.GRID_PREPARE, led),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)),
         () -> oi.getMoveToGridEnabledSwitch().getAsBoolean());
   }

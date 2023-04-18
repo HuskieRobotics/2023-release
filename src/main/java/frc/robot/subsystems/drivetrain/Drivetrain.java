@@ -108,6 +108,8 @@ public class Drivetrain extends SubsystemBase {
 
   private final SwerveDrivePoseEstimator poseEstimator;
   private boolean brakeMode;
+  private Timer brakeModeTimer = new Timer();
+  private static final double BREAK_MODE_DELAY_SEC = 10.0;
 
   private DriveMode driveMode = DriveMode.NORMAL;
   private double characterizationVoltage = 0.0;
@@ -509,6 +511,7 @@ public class Drivetrain extends SubsystemBase {
     if (DriverStation.isEnabled() && !brakeMode) {
       brakeMode = true;
       setBrakeMode(true);
+      brakeModeTimer.restart();
 
     } else {
       boolean stillMoving = false;
@@ -516,10 +519,11 @@ public class Drivetrain extends SubsystemBase {
         if (Math.abs(mod.getState().speedMetersPerSecond)
             > RobotConfig.getInstance().getRobotMaxCoastVelocity()) {
           stillMoving = true;
+          brakeModeTimer.restart();
         }
       }
 
-      if (brakeMode && !stillMoving) {
+      if (brakeMode && !stillMoving && brakeModeTimer.hasElapsed(BREAK_MODE_DELAY_SEC)) {
         brakeMode = false;
         setBrakeMode(false);
       }

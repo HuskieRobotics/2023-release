@@ -1229,6 +1229,11 @@ public class RobotContainer {
     oi.getTurn180Button()
         .onTrue(new RotateToAngle(drivetrain, oi::getTranslateX, oi::getTranslateY));
 
+    
+    if(TUNING_MODE){
+    oi.getBalanceTestingButton().onTrue(new AutoBalance(drivetrain, true, led, true));
+    }
+
     oi.getToggleIntakeButton()
         .toggleOnTrue(
             Commands.either(

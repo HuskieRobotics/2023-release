@@ -234,4 +234,8 @@ public interface OperatorInterface {
   public default Trigger getIntakeShootButton() {
     return new Trigger(() -> false);
   }
+
+  public default Trigger getBalanceTestingButton() {
+    return new Trigger(() -> false);
+  }
 }

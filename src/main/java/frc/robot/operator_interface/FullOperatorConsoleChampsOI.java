@@ -123,6 +123,11 @@ public class FullOperatorConsoleChampsOI implements OperatorInterface {
     return rotateJoystickButtons[9];
   }
 
+  @Override
+  public Trigger getBalanceTestingButton(){
+    return rotateJoystickButtons[10];
+  }
+
   // Operator Controller
 
   @Override

@@ -73,6 +73,10 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  public void rewindRopeOnDrum(double power) {
+    io.setRotationMotorPercentage(power * MAX_MANUAL_POWER_ROTATION);
+  }
+
   public boolean atRotationSetpoint() {
     // storage position is a special case: if the rotation angle is greater than the setpoint,
     // which it will be when we stall against the mechanical hard stop, we still want to

@@ -1229,6 +1229,11 @@ public class RobotContainer {
     oi.getTurn180Button()
         .onTrue(new RotateToAngle(drivetrain, oi::getTranslateX, oi::getTranslateY));
 
+    if (TUNING_MODE) {
+      oi.getAutoBalanceButton().onTrue(new AutoBalance(drivetrain, true, led, false));
+      oi.getAutoBalanceTestNOTGRID().onTrue(new AutoBalance(drivetrain, true, led, true));
+    }
+
     oi.getToggleIntakeButton()
         .toggleOnTrue(
             Commands.either(
@@ -1360,6 +1365,11 @@ public class RobotContainer {
                 elevator,
                 () -> SetElevatorPosition.convertGridRowToPosition(oi.getGridRow()),
                 led));
+
+    oi.getSpoolRecoverButton()
+        .onTrue(Commands.runOnce(() -> elevator.rewindRopeOnDrum(1.0), elevator));
+    oi.getSpoolRecoverButton()
+        .onFalse(Commands.runOnce(() -> elevator.rewindRopeOnDrum(0.0), elevator));
 
     elevator.setDefaultCommand(
         Commands.sequence(

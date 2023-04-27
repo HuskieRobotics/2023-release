@@ -87,6 +87,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getSpoolRecoverButton() {
+    return new Trigger(() -> false);
+  }
+
   public default double getRotateArm() {
     return 0.0;
   }
@@ -232,6 +236,14 @@ public interface OperatorInterface {
   }
 
   public default Trigger getIntakeShootButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAutoBalanceTest() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAutoBalanceTestNOTGRID() {
     return new Trigger(() -> false);
   }
 }

@@ -86,6 +86,11 @@ public class FullOperatorConsoleChampsOI implements OperatorInterface {
     return translateJoystickButtons[9];
   }
 
+  @Override
+  public Trigger getAutoBalanceTestNOTGRID() {
+    return translateJoystickButtons[10];
+  }
+
   // Rotate Joystick
 
   @Override
@@ -121,6 +126,16 @@ public class FullOperatorConsoleChampsOI implements OperatorInterface {
   @Override
   public Trigger getAutoZeroExtensionButton() {
     return rotateJoystickButtons[9];
+  }
+
+  @Override
+  public Trigger getAutoBalanceTest() {
+    return rotateJoystickButtons[10];
+  }
+
+  @Override
+  public Trigger getSpoolRecoverButton() {
+    return rotateJoystickButtons[11];
   }
 
   // Operator Controller

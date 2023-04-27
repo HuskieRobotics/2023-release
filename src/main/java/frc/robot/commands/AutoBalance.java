@@ -15,11 +15,11 @@ public class AutoBalance extends CommandBase {
   private static final double KP = 0.1;
   private static final double KI = 0.0;
   private static final double KD = 0.0;
-  private static final double MAX_ANGLE_DEG = 12.0;
+  private static final double MAX_ANGLE_DEG = 11.0;
   private static final double MAX_VELOCITY = 0.5;
   private static final double INIT_VELOCITY = 1.0;
-  private static final double ANGLE_HYSTERESIS_DEGREES = 5.0;
-  private static final double ADJUSTMENT_THRESHOLD_METERS = 0.0;
+  private static final double ANGLE_HYSTERESIS_DEGREES = 6.0;
+  private static final double ADJUSTMENT_THRESHOLD_METERS = 0.05;
 
   private double initDriveVelocity;
   private PIDController frontBack;

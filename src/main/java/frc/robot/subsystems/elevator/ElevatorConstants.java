@@ -143,8 +143,8 @@ public class ElevatorConstants {
   public static final int PIGEON_ID = 4;
   public static final double EXTENSION_SLOW_PEAK_OUTPUT = 0.15;
 
-  public static final double MAX_EXTENSION_VELOCITY_METERS_PER_SECOND = 1.5;
-  public static final double EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 3.0;
+  public static final double MAX_EXTENSION_VELOCITY_METERS_PER_SECOND = 3.0;
+  public static final double EXTENSION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 9.0;
   public static final double MAX_RETRACTION_VELOCITY_METERS_PER_SECOND = 1.5;
   public static final double RETRACTION_ACCELERATION_METERS_PER_SECOND_PER_SECOND = 3.0;
 

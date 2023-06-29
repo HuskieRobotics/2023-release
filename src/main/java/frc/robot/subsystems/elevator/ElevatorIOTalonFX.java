@@ -200,7 +200,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     extensionConfig.slot0.integralZone = (int) 400;
     extensionConfig.slot0.closedLoopPeakOutput = ekPeakOutput.get();
 
-    extensionConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
+    // extensionConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 50, 1);
 
     extensionMotor.configAllSettings(extensionConfig);
 

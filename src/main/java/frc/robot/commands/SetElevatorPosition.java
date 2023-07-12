@@ -64,7 +64,7 @@ public class SetElevatorPosition extends CommandBase {
   private final TunableNumber extensionRotationProfileOffsetIn =
       new TunableNumber("Elevator/ProfileDeltaIn(s)", ROTATION_EXTENSION_TIME_OFFSET_IN);
   private final TunableNumber extensionRotationProfileOffsetOut =
-      new TunableNumber("Elevator/ProfileDeltaIn(s)", ROTATION_EXTENSION_TIME_OFFSET_OUT);
+      new TunableNumber("Elevator/ProfileDeltaOut(s)", ROTATION_EXTENSION_TIME_OFFSET_OUT);
 
   protected Elevator elevator;
   protected double rotation;
